@@ -13,103 +13,67 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/white"
         android:elevation="@dimen/small_padding"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        style="@style/SettingsViewLinearLayout">
 
         <TextView
             android:id="@+id/dark_theme"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:padding="@dimen/big_padding"
             android:text="@string/theme_switch"
-            android:textColor="@color/black"
-            android:textSize="@dimen/list_text_size" />
+            style="@style/SettingsTextView"/>
 
         <Switch
             android:id="@+id/theme_switch"
+            android:trackTint="@color/trackTintColor"
+            android:thumbTint="@color/main_background"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="@dimen/big_padding" />
+            android:padding="@dimen/big_padding"/>
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        style="@style/SettingsViewLinearLayout"
+        tools:ignore="UseCompoundDrawables">
 
         <TextView
             android:id="@+id/share_app"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:padding="@dimen/big_padding"
-            android:text="@string/share_app_text"
-            android:textColor="@color/black"
-            android:textSize="@dimen/list_text_size" />
+            style="@style/SettingsTextView"
+            android:text="@string/share_app_text"/>
 
         <ImageView
             android:id="@+id/share_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/big_padding"
+            style="@style/SettingsImageView"
             app:srcCompat="@drawable/share" />
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        style="@style/SettingsViewLinearLayout">
 
         <TextView
             android:id="@+id/support_send"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:padding="@dimen/big_padding"
             android:text="@string/support_text"
-            android:textColor="@color/black"
-            android:textSize="@dimen/list_text_size" />
+            style="@style/SettingsTextView"/>
 
         <ImageView
             android:id="@+id/support_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/big_padding"
+            style="@style/SettingsImageView"
             app:srcCompat="@drawable/support" />
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        style="@style/SettingsViewLinearLayout">
 
         <TextView
             android:id="@+id/user_lic"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:padding="@dimen/big_padding"
             android:text="@string/user_lic_text"
-            android:textColor="@color/black"
-            android:textSize="@dimen/list_text_size" />
+            style="@style/SettingsTextView"/>
 
         <ImageView
             android:id="@+id/forward_arrow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/big_padding"
+            style="@style/SettingsImageView"
             app:srcCompat="@drawable/forward_arrow" />
 
     </LinearLayout>
