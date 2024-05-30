@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.app.CoreComponentFactory
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,7 +23,7 @@ class SettingsActivity : AppCompatActivity() {
             insets
         }
 
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        val toolbar = findViewById<Toolbar>(R.id.settings_toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.title = getString(R.string.settings_title)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -71,16 +72,15 @@ class SettingsActivity : AppCompatActivity() {
             putExtra(Intent.EXTRA_TEXT, getString(R.string.mail_body))
         }
 
-        if (mailIntent.resolveActivity(packageManager) != null)
-            startActivity(mailIntent)
+        startActivity(mailIntent)
+
     }
 
     private fun openUserAgreement(){
         val urlIntent = Intent(Intent.ACTION_VIEW).apply {
             data = Uri.parse(getString(R.string.user_agreement))
         }
+        startActivity(urlIntent)
 
-        if (urlIntent.resolveActivity(packageManager) != null)
-            startActivity(urlIntent)
     }
 }
