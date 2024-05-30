@@ -35,6 +35,8 @@ class SearchActivity : AppCompatActivity() {
         val inputText = findViewById<EditText>(R.id.search_edit_text)
         val clearTextButton = findViewById<ImageView>(R.id.clear_text)
 
+        inputText.setText(searchQuery)
+
         clearTextButton.setOnClickListener {
             inputText.setText("")
             searchQuery = ""
@@ -79,5 +81,11 @@ class SearchActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString("SearchField", searchQuery )
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        searchQuery = savedInstanceState.getString("SearchField","")
+
     }
 }
