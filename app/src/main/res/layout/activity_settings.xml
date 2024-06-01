@@ -32,6 +32,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/share_layout"
         style="@style/SettingsViewLinearLayout">
 
         <TextView
@@ -46,6 +47,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/support_layout"
         style="@style/SettingsViewLinearLayout">
 
         <TextView
@@ -60,6 +62,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/user_agreement_layout"
         style="@style/SettingsViewLinearLayout">
 
         <TextView

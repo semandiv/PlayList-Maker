@@ -21,16 +21,23 @@
             android:src="@drawable/search_icon"
             style="@style/EditTextButton" />
 
-        <EditText
-            android:id="@+id/search_edit_text"
-            android:hint="@string/search_text"
-            style="@style/EditTextField" />
+        <FrameLayout style="@style/EditFieldLayout">
 
-        <ImageView
-            android:id="@+id/clear_text"
-            android:src="@drawable/clear"
-            android:visibility="gone"
-            style="@style/EditTextButton"/>
+            <EditText
+                android:id="@+id/search_edit_text"
+                android:hint="@string/search_text"
+                style="@style/EditTextField" />
+
+            <ImageView
+                android:id="@+id/clear_text"
+                android:src="@drawable/clear"
+                android:visibility="gone"
+                android:layout_gravity="end|center_vertical"
+                style="@style/EditTextButton"/>
+
+
+
+        </FrameLayout>
 
     </LinearLayout>
 

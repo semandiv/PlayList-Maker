@@ -1,10 +1,10 @@
 package com.example.playlistmaker
 
+import android.app.Activity
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.MenuItem
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 
 class SearchActivity : AppCompatActivity() {
@@ -21,7 +22,7 @@ class SearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_search)
-       ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.search_view)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.search_view)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
@@ -40,25 +41,17 @@ class SearchActivity : AppCompatActivity() {
         clearTextButton.setOnClickListener {
             inputText.setText("")
             searchQuery = ""
+            it.hideKeyboard()
         }
 
-        val inputTextWatcher = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+        inputText.addTextChangedListener(
+            onTextChanged = { s: CharSequence?, start: Int, before: Int, count: Int ->
                 searchQuery += s.toString()
-                clearTextButton.visibility = clearButtonVisibility(s)
+                clearTextButton.isVisible = !s.isNullOrEmpty()
             }
 
-            override fun afterTextChanged(s: Editable?) {
-
-            }
-        }
-        inputText.addTextChangedListener(inputTextWatcher)
+        )
     }
-
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
@@ -67,14 +60,6 @@ class SearchActivity : AppCompatActivity() {
                 true
             }
             else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    private fun clearButtonVisibility(s: CharSequence?): Int {
-        return if (s.isNullOrEmpty()) {
-            View.GONE
-        } else {
-            View.VISIBLE
         }
     }
 
@@ -87,5 +72,10 @@ class SearchActivity : AppCompatActivity() {
         super.onRestoreInstanceState(savedInstanceState)
         searchQuery = savedInstanceState.getString("SearchField","")
 
+    }
+
+    private fun View.hideKeyboard() {
+        val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(windowToken, 0)
     }
 }

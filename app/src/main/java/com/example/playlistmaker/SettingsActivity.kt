@@ -4,13 +4,12 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
-import android.widget.TextView
+import android.widget.LinearLayout
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.app.CoreComponentFactory
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,21 +27,21 @@ class SettingsActivity : AppCompatActivity() {
         supportActionBar?.title = getString(R.string.settings_title)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val shareText = findViewById<TextView>(R.id.share_text)
-        shareText.setOnClickListener {
+        val shareLayout = findViewById<LinearLayout>(R.id.share_layout)
+        val supportLayout = findViewById<LinearLayout>(R.id.support_layout)
+        val userAgreementLayout = findViewById<LinearLayout>(R.id.user_agreement_layout)
+
+        shareLayout.setOnClickListener {
             shareApp()
         }
 
-        val mailToSupport = findViewById<TextView>(R.id.support_send)
-        mailToSupport.setOnClickListener {
+        supportLayout.setOnClickListener {
             sendSupportEmail()
         }
 
-        val userAgreement = findViewById<TextView>(R.id.user_lic)
-        userAgreement.setOnClickListener {
+        userAgreementLayout.setOnClickListener {
             openUserAgreement()
         }
-
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
