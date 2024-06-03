@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="MainViewButton" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginTop">@dimen/small_padding</item>
+        <item name="android:layout_marginLeft">@dimen/big_padding</item>
+        <item name="android:layout_marginRight">@dimen/big_padding</item>
+        <item name="android:layout_marginBottom">@dimen/small_padding</item>
+        <item name="android:backgroundTint">@color/white</item>
+        <item name="android:textColor">@color/text_icon_color</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">@dimen/primary_text_size</item>
+        <item name="android:gravity">center</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">@dimen/medium_padding</item>
+        <item name="iconTint">@color/text_icon_color</item>
+        <item name="cornerRadius">@dimen/btn_radius</item>
+    </style>
+
+    <style name="SettingsViewLinearLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="SettingsTextView">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:padding">@dimen/big_padding</item>
+        <item name="android:textSize">@dimen/list_text_size</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="SettingsImageView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/big_padding</item>
+    </style>
+
+    <style name="SearchFieldBlock">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_marginTop">@dimen/medium_padding</item>
+        <item name="android:layout_marginLeft">@dimen/big_padding</item>
+        <item name="android:layout_marginRight">@dimen/big_padding</item>
+        <item name="android:background">@drawable/edit_text_bg</item>
+    </style>
+
+    <style name="EditTextField">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/editTextHeight</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColorHint">@color/searchTextColor</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:inputType">text</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:importantForAutofill">no</item>
+        <item name="android:fontWeight">400</item>
+        <item name="android:textSize">@dimen/list_text_size</item>
+    </style>
+
+    <style name="EditTextButton">
+        <item name="android:layout_width">@dimen/big_padding</item>
+        <item name="android:layout_height">@dimen/big_padding</item>
+        <item name="android:layout_marginLeft">@dimen/edit_field_padding</item>
+        <item name="android:layout_marginRight">@dimen/edit_field_padding</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="tint">@color/searchTextColor</item>
+    </style>
+
+    <style name="ToolbarStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="android:elevation">@dimen/small_padding</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+    </style>
+
+    <style name="EditFieldLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/editTextHeight</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:layout_gravity">center_vertical</item>
+    </style>
+
+
+</resources>
