@@ -6,7 +6,7 @@
     <color name="text_icon_color">#1A1B22</color>
     <color name="trackTintColor">#9FBBF3</color>
     <color name="knobTintColor">#3772E7</color>
-    <color name="searchTextColor">#AEAFB4</color>
+    <color name="grayTint">#AEAFB4</color>
     <color name="searchTextColorDark">#1A1B22</color>
     <color name="cursorColor">#3772E7</color>
 </resources>

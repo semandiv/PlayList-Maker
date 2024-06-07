@@ -14,6 +14,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 class SearchActivity : AppCompatActivity() {
 
@@ -51,6 +53,12 @@ class SearchActivity : AppCompatActivity() {
             }
 
         )
+
+        val tracks = Track.createMockTracks()
+
+        val recyclerView = findViewById<RecyclerView>(R.id.trackList)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = TracksAdapter(tracks)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
