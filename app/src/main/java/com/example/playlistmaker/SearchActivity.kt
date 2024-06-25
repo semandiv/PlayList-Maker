@@ -19,14 +19,14 @@ import androidx.recyclerview.widget.RecyclerView
 
 class SearchActivity : AppCompatActivity() {
 
-    private var searchQuery = ""
+    private var searchQuery = String()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_search)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.search_view)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.search_view)) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
@@ -40,16 +40,16 @@ class SearchActivity : AppCompatActivity() {
 
         inputText.setText(searchQuery)
 
-        clearTextButton.setOnClickListener {
-            inputText.setText("")
-            searchQuery = ""
-            it.hideKeyboard()
+        clearTextButton.setOnClickListener {view ->
+            inputText.text = null
+            searchQuery = String()
+            view.hideKeyboard()
         }
 
         inputText.addTextChangedListener(
-            onTextChanged = { s: CharSequence?, start: Int, before: Int, count: Int ->
-                searchQuery += s.toString()
-                clearTextButton.isVisible = !s.isNullOrEmpty()
+            onTextChanged = { text: CharSequence?, _, _,_ ->
+                searchQuery += text.toString()
+                clearTextButton.isVisible = !text.isNullOrEmpty()
             }
 
         )

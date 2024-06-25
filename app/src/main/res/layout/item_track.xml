@@ -5,6 +5,7 @@
 
     <ImageView
         android:id="@+id/artwork"
+        android:contentDescription="@string/album_cover_descript"
         style="@style/coverImage" />
 
     <LinearLayout style="@style/trackDescriptLayout">

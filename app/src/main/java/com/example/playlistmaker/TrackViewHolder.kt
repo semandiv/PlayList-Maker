@@ -13,7 +13,7 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val artistName: TextView = itemView.findViewById(R.id.artistName_trackTime)
     private val artwork: ImageView = itemView.findViewById(R.id.artwork)
 
-    val separator = " \u2022 "
+    private val separator = " \u2022 "
 
     fun bind(track: Track) {
         trackName.text = track.trackName
