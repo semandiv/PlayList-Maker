@@ -55,7 +55,7 @@
         <item name="android:layout_height">@dimen/editTextHeight</item>
         <item name="android:layout_weight">1</item>
         <item name="android:maxLines">1</item>
-        <item name="android:textColorHint">@color/searchTextColor</item>
+        <item name="android:textColorHint">@color/grayTint</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:inputType">text</item>
         <item name="android:background">@android:color/transparent</item>
@@ -71,7 +71,7 @@
         <item name="android:layout_marginRight">@dimen/edit_field_padding</item>
         <item name="android:layout_gravity">center_vertical</item>
         <item name="android:background">@android:color/transparent</item>
-        <item name="tint">@color/searchTextColor</item>
+        <item name="tint">@color/grayTint</item>
     </style>
 
     <style name="ToolbarStyle">
@@ -86,6 +86,59 @@
         <item name="android:layout_height">@dimen/editTextHeight</item>
         <item name="android:background">@android:color/transparent</item>
         <item name="android:layout_gravity">center_vertical</item>
+    </style>
+
+    //Блок стилей айтема RecyclerView
+    <style name="coverImage">
+        <item name="android:layout_width">@dimen/listImageSize</item>
+        <item name="android:layout_height">@dimen/listImageSize</item>
+        <item name="android:layout_marginStart">@dimen/medium_padding</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="tint">@color/grayTint</item>
+    </style>
+
+    <style name="trackDescriptLayout">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_marginStart">@dimen/medium_padding</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="trackNameText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="trackArtistText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:textColor">@color/grayTint</item>
+    </style>
+
+    <style name="trackItemRightArrow">
+        <item name="android:layout_gravity">end|center_vertical</item>
+        <item name="android:layout_width">@dimen/itemRightArrow</item>
+        <item name="android:layout_height">@dimen/itemRightArrow</item>
+        <item name="tint">@color/grayTint</item>
+    </style>
+
+    <style name="trackItemLayout">
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@color/white</item>
+        <item name="android:padding">@dimen/medium_padding</item>
     </style>
 
 
