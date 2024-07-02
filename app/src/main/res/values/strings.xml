@@ -17,4 +17,8 @@
     <string name="mail_body">Спасибо разработчикам и разработчицам за крутое приложение!</string>
     <string name="user_agreement">https://yandex.ru/legal/practicum_offer/</string>
     <string name="album_cover_descript">Обложка альбома</string>
+    <string name="placeholder">Placeholder</string>
+    <string name="refreshBtnText">Обновить</string>
+    <string name="noResultMessage">Ничего не нашлось</string>
+    <string name="noConnectMessage">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
 </resources>

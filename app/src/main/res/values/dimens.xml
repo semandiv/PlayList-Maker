@@ -6,6 +6,8 @@
     <dimen name="primary_text_size">22sp</dimen>
     <dimen name="list_text_size">16sp</dimen>
     <dimen name="small_text_size">11sp</dimen>
+    <dimen name="medium_text_size">14sp</dimen>
+    <dimen name="big_text_size">19sp</dimen>
     <dimen name="btn_radius">16dp</dimen>
     <dimen name="edit_field_padding">12dp</dimen>
     <dimen name="editTextHeight">36dp</dimen>
