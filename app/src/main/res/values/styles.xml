@@ -96,7 +96,7 @@
         <item name="android:layout_height">@dimen/listImageSize</item>
         <item name="android:layout_marginStart">@dimen/medium_padding</item>
         <item name="android:scaleType">fitCenter</item>
-        <item name="tint">@color/grayTint</item>
+
     </style>
 
     <style name="trackDescriptLayout">
@@ -119,9 +119,20 @@
     </style>
 
     <style name="trackArtistText">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
         <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:textColor">@color/grayTint</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="trackTimeText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">end</item>
         <item name="android:maxLines">1</item>
         <item name="android:fontFamily">@font/ys_display_regular</item>
         <item name="android:textFontWeight">400</item>

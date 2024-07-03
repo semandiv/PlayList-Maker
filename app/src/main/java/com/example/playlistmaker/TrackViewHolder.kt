@@ -22,8 +22,8 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val artName = track.artistName + separator
 
         trackName.text = track.trackName
-        artistName.text = artName
-        trackTime.text  = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis.toLong())
+        artistName.text = track.artistName
+        trackTime.text  = separator + SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis.toLong())
 
         Glide.with(itemView.context)
             .load(track.artworkUrl100)

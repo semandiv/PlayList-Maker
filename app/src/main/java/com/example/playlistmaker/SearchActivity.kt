@@ -80,6 +80,9 @@ class SearchActivity : AppCompatActivity() {
         clearTextButton.setOnClickListener { view ->
             inputText.text = null
             searchQuery = String()
+            tracks.clear()
+            adapter.notifyDataSetChanged()
+            placeholder.visibility = View.GONE
             view.hideKeyboard()
         }
 
@@ -101,7 +104,14 @@ class SearchActivity : AppCompatActivity() {
 
         recyclerView = findViewById<RecyclerView>(R.id.trackList)
         recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.itemAnimator  = null
         recyclerView.adapter = adapter
+
+        refreshBtn.setOnClickListener  {
+            placeholder.visibility = View.GONE
+            recyclerView.visibility = View.VISIBLE
+            searchTracks(inputText)
+        }
     }
 
     //запрос в сеть
@@ -117,6 +127,8 @@ class SearchActivity : AppCompatActivity() {
                             tracks.clear()
                             if (response.body()?.results?.isNotEmpty() == true) {
                                 tracks.addAll(response.body()?.results!!)
+                                placeholder.visibility = View.GONE
+                                recyclerView.visibility = View.VISIBLE
                                 adapter.notifyDataSetChanged()
                             }
                             if (tracks.isEmpty()) {

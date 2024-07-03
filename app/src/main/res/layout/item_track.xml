@@ -27,7 +27,7 @@
 
             <TextView
                 android:id="@+id/trackTime"
-                style="@style/trackArtistText"
+                style="@style/trackTimeText"
                 android:textSize="@dimen/small_text_size" />
         </LinearLayout>
     </LinearLayout>
