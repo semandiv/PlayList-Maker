@@ -1,8 +1,10 @@
 package com.example.playlistmaker
 
+import android.graphics.PorterDuff
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -19,17 +21,19 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val separator = " \u2022 "
 
     fun bind(track: Track) {
-        val artName = track.artistName + separator
-
         trackName.text = track.trackName
         artistName.text = track.artistName
         trackTime.text  = separator + SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis.toLong())
+        artwork.clearColorFilter()
 
         Glide.with(itemView.context)
             .load(track.artworkUrl100)
-            .placeholder(R.drawable.baseline_album_24)
-            .error(R.drawable.baseline_album_24)
+            .placeholder(R.drawable.placeholder)
+            .error(R.drawable.placeholder)
             .transform(RoundedCorners(16))
             .into(artwork)
+
+
+        itemView.requestLayout()
     }
 }

@@ -104,7 +104,6 @@ class SearchActivity : AppCompatActivity() {
 
         recyclerView = findViewById<RecyclerView>(R.id.trackList)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.itemAnimator  = null
         recyclerView.adapter = adapter
 
         refreshBtn.setOnClickListener  {

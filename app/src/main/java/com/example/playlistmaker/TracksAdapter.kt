@@ -18,4 +18,12 @@ class TracksAdapter(private val tracks: List<Track>) : RecyclerView.Adapter<Trac
     override fun getItemCount(): Int {
         return tracks.size
     }
+
+    override fun getItemViewType(position: Int): Int  {
+        return position
+    }
+
+    override fun getItemId(position: Int): Long   {
+        return position.toLong()
+    }
 }
