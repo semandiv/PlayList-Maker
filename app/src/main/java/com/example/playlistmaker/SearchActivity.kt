@@ -3,6 +3,7 @@ package com.example.playlistmaker
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -26,15 +27,17 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.ArrayList
 
 
 class SearchActivity : AppCompatActivity() {
 
-    private val tracks = mutableListOf<Track>()
+    private val tracks = ArrayList<Track>()
 
     companion object {
         private const val APPLE_BASE_URL = "https://itunes.apple.com"
-        private const val SEARCH_FIELD_KEY  = "SearchField"
+        private const val SEARCH_FIELD_KEY = "SearchField"
+        private const val RECYCLER_STATE_KEY = "Tracks"
     }
 
     private val retrofit = Retrofit.Builder()
@@ -93,7 +96,7 @@ class SearchActivity : AppCompatActivity() {
         )
 
         inputText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE){
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
                 searchTracks(inputText)
                 inputText.hideKeyboard()
                 true
@@ -104,7 +107,7 @@ class SearchActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
 
-        refreshBtn.setOnClickListener  {
+        refreshBtn.setOnClickListener {
             refreshBtnClick(inputText)
         }
     }
@@ -128,7 +131,7 @@ class SearchActivity : AppCompatActivity() {
         searchQuery = String()
         tracks.clear()
         adapter.notifyDataSetChanged()
-        placeholder.visibility = View.GONE 
+        placeholder.visibility = View.GONE
         view.hideKeyboard()
     }
 
@@ -168,7 +171,7 @@ class SearchActivity : AppCompatActivity() {
     @SuppressLint("NotifyDataSetChanged")
     private fun showTracks() {
         placeholder.isVisible = false
-        recyclerView.isVisible= true
+        recyclerView.isVisible = true
         adapter.notifyDataSetChanged()
     }
 
@@ -196,18 +199,28 @@ class SearchActivity : AppCompatActivity() {
                 finish()
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString("SearchField", searchQuery)
+        outState.putString(SEARCH_FIELD_KEY, searchQuery)
+        outState.putParcelable(
+            RECYCLER_STATE_KEY,
+            recyclerView.layoutManager?.onSaveInstanceState()
+        )
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         searchQuery = savedInstanceState.getString(SEARCH_FIELD_KEY, String())
+        val recyclerState = savedInstanceState.getParcelable<Parcelable>(RECYCLER_STATE_KEY)
+        if (recyclerState != null) {
+            recyclerView.layoutManager?.onRestoreInstanceState(recyclerState)
+        }
     }
 
     private fun View.hideKeyboard() {
