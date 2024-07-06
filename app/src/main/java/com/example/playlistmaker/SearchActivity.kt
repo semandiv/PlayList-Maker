@@ -30,24 +30,29 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class SearchActivity : AppCompatActivity() {
 
-    val tracks = ArrayList<Track>()
-    private val appleBaseUrl = "https://itunes.apple.com"
+    private val tracks = mutableListOf<Track>()
+
+    companion object {
+        private const val APPLE_BASE_URL = "https://itunes.apple.com"
+        private const val SEARCH_FIELD_KEY  = "SearchField"
+    }
+
     private val retrofit = Retrofit.Builder()
-        .baseUrl(appleBaseUrl)
+        .baseUrl(Companion.APPLE_BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
-    private val aplleApi = retrofit.create(AppleAPI::class.java)
+    private val appleAPI = retrofit.create(AppleAPI::class.java)
 
     private val adapter = TracksAdapter(tracks)
 
     private var searchQuery = String()
 
-    lateinit var placeholder: LinearLayout
-    lateinit var recyclerView: RecyclerView
-    lateinit var placeholderNoResultIcon: ImageView
-    lateinit var placeholderNoConnectIcon: ImageView
-    lateinit var placeholderText: TextView
-    lateinit var refreshBtn: Button
+    private lateinit var placeholder: LinearLayout
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var placeholderNoResultIcon: ImageView
+    private lateinit var placeholderNoConnectIcon: ImageView
+    private lateinit var placeholderText: TextView
+    private lateinit var refreshBtn: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,62 +78,77 @@ class SearchActivity : AppCompatActivity() {
         placeholderText = findViewById(R.id.placeholderText)
         refreshBtn = findViewById(R.id.refreshBtn)
 
-        placeholder.visibility = View.GONE
+        placeholder.isVisible = false
 
         inputText.setText(searchQuery)
 
         clearTextButton.setOnClickListener { view ->
-            inputText.text = null
-            searchQuery = String()
-            tracks.clear()
-            adapter.notifyDataSetChanged()
-            placeholder.visibility = View.GONE
-            view.hideKeyboard()
+            clearTextField(inputText, view)
         }
 
         inputText.addTextChangedListener(
             onTextChanged = { text: CharSequence?, _, _, _ ->
-                searchQuery += text.toString()
-                clearTextButton.isVisible = !text.isNullOrEmpty()
+                textChageListener(text, clearTextButton)
             }
-
         )
 
         inputText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
+            if (actionId == EditorInfo.IME_ACTION_DONE){
                 searchTracks(inputText)
+                inputText.hideKeyboard()
                 true
-            }
-            false
+            } else false
         }
 
-        recyclerView = findViewById<RecyclerView>(R.id.trackList)
+        recyclerView = findViewById(R.id.trackList)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
 
         refreshBtn.setOnClickListener  {
-            placeholder.visibility = View.GONE
-            recyclerView.visibility = View.VISIBLE
-            searchTracks(inputText)
+            refreshBtnClick(inputText)
         }
+    }
+
+    private fun refreshBtnClick(inputText: EditText) {
+        placeholder.isVisible = false
+        recyclerView.isVisible = true
+        searchTracks(inputText)
+    }
+
+    private fun textChageListener(text: CharSequence?, clearTextButton: ImageView) {
+        if (text != null) {
+            searchQuery += text.toString()
+            clearTextButton.isVisible = true
+        }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun clearTextField(inputText: EditText, view: View) {
+        inputText.text = null
+        searchQuery = String()
+        tracks.clear()
+        adapter.notifyDataSetChanged()
+        placeholder.visibility = View.GONE 
+        view.hideKeyboard()
     }
 
     //запрос в сеть
     private fun searchTracks(inputText: EditText) {
         if (inputText.text.isNotEmpty()) {
-            aplleApi.searchTrack(inputText.text.toString())
+            appleAPI.searchTrack(inputText.text.toString())
                 .enqueue(object : Callback<TracksResponse> {
                     override fun onResponse(
                         call: Call<TracksResponse>,
                         response: Response<TracksResponse>
                     ) {
+                        val body = response.body()
                         if (response.code() == 200) {
                             tracks.clear()
-                            if (response.body()?.results?.isNotEmpty() == true) {
-                                tracks.addAll(response.body()?.results!!)
-                                placeholder.visibility = View.GONE
-                                recyclerView.visibility = View.VISIBLE
-                                adapter.notifyDataSetChanged()
+                            if (body != null) {
+                                if (body.results.isNotEmpty()) {
+                                    tracks.addAll(body.results)
+                                    showTracks()
+                                }
                             }
                             if (tracks.isEmpty()) {
                                 showResultZeroPlaceholder()
@@ -137,11 +157,19 @@ class SearchActivity : AppCompatActivity() {
                             showResultZeroPlaceholder()
                         }
                     }
+
                     override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
                         showConnectErrorPlaceholder()
                     }
                 })
         }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun showTracks() {
+        placeholder.isVisible = false
+        recyclerView.isVisible= true
+        adapter.notifyDataSetChanged()
     }
 
     private fun showResultZeroPlaceholder() {
@@ -179,8 +207,7 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        searchQuery = savedInstanceState.getString("SearchField", "")
-
+        searchQuery = savedInstanceState.getString(SEARCH_FIELD_KEY, String())
     }
 
     private fun View.hideKeyboard() {
@@ -188,6 +215,4 @@ class SearchActivity : AppCompatActivity() {
             getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(windowToken, 0)
     }
-
-
 }
