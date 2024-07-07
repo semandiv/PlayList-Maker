@@ -34,14 +34,14 @@ class SearchActivity : AppCompatActivity() {
 
     private val tracks = ArrayList<Track>()
 
-    companion object {
+    private companion object {
         private const val APPLE_BASE_URL = "https://itunes.apple.com"
         private const val SEARCH_FIELD_KEY = "SearchField"
         private const val RECYCLER_STATE_KEY = "Tracks"
     }
 
     private val retrofit = Retrofit.Builder()
-        .baseUrl(Companion.APPLE_BASE_URL)
+        .baseUrl(APPLE_BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
     private val appleAPI = retrofit.create(AppleAPI::class.java)
@@ -131,7 +131,7 @@ class SearchActivity : AppCompatActivity() {
         searchQuery = String()
         tracks.clear()
         adapter.notifyDataSetChanged()
-        placeholder.visibility = View.GONE
+        placeholder.isVisible = false
         view.hideKeyboard()
     }
 
@@ -176,21 +176,21 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun showResultZeroPlaceholder() {
-        placeholder.visibility = View.VISIBLE
-        placeholderNoResultIcon.visibility = View.VISIBLE
-        placeholderNoConnectIcon.visibility = View.GONE
+        placeholder.isVisible = true
+        placeholderNoResultIcon.isVisible = true
+        placeholderNoConnectIcon.isVisible = false
         placeholderText.text = getString(R.string.noResultMessage)
-        recyclerView.visibility = View.GONE
-        refreshBtn.visibility = View.GONE
+        recyclerView.isVisible = false
+        refreshBtn.isVisible = false
     }
 
     private fun showConnectErrorPlaceholder() {
-        placeholder.visibility = View.VISIBLE
-        placeholderNoResultIcon.visibility = View.GONE
-        placeholderNoConnectIcon.visibility = View.VISIBLE
+        placeholder.isVisible = true
+        placeholderNoResultIcon.isVisible = false
+        placeholderNoConnectIcon.isVisible = true
         placeholderText.text = this.getString(R.string.noConnectMessage)
-        recyclerView.visibility = View.GONE
-        refreshBtn.visibility = View.VISIBLE
+        recyclerView.isVisible = false
+        refreshBtn.isVisible= true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
