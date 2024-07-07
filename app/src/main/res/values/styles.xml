@@ -62,6 +62,8 @@
         <item name="android:importantForAutofill">no</item>
         <item name="android:fontWeight">400</item>
         <item name="android:textSize">@dimen/list_text_size</item>
+        <item name="android:imeOptions">actionDone</item>
+        <item name="android:singleLine">true</item>
     </style>
 
     <style name="EditTextButton">
@@ -94,7 +96,6 @@
         <item name="android:layout_height">@dimen/listImageSize</item>
         <item name="android:layout_marginStart">@dimen/medium_padding</item>
         <item name="android:scaleType">fitCenter</item>
-        <item name="tint">@color/grayTint</item>
     </style>
 
     <style name="trackDescriptLayout">
@@ -117,9 +118,20 @@
     </style>
 
     <style name="trackArtistText">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
         <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:textColor">@color/grayTint</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="trackTimeText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">end</item>
         <item name="android:maxLines">1</item>
         <item name="android:fontFamily">@font/ys_display_regular</item>
         <item name="android:textFontWeight">400</item>
@@ -139,6 +151,50 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:background">@color/white</item>
         <item name="android:padding">@dimen/medium_padding</item>
+    </style>
+
+    <style name="refreshBtnStyle" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:backgroundTint">@color/black</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textSize">@dimen/medium_text_size</item>
+        <item name="android:textFontWeight">500</item>
+        <item name="cornerRadius">54dp</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="noResultIcon">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:visibility">invisible</item>
+        <item name="android:contentDescription">@string/placeholder</item>
+        <item name="android:paddingBottom">@dimen/big_padding</item>
+        <item name="android:src">@drawable/no_result_light_mode</item>
+    </style>
+
+    <style name="noConnectIcon">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:visibility">invisible</item>
+        <item name="android:contentDescription">@string/placeholder</item>
+        <item name="android:paddingBottom">@dimen/big_padding</item>
+        <item name="android:src">@drawable/no_internet_light_mode</item>
+    </style>
+
+    <style name="retrofitErrorMessage">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:layout_marginLeft">@dimen/itemRightArrow</item>
+        <item name="android:layout_marginRight">@dimen/itemRightArrow</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/big_text_size</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:paddingBottom">@dimen/big_padding</item>
+        <item name="android:text">@string/noConnectMessage</item>
     </style>
 
 
