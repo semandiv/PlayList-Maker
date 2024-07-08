@@ -33,6 +33,7 @@ import java.util.ArrayList
 class SearchActivity : AppCompatActivity() {
 
     private val tracks = ArrayList<Track>()
+    private val history  = ArrayList<Track>()
 
     private companion object {
         private const val APPLE_BASE_URL = "https://itunes.apple.com"
@@ -47,6 +48,7 @@ class SearchActivity : AppCompatActivity() {
     private val appleAPI = retrofit.create(AppleAPI::class.java)
 
     private val adapter = TracksAdapter(tracks)
+    private val historyAdapter = TracksAdapter(history)
 
     private var searchQuery = String()
 
@@ -56,7 +58,10 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var placeholderNoConnectIcon: ImageView
     private lateinit var placeholderText: TextView
     private lateinit var refreshBtn: Button
+    private lateinit var historyView: RecyclerView
+    private lateinit var clearHistoryBtn: Button
 
+    @SuppressLint("CutPasteId", "NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -80,6 +85,7 @@ class SearchActivity : AppCompatActivity() {
         placeholderNoConnectIcon = findViewById(R.id.placeholderImageNoConnect)
         placeholderText = findViewById(R.id.placeholderText)
         refreshBtn = findViewById(R.id.refreshBtn)
+        clearHistoryBtn  = findViewById(R.id.refreshBtn)
 
         placeholder.isVisible = false
 
@@ -109,6 +115,15 @@ class SearchActivity : AppCompatActivity() {
 
         refreshBtn.setOnClickListener {
             refreshBtnClick(inputText)
+        }
+
+        historyView = findViewById(R.id.trackList)
+        historyView.layoutManager  = LinearLayoutManager(this)
+        historyView.adapter  = historyAdapter
+
+        clearHistoryBtn.setOnClickListener  {
+            history.clear()
+            historyAdapter.notifyDataSetChanged()
         }
     }
 

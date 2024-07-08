@@ -11,6 +11,8 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
+private const val THEME_SWITCH = "theme_checker"
+
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,6 +23,10 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        val sharedPrefs = getSharedPreferences(THEME_SWITCH, MODE_PRIVATE)
+        //грузим тему из настроек
+        (applicationContext as App).switchTheme(sharedPrefs.getBoolean(THEME_SWITCH, false))
 
         val searchButton = findViewById<Button>(R.id.search_button)
         val libraryButton = findViewById<Button>(R.id.library_button)

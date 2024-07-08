@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/search_view"
@@ -13,66 +12,104 @@
         android:id="@+id/search_toolbar"
         style="@style/ToolbarStyle" />
 
-    <LinearLayout
-        style="@style/SearchFieldBlock">
+    <LinearLayout style="@style/SearchFieldBlock">
+
         <ImageView
             android:id="@+id/search_button"
-            android:src="@drawable/search_icon"
-            style="@style/EditTextButton" />
+            style="@style/EditTextButton"
+            android:src="@drawable/search_icon" />
+
         <FrameLayout style="@style/EditFieldLayout">
+
             <EditText
                 android:id="@+id/search_edit_text"
-                android:hint="@string/search_text"
-                style="@style/EditTextField" />
+                style="@style/EditTextField"
+                android:hint="@string/search_text" />
+
             <ImageView
                 android:id="@+id/clear_text"
-                android:src="@drawable/clear"
-                android:visibility="gone"
+                style="@style/EditTextButton"
                 android:layout_gravity="end|center_vertical"
-                style="@style/EditTextButton"/>
+                android:src="@drawable/clear"
+                android:visibility="gone" />
         </FrameLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/historyView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical|center_horizontal"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <TextView
+            android:id="@+id/historyHeader"
+            style="@style/retrofitErrorMessage"
+            android:paddingTop="@dimen/itemRightArrow"
+            android:paddingBottom="@dimen/medium_padding"
+            android:text="@string/youSearchHead"
+            android:textFontWeight="500"
+            android:textSize="@dimen/sp24_text_size" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/historyList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/itemRightArrow"
+            android:padding="0dp" />
+
+        <Button
+            android:id="@+id/clearHistoryBtn"
+            style="@style/refreshBtnStyle"
+            android:text="@string/clearHistoryBtnCaption" />
+
     </LinearLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/trackList"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="0dp"
-        android:visibility="visible"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/placeholderSearchView"
-        android:orientation="vertical"
-        android:visibility="invisible"
-        android:gravity="center_vertical|center_horizontal">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/trackList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="0dp"
+            android:visibility="invisible" />
 
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-        <ImageView
-            android:id="@+id/placeholderImageNoResult"
-            style="@style/noResultIcon" />
-        <ImageView
-            android:id="@+id/placeholderImageNoConnect"
-            style="@style/noConnectIcon" />
-        </FrameLayout>
-        <TextView
-            android:id="@+id/placeholderText"
-            style="@style/retrofitErrorMessage" />
+        <LinearLayout
+            android:id="@+id/placeholderSearchView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|center_horizontal"
+            android:orientation="vertical"
+            android:visibility="invisible">
 
-        <Button
-            android:id="@+id/refreshBtn"
-            android:text="@string/refreshBtnText"
-            style="@style/refreshBtnStyle" />
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
-    </LinearLayout>
+                <ImageView
+                    android:id="@+id/placeholderImageNoResult"
+                    style="@style/noResultIcon"
+                    android:contentDescription="@string/noContentIconDescript" />
+
+                <ImageView
+                    android:id="@+id/placeholderImageNoConnect"
+                    style="@style/noConnectIcon"
+                    android:contentDescription="@string/noConnectIconDescript" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/placeholderText"
+                style="@style/retrofitErrorMessage"
+                android:text="@string/noConnectMessage" />
+
+            <Button
+                android:id="@+id/refreshBtn"
+                style="@style/refreshBtnStyle"
+                android:text="@string/refreshBtnText" />
+
+        </LinearLayout>
     </FrameLayout>
-
-
-
 </LinearLayout>

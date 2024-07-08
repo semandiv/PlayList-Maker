@@ -175,6 +175,5 @@
         <item name="android:textSize">@dimen/big_text_size</item>
         <item name="android:textFontWeight">400</item>
         <item name="android:paddingBottom">@dimen/big_padding</item>
-        <item name="android:text">@string/noConnectMessage</item>
     </style>
 </resources>
