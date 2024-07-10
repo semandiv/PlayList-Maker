@@ -5,7 +5,10 @@ import android.app.Activity
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
@@ -29,16 +32,15 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.ArrayList
 
-
-class SearchActivity : AppCompatActivity() {
+class SearchActivity : AppCompatActivity(), TracksAdapter.ClickListener {
 
     private val tracks = ArrayList<Track>()
-    private val history  = ArrayList<Track>()
 
     private companion object {
         private const val APPLE_BASE_URL = "https://itunes.apple.com"
         private const val SEARCH_FIELD_KEY = "SearchField"
         private const val RECYCLER_STATE_KEY = "Tracks"
+        private const val SEARCH_HISTORY_KEY = "searchHistory"
     }
 
     private val retrofit = Retrofit.Builder()
@@ -47,8 +49,7 @@ class SearchActivity : AppCompatActivity() {
         .build()
     private val appleAPI = retrofit.create(AppleAPI::class.java)
 
-    private val adapter = TracksAdapter(tracks)
-    private val historyAdapter = TracksAdapter(history)
+    private var adapter = TracksAdapter(tracks, this)
 
     private var searchQuery = String()
 
@@ -58,8 +59,9 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var placeholderNoConnectIcon: ImageView
     private lateinit var placeholderText: TextView
     private lateinit var refreshBtn: Button
-    private lateinit var historyView: RecyclerView
+    private lateinit var historyHeader : TextView
     private lateinit var clearHistoryBtn: Button
+    private lateinit var searchHistory: SearchHistory
 
     @SuppressLint("CutPasteId", "NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,6 +74,11 @@ class SearchActivity : AppCompatActivity() {
             insets
         }
 
+        //инициализация хранилища и объекта работы с историей поиска
+        val sharedPref = getSharedPreferences(SEARCH_HISTORY_KEY, MODE_PRIVATE)
+        val searchHistory = SearchHistory(sharedPref)
+
+        //тулбар
         val toolbar = findViewById<Toolbar>(R.id.search_toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.title = getString(R.string.search_text)
@@ -86,8 +93,11 @@ class SearchActivity : AppCompatActivity() {
         placeholderText = findViewById(R.id.placeholderText)
         refreshBtn = findViewById(R.id.refreshBtn)
         clearHistoryBtn  = findViewById(R.id.refreshBtn)
+        historyHeader = findViewById(R.id.historyHeader)
 
         placeholder.isVisible = false
+        clearHistoryBtn.isVisible = false
+
 
         inputText.setText(searchQuery)
 
@@ -100,6 +110,14 @@ class SearchActivity : AppCompatActivity() {
                 textChageListener(text, clearTextButton)
             }
         )
+
+        inputText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus && !searchHistory.getHistory().isEmpty()) {
+                showHistory()
+            } else {
+                hideHistory()
+            }
+        }
 
         inputText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -117,14 +135,33 @@ class SearchActivity : AppCompatActivity() {
             refreshBtnClick(inputText)
         }
 
-        historyView = findViewById(R.id.trackList)
-        historyView.layoutManager  = LinearLayoutManager(this)
-        historyView.adapter  = historyAdapter
-
         clearHistoryBtn.setOnClickListener  {
-            history.clear()
-            historyAdapter.notifyDataSetChanged()
+            searchHistory.clearHistory()
+            adapter = TracksAdapter(tracks, this)
+            adapter.notifyDataSetChanged()
         }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun hideHistory() {
+        historyHeader.isVisible = false
+        val params = historyHeader.layoutParams as LayoutParams
+        params.height = 0
+        historyHeader.layoutParams = params
+        clearHistoryBtn.isVisible = false
+        adapter = TracksAdapter(tracks, this)
+        adapter.notifyDataSetChanged()
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun showHistory() {
+        historyHeader.isVisible = true
+        val params = historyHeader.layoutParams as LayoutParams
+        params.height = LayoutParams.WRAP_CONTENT
+        historyHeader.layoutParams = params
+        clearHistoryBtn.isVisible = true
+        adapter = TracksAdapter(searchHistory.getHistory(), this)
+        adapter.notifyDataSetChanged()
     }
 
     private fun refreshBtnClick(inputText: EditText) {
@@ -187,6 +224,7 @@ class SearchActivity : AppCompatActivity() {
     private fun showTracks() {
         placeholder.isVisible = false
         recyclerView.isVisible = true
+        adapter = TracksAdapter(tracks, this)
         adapter.notifyDataSetChanged()
     }
 
@@ -242,5 +280,9 @@ class SearchActivity : AppCompatActivity() {
         val inputMethodManager =
             getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(windowToken, 0)
+    }
+
+    override fun onTrackClick(track: Track) {
+        searchHistory.addHistory(track)
     }
 }
