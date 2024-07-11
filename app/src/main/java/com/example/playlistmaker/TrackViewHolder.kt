@@ -19,7 +19,7 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val separator = " \u2022 "
 
     @SuppressLint("SetTextI18n")
-    fun bind(track: Track, listener: TracksAdapter.ClickListener) {
+    fun bind(track: Track) {
         trackName.text = track.trackName
         artistName.text = track.artistName
         trackTime.text = separator + SimpleDateFormat(
@@ -36,9 +36,5 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             .into(artwork)
 
         artistName.requestLayout()
-
-        itemView.setOnClickListener {
-            listener.onTrackClick(track)
-        }
     }
 }

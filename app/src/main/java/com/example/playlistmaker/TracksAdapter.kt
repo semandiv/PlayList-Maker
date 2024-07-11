@@ -5,7 +5,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
-class TracksAdapter(private val tracks: ArrayList<Track>, val listener: ClickListener) : RecyclerView.Adapter<TrackViewHolder>() {
+class TracksAdapter(private val tracks: ArrayList<Track>) : RecyclerView.Adapter<TrackViewHolder>() {
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_track, parent, false)
@@ -13,15 +14,15 @@ class TracksAdapter(private val tracks: ArrayList<Track>, val listener: ClickLis
     }
 
     override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
-        holder.bind(tracks[position], listener)
+        holder.bind(tracks[position])
     }
 
     override fun getItemCount(): Int {
         return tracks.size
     }
 
-    interface ClickListener {
-        fun onTrackClick(track: Track)
+    fun getItem(position: Int): Track {
+        return tracks[position]
     }
 
     @SuppressLint("NotifyDataSetChanged")

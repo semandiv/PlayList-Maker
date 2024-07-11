@@ -31,7 +31,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.ArrayList
 
-class SearchActivity : AppCompatActivity(), TracksAdapter.ClickListener {
+class SearchActivity : AppCompatActivity() {
 
     private val tracks = ArrayList<Track>()
 
@@ -48,7 +48,7 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.ClickListener {
         .build()
     private val appleAPI = retrofit.create(AppleAPI::class.java)
 
-    private val adapter = TracksAdapter(tracks, this)
+    private val adapter = TracksAdapter(tracks)
 
     private var searchQuery = String()
 
@@ -81,7 +81,7 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.ClickListener {
         //инициализация хранилища, нового адаптера и объекта работы с историей поиска
         val sharedPref = getSharedPreferences(SEARCH_HISTORY_KEY, MODE_PRIVATE)
         searchHistory = SearchHistory(sharedPref)
-        historyAdapter = TracksAdapter(searchHistory.getHistory(), this)
+        historyAdapter = TracksAdapter(searchHistory.getHistory())
         listener = OnSharedPreferenceChangeListener { _, key ->
             if (key == SEARCH_HISTORY_KEY) {
                 historyAdapter.updateAdapter(searchHistory.getHistory())
@@ -122,7 +122,7 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.ClickListener {
         )
 
         inputText.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus && !searchHistory.getHistory().isEmpty()) {
+            if (hasFocus && searchHistory.getHistory().size>0) {
                 showHistory()
             } else {
                 hideHistory()
@@ -141,6 +141,12 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.ClickListener {
         recyclerView = findViewById(R.id.trackList)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
+
+        recyclerView.addOnItemClickListener(object: TrackClickListener{
+            override fun onTrackClick(position: Int, view: View) {
+                searchHistory.addHistory(adapter.getItem(position))
+            }
+        })
 
         refreshBtn.setOnClickListener {
             refreshBtnClick(inputText)
@@ -185,6 +191,7 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.ClickListener {
     private fun clearTextField(inputText: EditText, view: View) {
         inputText.text = null
         searchQuery = String()
+        view.isVisible = false
         tracks.clear()
         adapter.notifyDataSetChanged()
         placeholder.isVisible = false
@@ -285,7 +292,18 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.ClickListener {
         inputMethodManager.hideSoftInputFromWindow(windowToken, 0)
     }
 
-    override fun onTrackClick(track: Track) {
-        searchHistory.addHistory(track)
+    fun RecyclerView.addOnItemClickListener(onClickListener: TrackClickListener) {
+        this.addOnChildAttachStateChangeListener(object : RecyclerView.OnChildAttachStateChangeListener {
+            override fun onChildViewDetachedFromWindow(view: View) {
+                view.setOnClickListener(null)
+            }
+
+            override fun onChildViewAttachedToWindow(view: View) {
+                view.setOnClickListener {
+                    val holder = getChildViewHolder(view)
+                    onClickListener.onTrackClick(holder.adapterPosition, view)
+                }
+            }
+        })
     }
 }

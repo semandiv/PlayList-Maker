@@ -46,11 +46,12 @@ class SearchHistory(val sharedPref: SharedPreferences) {
         if (history.size >= 10){
             history.removeAt(0)
         }
-        history.forEach {
-            if (it.trackId == newTrack.trackId) {
-                history.remove(it)
-            }
+
+        history.removeIf {
+            it.trackId == newTrack.trackId
         }
+
+        history.add(newTrack)
         saveHistory()
     }
 }
