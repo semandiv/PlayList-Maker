@@ -11,7 +11,7 @@ class SearchHistory(val sharedPref: SharedPreferences) {
 
     private var history = ArrayList<Track>()
 
-    fun saveHistory(){
+    private fun saveHistory(){
         val editor = sharedPref.edit()
         editor.putString(SEARCH_HISTORY_KEY, Gson().toJson(history))
         editor.apply()
@@ -20,17 +20,18 @@ class SearchHistory(val sharedPref: SharedPreferences) {
     fun getHistory(): ArrayList<Track> {
         if (history.isEmpty()){
             history = loadHistory()
+            history.reverse()
         }
         return history
     }
 
-    fun loadHistory(): ArrayList<Track> {
+    private fun loadHistory(): ArrayList<Track> {
         val itemType = object : TypeToken<ArrayList<Track>>() {}.type
         val jsonString = sharedPref.getString(SEARCH_HISTORY_KEY, null)
         if (jsonString!= null){
-            return Gson().fromJson(jsonString, itemType)
+            return Gson().fromJson<ArrayList<Track>>(jsonString, itemType)
         } else {
-            return ArrayList()
+            return ArrayList<Track>()
         }
     }
 
@@ -41,14 +42,15 @@ class SearchHistory(val sharedPref: SharedPreferences) {
         saveHistory()
     }
 
-    fun addHistory(track: Track){
-        if (!history.contains(track)){
-            history.add(track)
-            saveHistory()
-        } else {
-            history.remove(track)
-            history.add(track)
-            saveHistory()
+    fun addHistory(newTrack: Track){
+        if (history.size >= 10){
+            history.removeAt(0)
         }
+        history.forEach {
+            if (it.trackId == newTrack.trackId) {
+                history.remove(it)
+            }
+        }
+        saveHistory()
     }
 }

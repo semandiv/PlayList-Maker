@@ -2,13 +2,12 @@ package com.example.playlistmaker
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.SharedPreferences
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.MenuItem
-import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
@@ -49,19 +48,24 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.ClickListener {
         .build()
     private val appleAPI = retrofit.create(AppleAPI::class.java)
 
-    private var adapter = TracksAdapter(tracks, this)
+    private val adapter = TracksAdapter(tracks, this)
 
     private var searchQuery = String()
 
     private lateinit var placeholder: LinearLayout
+    private lateinit var historyLayout: LinearLayout
     private lateinit var recyclerView: RecyclerView
     private lateinit var placeholderNoResultIcon: ImageView
     private lateinit var placeholderNoConnectIcon: ImageView
     private lateinit var placeholderText: TextView
     private lateinit var refreshBtn: Button
-    private lateinit var historyHeader : TextView
+
+    //private lateinit var historyHeader : TextView
     private lateinit var clearHistoryBtn: Button
     private lateinit var searchHistory: SearchHistory
+    private lateinit var historyAdapter: TracksAdapter
+    private lateinit var historyList: RecyclerView
+    private lateinit var listener: OnSharedPreferenceChangeListener
 
     @SuppressLint("CutPasteId", "NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,9 +78,16 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.ClickListener {
             insets
         }
 
-        //инициализация хранилища и объекта работы с историей поиска
+        //инициализация хранилища, нового адаптера и объекта работы с историей поиска
         val sharedPref = getSharedPreferences(SEARCH_HISTORY_KEY, MODE_PRIVATE)
-        val searchHistory = SearchHistory(sharedPref)
+        searchHistory = SearchHistory(sharedPref)
+        historyAdapter = TracksAdapter(searchHistory.getHistory(), this)
+        listener = OnSharedPreferenceChangeListener { _, key ->
+            if (key == SEARCH_HISTORY_KEY) {
+                historyAdapter.updateAdapter(searchHistory.getHistory())
+            }
+        }
+        sharedPref.registerOnSharedPreferenceChangeListener(listener)
 
         //тулбар
         val toolbar = findViewById<Toolbar>(R.id.search_toolbar)
@@ -88,16 +99,15 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.ClickListener {
         val clearTextButton = findViewById<ImageView>(R.id.clear_text)
 
         placeholder = findViewById(R.id.placeholderSearchView)
+        historyLayout = findViewById(R.id.historyLayout)
         placeholderNoResultIcon = findViewById(R.id.placeholderImageNoResult)
         placeholderNoConnectIcon = findViewById(R.id.placeholderImageNoConnect)
         placeholderText = findViewById(R.id.placeholderText)
         refreshBtn = findViewById(R.id.refreshBtn)
-        clearHistoryBtn  = findViewById(R.id.refreshBtn)
-        historyHeader = findViewById(R.id.historyHeader)
+        clearHistoryBtn = findViewById(R.id.refreshBtn)
 
         placeholder.isVisible = false
-        clearHistoryBtn.isVisible = false
-
+        historyLayout.isVisible = false
 
         inputText.setText(searchQuery)
 
@@ -123,6 +133,7 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.ClickListener {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 searchTracks(inputText)
                 inputText.hideKeyboard()
+                hideHistory()
                 true
             } else false
         }
@@ -135,33 +146,26 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.ClickListener {
             refreshBtnClick(inputText)
         }
 
-        clearHistoryBtn.setOnClickListener  {
+        historyList = findViewById(R.id.historyList)
+        historyList.layoutManager = LinearLayoutManager(this)
+        historyList.adapter = historyAdapter
+
+        clearHistoryBtn.setOnClickListener {
+            hideHistory()
             searchHistory.clearHistory()
-            adapter = TracksAdapter(tracks, this)
-            adapter.notifyDataSetChanged()
+            historyAdapter.notifyDataSetChanged()
         }
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun hideHistory() {
-        historyHeader.isVisible = false
-        val params = historyHeader.layoutParams as LayoutParams
-        params.height = 0
-        historyHeader.layoutParams = params
-        clearHistoryBtn.isVisible = false
-        adapter = TracksAdapter(tracks, this)
-        adapter.notifyDataSetChanged()
+        historyLayout.isVisible = false
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun showHistory() {
-        historyHeader.isVisible = true
-        val params = historyHeader.layoutParams as LayoutParams
-        params.height = LayoutParams.WRAP_CONTENT
-        historyHeader.layoutParams = params
-        clearHistoryBtn.isVisible = true
-        adapter = TracksAdapter(searchHistory.getHistory(), this)
-        adapter.notifyDataSetChanged()
+        historyAdapter.updateAdapter(searchHistory.getHistory())
+        historyLayout.isVisible = true
     }
 
     private fun refreshBtnClick(inputText: EditText) {
@@ -224,7 +228,6 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.ClickListener {
     private fun showTracks() {
         placeholder.isVisible = false
         recyclerView.isVisible = true
-        adapter = TracksAdapter(tracks, this)
         adapter.notifyDataSetChanged()
     }
 
@@ -243,7 +246,7 @@ class SearchActivity : AppCompatActivity(), TracksAdapter.ClickListener {
         placeholderNoConnectIcon.isVisible = true
         placeholderText.text = this.getString(R.string.noConnectMessage)
         recyclerView.isVisible = false
-        refreshBtn.isVisible= true
+        refreshBtn.isVisible = true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

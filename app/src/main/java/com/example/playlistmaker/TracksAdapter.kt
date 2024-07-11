@@ -1,10 +1,11 @@
 package com.example.playlistmaker
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
-class TracksAdapter(private val tracks: List<Track>, val listener: ClickListener) : RecyclerView.Adapter<TrackViewHolder>() {
+class TracksAdapter(private val tracks: ArrayList<Track>, val listener: ClickListener) : RecyclerView.Adapter<TrackViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_track, parent, false)
@@ -21,5 +22,12 @@ class TracksAdapter(private val tracks: List<Track>, val listener: ClickListener
 
     interface ClickListener {
         fun onTrackClick(track: Track)
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateAdapter(tracks: ArrayList<Track>) {
+        this.tracks.clear()
+        this.tracks.addAll(tracks)
+        notifyDataSetChanged()
     }
 }
