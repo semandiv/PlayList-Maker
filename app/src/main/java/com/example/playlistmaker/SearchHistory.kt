@@ -11,6 +11,10 @@ class SearchHistory(val sharedPref: SharedPreferences) {
 
     private var history = ArrayList<Track>()
 
+    init {
+        history = loadHistory()
+    }
+
     private fun saveHistory(){
         val editor = sharedPref.edit()
         editor.putString(SEARCH_HISTORY_KEY, Gson().toJson(history))
@@ -20,7 +24,6 @@ class SearchHistory(val sharedPref: SharedPreferences) {
     fun getHistory(): ArrayList<Track> {
         if (history.isEmpty()){
             history = loadHistory()
-            history.reverse()
         }
         return history
     }
@@ -36,9 +39,7 @@ class SearchHistory(val sharedPref: SharedPreferences) {
     }
 
     fun clearHistory(){
-        if (!history.isEmpty()){
-            history.clear()
-        }
+        history.clear()
         saveHistory()
     }
 

@@ -21,6 +21,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.widget.NestedScrollView
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -35,6 +36,8 @@ class SearchActivity : AppCompatActivity() {
 
     private val tracks = ArrayList<Track>()
 
+    private val adapter = TracksAdapter(tracks)
+
     private companion object {
         private const val APPLE_BASE_URL = "https://itunes.apple.com"
         private const val SEARCH_FIELD_KEY = "SearchField"
@@ -48,19 +51,15 @@ class SearchActivity : AppCompatActivity() {
         .build()
     private val appleAPI = retrofit.create(AppleAPI::class.java)
 
-    private val adapter = TracksAdapter(tracks)
-
     private var searchQuery = String()
 
     private lateinit var placeholder: LinearLayout
-    private lateinit var historyLayout: LinearLayout
+    private lateinit var historyLayout: NestedScrollView
     private lateinit var recyclerView: RecyclerView
     private lateinit var placeholderNoResultIcon: ImageView
     private lateinit var placeholderNoConnectIcon: ImageView
     private lateinit var placeholderText: TextView
     private lateinit var refreshBtn: Button
-
-    //private lateinit var historyHeader : TextView
     private lateinit var clearHistoryBtn: Button
     private lateinit var searchHistory: SearchHistory
     private lateinit var historyAdapter: TracksAdapter
@@ -82,12 +81,6 @@ class SearchActivity : AppCompatActivity() {
         val sharedPref = getSharedPreferences(SEARCH_HISTORY_KEY, MODE_PRIVATE)
         searchHistory = SearchHistory(sharedPref)
         historyAdapter = TracksAdapter(searchHistory.getHistory())
-        listener = OnSharedPreferenceChangeListener { _, key ->
-            if (key == SEARCH_HISTORY_KEY) {
-                historyAdapter.updateAdapter(searchHistory.getHistory())
-            }
-        }
-        sharedPref.registerOnSharedPreferenceChangeListener(listener)
 
         //тулбар
         val toolbar = findViewById<Toolbar>(R.id.search_toolbar)
@@ -104,7 +97,7 @@ class SearchActivity : AppCompatActivity() {
         placeholderNoConnectIcon = findViewById(R.id.placeholderImageNoConnect)
         placeholderText = findViewById(R.id.placeholderText)
         refreshBtn = findViewById(R.id.refreshBtn)
-        clearHistoryBtn = findViewById(R.id.refreshBtn)
+        clearHistoryBtn = findViewById(R.id.clearHistoryBtn)
 
         placeholder.isVisible = false
         historyLayout.isVisible = false
@@ -122,7 +115,7 @@ class SearchActivity : AppCompatActivity() {
         )
 
         inputText.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus && searchHistory.getHistory().size>0) {
+            if (hasFocus && searchHistory.getHistory().size > 0) {
                 showHistory()
             } else {
                 hideHistory()
@@ -142,25 +135,25 @@ class SearchActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
 
-        recyclerView.addOnItemClickListener(object: TrackClickListener{
-            override fun onTrackClick(position: Int, view: View) {
-                searchHistory.addHistory(adapter.getItem(position))
-            }
-        })
-
         refreshBtn.setOnClickListener {
             refreshBtnClick(inputText)
         }
 
         historyList = findViewById(R.id.historyList)
-        historyList.layoutManager = LinearLayoutManager(this)
+        val linearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true)
+        historyList.layoutManager = linearLayoutManager
         historyList.adapter = historyAdapter
 
         clearHistoryBtn.setOnClickListener {
-            hideHistory()
-            searchHistory.clearHistory()
-            historyAdapter.notifyDataSetChanged()
+            clearHistoryBtnClick()
         }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun clearHistoryBtnClick() {
+        hideHistory()
+        searchHistory.clearHistory()
+        historyAdapter.notifyDataSetChanged()
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -170,7 +163,10 @@ class SearchActivity : AppCompatActivity() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun showHistory() {
-        historyAdapter.updateAdapter(searchHistory.getHistory())
+        placeholder.isVisible = false
+        recyclerView.isVisible = false
+        //historyAdapter.updateAdapter(searchHistory.getHistory())
+        historyAdapter.notifyDataSetChanged()
         historyLayout.isVisible = true
     }
 
@@ -194,7 +190,7 @@ class SearchActivity : AppCompatActivity() {
         view.isVisible = false
         tracks.clear()
         adapter.notifyDataSetChanged()
-        placeholder.isVisible = false
+        showHistory()
         view.hideKeyboard()
     }
 
@@ -234,6 +230,7 @@ class SearchActivity : AppCompatActivity() {
     @SuppressLint("NotifyDataSetChanged")
     private fun showTracks() {
         placeholder.isVisible = false
+        historyLayout.isVisible = false
         recyclerView.isVisible = true
         adapter.notifyDataSetChanged()
     }
@@ -262,7 +259,6 @@ class SearchActivity : AppCompatActivity() {
                 finish()
                 true
             }
-
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -276,6 +272,7 @@ class SearchActivity : AppCompatActivity() {
         )
     }
 
+    @Suppress("DEPRECATION")
     @SuppressLint("NotifyDataSetChanged")
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
@@ -292,18 +289,7 @@ class SearchActivity : AppCompatActivity() {
         inputMethodManager.hideSoftInputFromWindow(windowToken, 0)
     }
 
-    fun RecyclerView.addOnItemClickListener(onClickListener: TrackClickListener) {
-        this.addOnChildAttachStateChangeListener(object : RecyclerView.OnChildAttachStateChangeListener {
-            override fun onChildViewDetachedFromWindow(view: View) {
-                view.setOnClickListener(null)
-            }
-
-            override fun onChildViewAttachedToWindow(view: View) {
-                view.setOnClickListener {
-                    val holder = getChildViewHolder(view)
-                    onClickListener.onTrackClick(holder.adapterPosition, view)
-                }
-            }
-        })
+    fun getSearchHistory(): SearchHistory {
+        return searchHistory
     }
 }
