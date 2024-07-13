@@ -3,7 +3,6 @@ package com.example.playlistmaker
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlin.collections.ArrayList
 
 const val SEARCH_HISTORY_KEY = "searchHistory"
 
