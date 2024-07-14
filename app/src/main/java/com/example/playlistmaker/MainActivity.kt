@@ -22,10 +22,6 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        val sharedPrefs = getSharedPreferences(THEME_SWITCH, MODE_PRIVATE)
-        //грузим тему из настроек
-        (applicationContext as App).switchTheme(sharedPrefs.getBoolean(THEME_SWITCH, false))
-
         val searchButton = findViewById<Button>(R.id.search_button)
         val libraryButton = findViewById<Button>(R.id.library_button)
         val settingsButton = findViewById<Button>(R.id.settings_button)

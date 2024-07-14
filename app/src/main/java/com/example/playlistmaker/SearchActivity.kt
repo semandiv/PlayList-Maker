@@ -1,8 +1,6 @@
 package com.example.playlistmaker
 
-import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.MenuItem
@@ -34,7 +32,9 @@ class SearchActivity : AppCompatActivity() {
 
     private val tracks = ArrayList<Track>()
 
-    private val adapter = TracksAdapter(tracks)
+    private val adapter = TracksAdapter(tracks){ track ->
+        saveTrack(track)
+    }
 
     private companion object {
         private const val APPLE_BASE_URL = "https://itunes.apple.com"
@@ -53,7 +53,7 @@ class SearchActivity : AppCompatActivity() {
 
     private lateinit var placeholder: LinearLayout
     private lateinit var historyLayout: NestedScrollView
-    private lateinit var recyclerView: RecyclerView
+    private lateinit var trackSearchList: RecyclerView
     private lateinit var placeholderNoResultIcon: ImageView
     private lateinit var placeholderNoConnectIcon: ImageView
     private lateinit var placeholderText: TextView
@@ -62,9 +62,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var searchHistory: SearchHistory
     private lateinit var historyAdapter: TracksAdapter
     private lateinit var historyList: RecyclerView
-    private lateinit var listener: OnSharedPreferenceChangeListener
 
-    @SuppressLint("CutPasteId", "NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -78,7 +76,7 @@ class SearchActivity : AppCompatActivity() {
         //инициализация хранилища, нового адаптера и объекта работы с историей поиска
         val sharedPref = getSharedPreferences(SEARCH_HISTORY_KEY, MODE_PRIVATE)
         searchHistory = SearchHistory(sharedPref)
-        historyAdapter = TracksAdapter(searchHistory.getHistory())
+        historyAdapter = TracksAdapter(searchHistory.getHistory()){ }
 
         //тулбар
         val toolbar = findViewById<Toolbar>(R.id.search_toolbar)
@@ -129,9 +127,9 @@ class SearchActivity : AppCompatActivity() {
             } else false
         }
 
-        recyclerView = findViewById(R.id.trackList)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = adapter
+        trackSearchList = findViewById(R.id.trackList)
+        trackSearchList.layoutManager = LinearLayoutManager(this)
+        trackSearchList.adapter = adapter
 
         refreshBtn.setOnClickListener {
             refreshBtnClick(inputText)
@@ -147,30 +145,29 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
+
     private fun clearHistoryBtnClick() {
         hideHistory()
         searchHistory.clearHistory()
         historyAdapter.notifyDataSetChanged()
     }
 
-    @SuppressLint("NotifyDataSetChanged")
+
     private fun hideHistory() {
         historyLayout.isVisible = false
     }
 
-    @SuppressLint("NotifyDataSetChanged")
+
     private fun showHistory() {
         placeholder.isVisible = false
-        recyclerView.isVisible = false
-        //historyAdapter.updateAdapter(searchHistory.getHistory())
+        trackSearchList.isVisible = false
         historyAdapter.notifyDataSetChanged()
         historyLayout.isVisible = true
     }
 
     private fun refreshBtnClick(inputText: EditText) {
         placeholder.isVisible = false
-        recyclerView.isVisible = true
+        trackSearchList.isVisible = true
         searchTracks(inputText)
     }
 
@@ -181,13 +178,15 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
+
     private fun clearTextField(inputText: EditText, view: View) {
         inputText.text = null
         searchQuery = String()
         view.isVisible = false
         tracks.clear()
         adapter.notifyDataSetChanged()
+        val historyList = searchHistory.getHistory()
+        historyAdapter.updateAdapter(historyList)
         showHistory()
         view.hideKeyboard()
     }
@@ -225,11 +224,10 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     private fun showTracks() {
         placeholder.isVisible = false
         historyLayout.isVisible = false
-        recyclerView.isVisible = true
+        trackSearchList.isVisible = true
         adapter.notifyDataSetChanged()
     }
 
@@ -238,7 +236,7 @@ class SearchActivity : AppCompatActivity() {
         placeholderNoResultIcon.isVisible = true
         placeholderNoConnectIcon.isVisible = false
         placeholderText.text = getString(R.string.noResultMessage)
-        recyclerView.isVisible = false
+        trackSearchList.isVisible = false
         refreshBtn.isVisible = false
     }
 
@@ -247,7 +245,7 @@ class SearchActivity : AppCompatActivity() {
         placeholderNoResultIcon.isVisible = false
         placeholderNoConnectIcon.isVisible = true
         placeholderText.text = this.getString(R.string.noConnectMessage)
-        recyclerView.isVisible = false
+        trackSearchList.isVisible = false
         refreshBtn.isVisible = true
     }
 
@@ -266,18 +264,17 @@ class SearchActivity : AppCompatActivity() {
         outState.putString(SEARCH_FIELD_KEY, searchQuery)
         outState.putParcelable(
             RECYCLER_STATE_KEY,
-            recyclerView.layoutManager?.onSaveInstanceState()
+            trackSearchList.layoutManager?.onSaveInstanceState()
         )
     }
 
     @Suppress("DEPRECATION")
-    @SuppressLint("NotifyDataSetChanged")
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         searchQuery = savedInstanceState.getString(SEARCH_FIELD_KEY, String())
         val recyclerState = savedInstanceState.getParcelable<Parcelable>(RECYCLER_STATE_KEY)
         if (recyclerState != null) {
-            recyclerView.layoutManager?.onRestoreInstanceState(recyclerState)
+            trackSearchList.layoutManager?.onRestoreInstanceState(recyclerState)
         }
     }
 
@@ -289,5 +286,10 @@ class SearchActivity : AppCompatActivity() {
 
     fun getSearchHistory(): SearchHistory {
         return searchHistory
+    }
+
+    fun saveTrack(track: Track){
+        searchHistory.addHistory(track)
+        adapter.notifyItemInserted(0)
     }
 }

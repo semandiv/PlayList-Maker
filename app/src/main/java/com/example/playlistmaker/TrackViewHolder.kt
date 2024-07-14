@@ -10,15 +10,11 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class TrackViewHolder(itemView: View, private val adapter: TracksAdapter) : RecyclerView.ViewHolder(itemView), View.OnClickListener{
+class TrackViewHolder(itemView: View, private val adapter: TracksAdapter) : RecyclerView.ViewHolder(itemView){
     private val trackName: TextView = itemView.findViewById(R.id.trackName)
     private val artistName: TextView = itemView.findViewById(R.id.artistName)
     private val artwork: ImageView = itemView.findViewById(R.id.artwork)
     private val trackTime: TextView = itemView.findViewById(R.id.trackTime)
-
-    init {
-        itemView.setOnClickListener(this)
-    }
 
     private val separator = " \u2022 "
 
@@ -40,15 +36,9 @@ class TrackViewHolder(itemView: View, private val adapter: TracksAdapter) : Recy
             .into(artwork)
 
         artistName.requestLayout()
-    }
 
-    override fun onClick(v: View?) {
-        val searchHistory = (itemView.context as SearchActivity).getSearchHistory()
-        val position = adapterPosition
-        if (position!= RecyclerView.NO_POSITION) {
-            val track = adapter.getItem(position)
-            searchHistory.addHistory(track)
-            adapter.notifyItemInserted(0)
+        itemView.setOnClickListener{
+            adapter.listener.invoke(track)
         }
     }
 }

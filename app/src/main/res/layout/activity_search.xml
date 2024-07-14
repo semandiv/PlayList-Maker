@@ -30,9 +30,13 @@
             <ImageView
                 android:id="@+id/clear_text"
                 style="@style/EditTextButton"
+                android:layout_height="@dimen/itemRightArrow"
+                android:layout_width="@dimen/itemRightArrow"
+                android:layout_marginEnd="@dimen/medium_padding"
+                android:padding="0dp"
                 android:layout_gravity="end|center_vertical"
-                android:src="@drawable/clear"
-                android:visibility="gone" />
+                android:src="@drawable/close_md"
+                android:visibility="invisible" />
         </FrameLayout>
     </LinearLayout>
 
