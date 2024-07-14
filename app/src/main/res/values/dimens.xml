@@ -13,4 +13,5 @@
     <dimen name="editTextHeight">36dp</dimen>
     <dimen name="listImageSize">45dp</dimen>
     <dimen name="itemRightArrow">24dp</dimen>
+    <dimen name="sp24_text_size">24sp</dimen>
 </resources>

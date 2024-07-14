@@ -4,11 +4,12 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
-class TracksAdapter(private val tracks: List<Track>) : RecyclerView.Adapter<TrackViewHolder>() {
+class TracksAdapter(private val tracks: ArrayList<Track>, val listener: (Track) -> Unit) : RecyclerView.Adapter<TrackViewHolder>() {
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_track, parent, false)
-        return TrackViewHolder(view)
+        return TrackViewHolder(view, this)
     }
 
     override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
@@ -19,11 +20,12 @@ class TracksAdapter(private val tracks: List<Track>) : RecyclerView.Adapter<Trac
         return tracks.size
     }
 
-   /* override fun getItemViewType(position: Int): Int  {
-        return position
+    fun getItem(position: Int): Track {
+        return tracks[position]
     }
 
-    override fun getItemId(position: Int): Long   {
-        return position.toLong()
-    }*/
+    fun updateAdapter(newTracks: ArrayList<Track>) {
+        tracks.clear()
+        tracks.addAll(newTracks)
+    }
 }

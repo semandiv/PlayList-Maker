@@ -21,4 +21,8 @@
     <string name="refreshBtnText">Обновить</string>
     <string name="noResultMessage">Ничего не нашлось</string>
     <string name="noConnectMessage">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
+    <string name="clearHistoryBtnCaption">Очистить историю</string>
+    <string name="youSearchHead">Вы искали</string>
+    <string name="noContentIconDescript">Контент по запросу не найден</string>
+    <string name="noConnectIconDescript">Нет подключения к сети</string>
 </resources>

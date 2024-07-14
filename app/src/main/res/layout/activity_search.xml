@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/search_view"
     android:layout_width="match_parent"
@@ -13,66 +13,137 @@
         android:id="@+id/search_toolbar"
         style="@style/ToolbarStyle" />
 
-    <LinearLayout
-        style="@style/SearchFieldBlock">
+    <LinearLayout style="@style/SearchFieldBlock">
+
         <ImageView
             android:id="@+id/search_button"
-            android:src="@drawable/search_icon"
-            style="@style/EditTextButton" />
+            style="@style/EditTextButton"
+            android:src="@drawable/search_icon" />
+
         <FrameLayout style="@style/EditFieldLayout">
+
             <EditText
                 android:id="@+id/search_edit_text"
-                android:hint="@string/search_text"
-                style="@style/EditTextField" />
+                style="@style/EditTextField"
+                android:hint="@string/search_text" />
+
             <ImageView
                 android:id="@+id/clear_text"
-                android:src="@drawable/clear"
-                android:visibility="gone"
+                style="@style/EditTextButton"
+                android:layout_height="@dimen/itemRightArrow"
+                android:layout_width="@dimen/itemRightArrow"
+                android:layout_marginEnd="@dimen/medium_padding"
+                android:padding="0dp"
                 android:layout_gravity="end|center_vertical"
-                style="@style/EditTextButton"/>
+                android:src="@drawable/close_md"
+                android:visibility="invisible" />
         </FrameLayout>
     </LinearLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/trackList"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="0dp"
-        android:visibility="visible"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/placeholderSearchView"
-        android:orientation="vertical"
-        android:visibility="invisible"
-        android:gravity="center_vertical|center_horizontal">
+        <LinearLayout
+            android:id="@+id/tracksLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|center_horizontal"
+            android:orientation="vertical"
+            android:visibility="visible">
 
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-        <ImageView
-            android:id="@+id/placeholderImageNoResult"
-            style="@style/noResultIcon" />
-        <ImageView
-            android:id="@+id/placeholderImageNoConnect"
-            style="@style/noConnectIcon" />
-        </FrameLayout>
-        <TextView
-            android:id="@+id/placeholderText"
-            style="@style/retrofitErrorMessage" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/trackList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/itemRightArrow"
+                android:padding="0dp" />
 
-        <Button
-            android:id="@+id/refreshBtn"
-            android:text="@string/refreshBtnText"
-            style="@style/refreshBtnStyle" />
+        </LinearLayout>
 
-    </LinearLayout>
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/historyLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="invisible">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|center_horizontal">
+
+                <TextView
+                    android:id="@+id/historyHeader"
+                    style="@style/retrofitErrorMessage"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/itemRightArrow"
+                    android:paddingBottom="@dimen/medium_padding"
+                    android:text="@string/youSearchHead"
+                    android:textFontWeight="500"
+                    android:textSize="@dimen/sp24_text_size"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/historyList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/historyHeader"
+                    app:reverseLayout="true"
+                    app:stackFromEnd="true"
+                    tools:itemCount="10"
+                    tools:listitem="@layout/item_track" />
+
+                <Button
+                    android:id="@+id/clearHistoryBtn"
+                    style="@style/refreshBtnStyle"
+                    android:text="@string/clearHistoryBtnCaption"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/historyList" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </androidx.core.widget.NestedScrollView>
+
+        <LinearLayout
+            android:id="@+id/placeholderSearchView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|center_horizontal"
+            android:orientation="vertical"
+            android:visibility="invisible">
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/placeholderImageNoResult"
+                    style="@style/noResultIcon"
+                    android:contentDescription="@string/noContentIconDescript" />
+
+                <ImageView
+                    android:id="@+id/placeholderImageNoConnect"
+                    style="@style/noConnectIcon"
+                    android:contentDescription="@string/noConnectIconDescript" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/placeholderText"
+                style="@style/retrofitErrorMessage"
+                android:text="@string/noConnectMessage" />
+
+            <Button
+                android:id="@+id/refreshBtn"
+                style="@style/refreshBtnStyle"
+                android:text="@string/refreshBtnText" />
+
+        </LinearLayout>
     </FrameLayout>
-
-
-
 </LinearLayout>

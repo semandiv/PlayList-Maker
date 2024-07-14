@@ -22,7 +22,7 @@
             android:text="@string/theme_switch"
             style="@style/SettingsTextView"/>
 
-        <Switch
+        <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/theme_switch"
             android:trackTint="@color/trackTintColor"
             android:thumbTint="@color/main_background"
