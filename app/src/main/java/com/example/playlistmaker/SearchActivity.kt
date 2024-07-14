@@ -186,8 +186,12 @@ class SearchActivity : AppCompatActivity() {
         tracks.clear()
         adapter.notifyDataSetChanged()
         val historyList = searchHistory.getHistory()
-        historyAdapter.updateAdapter(historyList)
-        showHistory()
+        if (historyList.isNotEmpty()){
+            historyAdapter.updateAdapter(historyList)
+            showHistory()
+        } else {
+            hideHistory()
+        }
         view.hideKeyboard()
     }
 
