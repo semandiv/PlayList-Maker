@@ -288,10 +288,6 @@ class SearchActivity : AppCompatActivity() {
         inputMethodManager.hideSoftInputFromWindow(windowToken, 0)
     }
 
-    fun getSearchHistory(): SearchHistory {
-        return searchHistory
-    }
-
     fun saveTrack(track: Track){
         searchHistory.addHistory(track)
         adapter.notifyItemInserted(0)

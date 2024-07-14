@@ -13,7 +13,7 @@ class App : Application() {
         super.onCreate()
         val sharedPrefs = getSharedPreferences(THEME_SWITCH, MODE_PRIVATE)
         //грузим тему из настроек
-        (applicationContext as App).switchTheme(sharedPrefs.getBoolean(THEME_SWITCH, false))
+        this.switchTheme(sharedPrefs.getBoolean(THEME_SWITCH, false))
     }
 
     fun switchTheme(darkThemeEnabled: Boolean) {
