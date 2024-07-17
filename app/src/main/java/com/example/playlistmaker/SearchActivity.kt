@@ -1,6 +1,7 @@
 package com.example.playlistmaker
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.MenuItem
@@ -41,6 +42,7 @@ class SearchActivity : AppCompatActivity() {
         private const val SEARCH_FIELD_KEY = "SearchField"
         private const val RECYCLER_STATE_KEY = "Tracks"
         private const val SEARCH_HISTORY_KEY = "searchHistory"
+        private const val SELECTED_TRACK = "selectedTrack"
     }
 
     private val retrofit = Retrofit.Builder()
@@ -291,5 +293,11 @@ class SearchActivity : AppCompatActivity() {
     fun saveTrack(track: Track){
         searchHistory.addHistory(track)
         adapter.notifyItemInserted(0)
+    }
+
+    fun startPlayer(track: Track){
+        val intent = Intent(this, PlayerActivity::class.java)
+        intent.putExtra(SELECTED_TRACK, track)
+        startActivity(intent)
     }
 }
