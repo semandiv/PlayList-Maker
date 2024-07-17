@@ -1,8 +1,10 @@
 package com.example.playlistmaker
 
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
@@ -24,6 +26,21 @@ class PlayerActivity : AppCompatActivity() {
             insets
         }
 
+        val toolbar = findViewById<Toolbar>(R.id.toolBar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.title = String()
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         track = intent.getSerializableExtra(RECIEVED_TRACK) as Track
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }
