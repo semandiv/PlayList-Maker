@@ -35,6 +35,7 @@ class SearchActivity : AppCompatActivity() {
 
     private val adapter = TracksAdapter(tracks){ track ->
         saveTrack(track)
+        startPlayer(track)
     }
 
     private companion object {
@@ -78,7 +79,9 @@ class SearchActivity : AppCompatActivity() {
         //инициализация хранилища, нового адаптера и объекта работы с историей поиска
         val sharedPref = getSharedPreferences(SEARCH_HISTORY_KEY, MODE_PRIVATE)
         searchHistory = SearchHistory(sharedPref)
-        historyAdapter = TracksAdapter(searchHistory.getHistory()){ }
+        historyAdapter = TracksAdapter(searchHistory.getHistory()){ track ->
+            startPlayer(track)
+        }
 
         //тулбар
         val toolbar = findViewById<Toolbar>(R.id.search_toolbar)

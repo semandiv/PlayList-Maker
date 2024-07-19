@@ -12,6 +12,12 @@
     <dimen name="edit_field_padding">12dp</dimen>
     <dimen name="editTextHeight">36dp</dimen>
     <dimen name="listImageSize">45dp</dimen>
-    <dimen name="itemRightArrow">24dp</dimen>
+    <dimen name="dp24_size">24dp</dimen>
     <dimen name="sp24_text_size">24sp</dimen>
+    <dimen name="dp51_size">51dp</dimen>
+    <dimen name="dp100_size">100dp</dimen>
+    <dimen name="dp36_size">36dp</dimen>
+    <dimen name="dp12_size">12dp</dimen>
+    <dimen name="sp13_text_size">13sp</dimen>
+    <dimen name="dp9_size">9dp</dimen>
 </resources>
