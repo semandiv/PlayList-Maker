@@ -115,13 +115,6 @@
         app:layout_constraintBaseline_toBaselineOf="@id/albumName"
         style="@style/trackInfoLoadedText"/>
 
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/barrier"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="timePlayName, timePlayValue" />
-
     <TextView
         android:id="@+id/timePlayName"
         android:text="@string/trackDuration"
