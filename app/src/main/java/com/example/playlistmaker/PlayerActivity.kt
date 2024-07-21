@@ -20,9 +20,9 @@ import java.util.Locale
 
 class PlayerActivity : AppCompatActivity() {
 
-    companion object {
-        private const val RECIEVED_TRACK = "selectedTrack"
-        private const val SAVED_TRACK = "savedTrack"
+    private companion object {
+        const val RECEIVED_TRACK = "selectedTrack"
+        const val SAVED_TRACK = "savedTrack"
     }
 
     private lateinit var track: Track
@@ -42,14 +42,13 @@ class PlayerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_player)
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        track = intent.getSerializableExtra(RECIEVED_TRACK) as Track
+        track = intent.getSerializableExtra(RECEIVED_TRACK) as Track
 
         countryValue = findViewById(R.id.countryValue)
         genreValue = findViewById(R.id.genreValue)
@@ -111,7 +110,7 @@ class PlayerActivity : AppCompatActivity() {
             .into(albumCover)
     }
 
-    private fun hideAlbumName(){
+    private fun hideAlbumName() {
         albumGroup.isVisible = false
     }
 
