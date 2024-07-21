@@ -42,4 +42,6 @@
     <string name="artistNamePlaceholder">The Beatles</string>
     <string name="trackNamePlaceholder">Yesterday (Remastered 2009)</string>
     <string name="album_cover">Album Cover</string>
+    <string name="clear_text">Clear text</string>
+    <string name="search_button">Search button</string>
 </resources>

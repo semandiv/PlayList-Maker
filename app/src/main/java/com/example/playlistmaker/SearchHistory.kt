@@ -1,13 +1,14 @@
 package com.example.playlistmaker
 
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
 const val SEARCH_HISTORY_KEY = "searchHistory"
 const val SEARCH_HISTORY_SIZE = 10
 
-class SearchHistory(val sharedPref: SharedPreferences) {
+class SearchHistory(private val sharedPref: SharedPreferences) {
 
     private val history = mutableListOf<Track>()
     private val gson = Gson()
@@ -17,9 +18,9 @@ class SearchHistory(val sharedPref: SharedPreferences) {
     }
 
     private fun saveHistory() {
-        val editor = sharedPref.edit()
-        editor.putString(SEARCH_HISTORY_KEY, gson.toJson(history))
-        editor.apply()
+        sharedPref.edit {
+            putString(SEARCH_HISTORY_KEY, gson.toJson(history))
+        }
     }
 
     fun getHistory(): MutableList<Track> {
@@ -34,11 +35,7 @@ class SearchHistory(val sharedPref: SharedPreferences) {
     private fun loadHistory(): MutableList<Track> {
         val itemType = object : TypeToken<MutableList<Track>>() {}.type
         val jsonString = sharedPref.getString(SEARCH_HISTORY_KEY, null)
-        if (jsonString != null) {
-            return gson.fromJson<MutableList<Track>>(jsonString, itemType)
-        } else {
-            return mutableListOf<Track>()
-        }
+        return if (jsonString!= null) gson.fromJson<MutableList<Track>>(jsonString, itemType) else mutableListOf<Track>()
     }
 
     fun clearHistory() {
