@@ -12,9 +12,4 @@ data class Track(
     val primaryGenreName: String,
     val country: String,
     val collectionName: String?
-) : Serializable {
-    override fun toString(): String {
-        return "Track(trackId='$trackId', trackName='$trackName', artistName='$artistName', trackTimeMillis='$trackTimeMillis', artworkUrl100='$artworkUrl100', releaseDate='$releaseDate', primaryGenreName='$primaryGenreName', country='$country', collectionName='$collectionName')"
-    }
-}
-
+) : Serializable
