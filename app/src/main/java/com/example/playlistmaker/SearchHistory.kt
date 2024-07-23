@@ -23,16 +23,16 @@ class SearchHistory(private val sharedPref: SharedPreferences) {
         }
     }
 
-    fun getHistory(): MutableList<Track> {
+    fun getHistory(): List<Track> {
         if (history.isEmpty()) {
             history.addAll(loadHistory())
         }
         val currentHistory = mutableListOf<Track>()
         currentHistory.addAll(history)
-        return currentHistory
+        return currentHistory.toList()
     }
 
-    private fun loadHistory(): MutableList<Track> {
+    private fun loadHistory(): List<Track> {
         val itemType = object : TypeToken<MutableList<Track>>() {}.type
         val jsonString = sharedPref.getString(SEARCH_HISTORY_KEY, null)
         return if (jsonString!= null) gson.fromJson<MutableList<Track>>(jsonString, itemType) else mutableListOf<Track>()

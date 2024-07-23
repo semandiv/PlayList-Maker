@@ -80,7 +80,7 @@ class SearchActivity : AppCompatActivity() {
         //инициализация хранилища, нового адаптера и объекта работы с историей поиска
         val sharedPref = getSharedPreferences(SEARCH_HISTORY_KEY, MODE_PRIVATE)
         searchHistory = SearchHistory(sharedPref)
-        historyList = searchHistory.getHistory()
+        historyList = searchHistory.getHistory().toMutableList()
         historyAdapter = TracksAdapter(historyList) { track ->
             startPlayer(track)
         }
@@ -152,6 +152,35 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(SEARCH_FIELD_KEY, searchQuery)
+        outState.putParcelable(
+            RECYCLER_STATE_KEY,
+            trackSearchList.layoutManager?.onSaveInstanceState()
+        )
+    }
+
+    @Suppress("DEPRECATION")
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        searchQuery = savedInstanceState.getString(SEARCH_FIELD_KEY, String())
+        val recyclerState = savedInstanceState.getParcelable<Parcelable>(RECYCLER_STATE_KEY)
+        if (recyclerState != null) {
+            trackSearchList.layoutManager?.onRestoreInstanceState(recyclerState)
+        }
+    }
 
     private fun clearHistoryBtnClick() {
         hideHistory()
@@ -159,11 +188,9 @@ class SearchActivity : AppCompatActivity() {
         historyAdapter.notifyDataSetChanged()
     }
 
-
     private fun hideHistory() {
         historyLayout.isVisible = false
     }
-
 
     private fun showHistory() {
         placeholder.isVisible = false
@@ -184,7 +211,6 @@ class SearchActivity : AppCompatActivity() {
             clearTextButton.isVisible = true
         }
     }
-
 
     private fun clearTextField(inputText: EditText, view: View) {
         inputText.text = null
@@ -258,36 +284,6 @@ class SearchActivity : AppCompatActivity() {
         placeholderText.text = this.getString(R.string.noConnectMessage)
         trackSearchList.isVisible = false
         refreshBtn.isVisible = true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            android.R.id.home -> {
-                finish()
-                true
-            }
-
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(SEARCH_FIELD_KEY, searchQuery)
-        outState.putParcelable(
-            RECYCLER_STATE_KEY,
-            trackSearchList.layoutManager?.onSaveInstanceState()
-        )
-    }
-
-    @Suppress("DEPRECATION")
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        searchQuery = savedInstanceState.getString(SEARCH_FIELD_KEY, String())
-        val recyclerState = savedInstanceState.getParcelable<Parcelable>(RECYCLER_STATE_KEY)
-        if (recyclerState != null) {
-            trackSearchList.layoutManager?.onRestoreInstanceState(recyclerState)
-        }
     }
 
     private fun View.hideKeyboard() {

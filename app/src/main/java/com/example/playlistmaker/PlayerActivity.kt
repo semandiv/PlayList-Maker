@@ -1,7 +1,7 @@
 package com.example.playlistmaker
 
-import android.annotation.SuppressLint
-import android.content.pm.ActivityInfo
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.ImageView
@@ -10,11 +10,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.Group
+import androidx.core.content.IntentCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -37,7 +39,6 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var albumCover: ImageView
     private lateinit var albumGroup: Group
 
-    @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -48,7 +49,9 @@ class PlayerActivity : AppCompatActivity() {
             insets
         }
 
-        track = intent.getSerializableExtra(RECEIVED_TRACK) as Track
+        IntentCompat.getSerializableExtra(intent, RECEIVED_TRACK, Track::class.java)?.let {
+            track = it
+        }
 
         countryValue = findViewById(R.id.countryValue)
         genreValue = findViewById(R.id.genreValue)
@@ -77,6 +80,26 @@ class PlayerActivity : AppCompatActivity() {
 
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putSerializable(SAVED_TRACK, track)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        track = savedInstanceState.getSerializable(SAVED_TRACK) as Track
+        setValues()
+    }
+
+    private inline fun <reified T : Serializable> Intent.serializable(key: String): T? = when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> getSerializableExtra(
+            key,
+            T::class.java
+        )
+
+        else -> @Suppress("DEPRECATION") getSerializableExtra(key) as? T
     }
 
     private fun setValues() {
@@ -112,16 +135,5 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun hideAlbumName() {
         albumGroup.isVisible = false
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putSerializable(SAVED_TRACK, track)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        track = savedInstanceState.getSerializable(SAVED_TRACK) as Track
-        setValues()
     }
 }
