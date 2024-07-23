@@ -7,7 +7,7 @@ private const val THEME_SWITCH = "theme_checker"
 
 class App : Application() {
 
-    var darkTheme = false
+    private var darkTheme = false
 
     override fun onCreate() {
         super.onCreate()

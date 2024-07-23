@@ -1,6 +1,7 @@
 package com.example.playlistmaker
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.MenuItem
@@ -30,17 +31,12 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class SearchActivity : AppCompatActivity() {
 
-    private val tracks = ArrayList<Track>()
-
-    private val adapter = TracksAdapter(tracks){ track ->
-        saveTrack(track)
-    }
-
     private companion object {
-        private const val APPLE_BASE_URL = "https://itunes.apple.com"
-        private const val SEARCH_FIELD_KEY = "SearchField"
-        private const val RECYCLER_STATE_KEY = "Tracks"
-        private const val SEARCH_HISTORY_KEY = "searchHistory"
+        const val APPLE_BASE_URL = "https://itunes.apple.com"
+        const val SEARCH_FIELD_KEY = "SearchField"
+        const val RECYCLER_STATE_KEY = "Tracks"
+        const val SEARCH_HISTORY_KEY = "searchHistory"
+        const val SELECTED_TRACK = "selectedTrack"
     }
 
     private val retrofit = Retrofit.Builder()
@@ -48,6 +44,13 @@ class SearchActivity : AppCompatActivity() {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
     private val appleAPI = retrofit.create(AppleAPI::class.java)
+
+    private val tracks = mutableListOf<Track>()
+
+    private val adapter = TracksAdapter(tracks) { track ->
+        saveTrack(track)
+        startPlayer(track)
+    }
 
     private var searchQuery = String()
 
@@ -61,7 +64,8 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var clearHistoryBtn: Button
     private lateinit var searchHistory: SearchHistory
     private lateinit var historyAdapter: TracksAdapter
-    private lateinit var historyList: RecyclerView
+    private lateinit var historyRecyclerView: RecyclerView
+    private lateinit var historyList: MutableList<Track>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,7 +80,10 @@ class SearchActivity : AppCompatActivity() {
         //инициализация хранилища, нового адаптера и объекта работы с историей поиска
         val sharedPref = getSharedPreferences(SEARCH_HISTORY_KEY, MODE_PRIVATE)
         searchHistory = SearchHistory(sharedPref)
-        historyAdapter = TracksAdapter(searchHistory.getHistory()){ }
+        historyList = searchHistory.getHistory().toMutableList()
+        historyAdapter = TracksAdapter(historyList) { track ->
+            startPlayer(track)
+        }
 
         //тулбар
         val toolbar = findViewById<Toolbar>(R.id.search_toolbar)
@@ -135,122 +142,14 @@ class SearchActivity : AppCompatActivity() {
             refreshBtnClick(inputText)
         }
 
-        historyList = findViewById(R.id.historyList)
+        historyRecyclerView = findViewById(R.id.historyList)
         val linearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true)
-        historyList.layoutManager = linearLayoutManager
-        historyList.adapter = historyAdapter
+        historyRecyclerView.layoutManager = linearLayoutManager
+        historyRecyclerView.adapter = historyAdapter
 
         clearHistoryBtn.setOnClickListener {
             clearHistoryBtnClick()
         }
-    }
-
-
-    private fun clearHistoryBtnClick() {
-        hideHistory()
-        searchHistory.clearHistory()
-        historyAdapter.notifyDataSetChanged()
-    }
-
-
-    private fun hideHistory() {
-        historyLayout.isVisible = false
-    }
-
-
-    private fun showHistory() {
-        placeholder.isVisible = false
-        trackSearchList.isVisible = false
-        historyAdapter.notifyDataSetChanged()
-        historyLayout.isVisible = true
-    }
-
-    private fun refreshBtnClick(inputText: EditText) {
-        placeholder.isVisible = false
-        trackSearchList.isVisible = true
-        searchTracks(inputText)
-    }
-
-    private fun textChageListener(text: CharSequence?, clearTextButton: ImageView) {
-        if (text != null) {
-            searchQuery += text.toString()
-            clearTextButton.isVisible = true
-        }
-    }
-
-
-    private fun clearTextField(inputText: EditText, view: View) {
-        inputText.text = null
-        searchQuery = String()
-        view.isVisible = false
-        tracks.clear()
-        adapter.notifyDataSetChanged()
-        val historyList = searchHistory.getHistory()
-        if (historyList.isNotEmpty()){
-            historyAdapter.updateAdapter(historyList)
-            showHistory()
-        } else {
-            hideHistory()
-        }
-        view.hideKeyboard()
-    }
-
-    //запрос в сеть
-    private fun searchTracks(inputText: EditText) {
-        if (inputText.text.isNotEmpty()) {
-            appleAPI.searchTrack(inputText.text.toString())
-                .enqueue(object : Callback<TracksResponse> {
-                    override fun onResponse(
-                        call: Call<TracksResponse>,
-                        response: Response<TracksResponse>
-                    ) {
-                        val body = response.body()
-                        if (response.code() == 200) {
-                            tracks.clear()
-                            if (body != null) {
-                                if (body.results.isNotEmpty()) {
-                                    tracks.addAll(body.results)
-                                    showTracks()
-                                }
-                            }
-                            if (tracks.isEmpty()) {
-                                showResultZeroPlaceholder()
-                            }
-                        } else {
-                            showResultZeroPlaceholder()
-                        }
-                    }
-
-                    override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
-                        showConnectErrorPlaceholder()
-                    }
-                })
-        }
-    }
-
-    private fun showTracks() {
-        placeholder.isVisible = false
-        historyLayout.isVisible = false
-        trackSearchList.isVisible = true
-        adapter.notifyDataSetChanged()
-    }
-
-    private fun showResultZeroPlaceholder() {
-        placeholder.isVisible = true
-        placeholderNoResultIcon.isVisible = true
-        placeholderNoConnectIcon.isVisible = false
-        placeholderText.text = getString(R.string.noResultMessage)
-        trackSearchList.isVisible = false
-        refreshBtn.isVisible = false
-    }
-
-    private fun showConnectErrorPlaceholder() {
-        placeholder.isVisible = true
-        placeholderNoResultIcon.isVisible = false
-        placeholderNoConnectIcon.isVisible = true
-        placeholderText.text = this.getString(R.string.noConnectMessage)
-        trackSearchList.isVisible = false
-        refreshBtn.isVisible = true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -259,6 +158,7 @@ class SearchActivity : AppCompatActivity() {
                 finish()
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -282,14 +182,124 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
+    private fun clearHistoryBtnClick() {
+        hideHistory()
+        searchHistory.clearHistory()
+        historyAdapter.notifyDataSetChanged()
+    }
+
+    private fun hideHistory() {
+        historyLayout.isVisible = false
+    }
+
+    private fun showHistory() {
+        placeholder.isVisible = false
+        trackSearchList.isVisible = false
+        historyAdapter.notifyDataSetChanged()
+        historyLayout.isVisible = true
+    }
+
+    private fun refreshBtnClick(inputText: EditText) {
+        placeholder.isVisible = false
+        trackSearchList.isVisible = true
+        searchTracks(inputText)
+    }
+
+    private fun textChageListener(text: CharSequence?, clearTextButton: ImageView) {
+        if (text != null) {
+            searchQuery += text.toString()
+            clearTextButton.isVisible = true
+        }
+    }
+
+    private fun clearTextField(inputText: EditText, view: View) {
+        inputText.text = null
+        searchQuery = String()
+        view.isVisible = false
+        tracks.clear()
+        adapter.notifyDataSetChanged()
+        val newHistoryList = searchHistory.getHistory()
+        if (newHistoryList.isNotEmpty()) {
+            historyList.clear()
+            historyList.addAll(newHistoryList)
+            showHistory()
+        } else {
+            hideHistory()
+        }
+        view.hideKeyboard()
+    }
+
+    //запрос в сеть
+    private fun searchTracks(inputText: EditText) {
+        if (inputText.text.isNotEmpty()) {
+            appleAPI.searchTrack(inputText.text.toString())
+                .enqueue(object : Callback<TracksResponse> {
+                    override fun onResponse(
+                        call: Call<TracksResponse>,
+                        response: Response<TracksResponse>
+                    ) {
+                        val body = response.body()
+                        if (response.code() == 200) {
+                            tracks.clear()
+                            if (body != null && body.results.isNotEmpty()) {
+                                tracks.addAll(body.results)
+                                showTracks()
+                            }
+                            if (tracks.isEmpty()) {
+                                showResultZeroPlaceholder()
+                            }
+                        } else {
+                            showResultZeroPlaceholder()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
+                        showConnectErrorPlaceholder()
+                    }
+                })
+        }
+    }
+
+    private fun showTracks() {
+        placeholder.isVisible = false
+        historyLayout.isVisible = false
+        trackSearchList.isVisible = true
+        adapter.notifyDataSetChanged()
+        trackSearchList.scrollToPosition(0)
+    }
+
+    private fun showResultZeroPlaceholder() {
+        placeholder.isVisible = true
+        placeholderNoResultIcon.isVisible = true
+        placeholderNoConnectIcon.isVisible = false
+        placeholderText.text = getString(R.string.noResultMessage)
+        trackSearchList.isVisible = false
+        refreshBtn.isVisible = false
+    }
+
+    private fun showConnectErrorPlaceholder() {
+        placeholder.isVisible = true
+        placeholderNoResultIcon.isVisible = false
+        placeholderNoConnectIcon.isVisible = true
+        placeholderText.text = this.getString(R.string.noConnectMessage)
+        trackSearchList.isVisible = false
+        refreshBtn.isVisible = true
+    }
+
     private fun View.hideKeyboard() {
         val inputMethodManager =
             getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(windowToken, 0)
     }
 
-    fun saveTrack(track: Track){
+    private fun saveTrack(track: Track) {
         searchHistory.addHistory(track)
         adapter.notifyItemInserted(0)
+    }
+
+    private fun startPlayer(track: Track) {
+        val intent = Intent(this, PlayerActivity::class.java)
+        intent.putExtra(SELECTED_TRACK, track)
+        startActivity(intent)
     }
 }

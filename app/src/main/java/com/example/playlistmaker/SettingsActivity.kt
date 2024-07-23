@@ -58,11 +58,6 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    private fun changeTheme(isChecked: Boolean, sharedPrefs: SharedPreferences) {
-        (applicationContext as App).switchTheme(isChecked)
-        sharedPrefs.edit().putBoolean(THEME_SWITCHER, isChecked).apply()
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
@@ -72,6 +67,11 @@ class SettingsActivity : AppCompatActivity() {
 
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun changeTheme(isChecked: Boolean, sharedPrefs: SharedPreferences) {
+        (applicationContext as App).switchTheme(isChecked)
+        sharedPrefs.edit().putBoolean(THEME_SWITCHER, isChecked).apply()
     }
 
     private fun shareApp() {

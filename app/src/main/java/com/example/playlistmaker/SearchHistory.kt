@@ -1,53 +1,50 @@
 package com.example.playlistmaker
 
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
 const val SEARCH_HISTORY_KEY = "searchHistory"
 const val SEARCH_HISTORY_SIZE = 10
 
-class SearchHistory(val sharedPref: SharedPreferences) {
+class SearchHistory(private val sharedPref: SharedPreferences) {
 
-    private var history = ArrayList<Track>()
+    private val history = mutableListOf<Track>()
     private val gson = Gson()
 
     init {
-        history = loadHistory()
+        history.addAll(loadHistory())
     }
 
-    private fun saveHistory(){
-        val editor = sharedPref.edit()
-        editor.putString(SEARCH_HISTORY_KEY, gson.toJson(history))
-        editor.apply()
-    }
-
-    fun getHistory(): ArrayList<Track> {
-        if (history.isEmpty()){
-            history = loadHistory()
+    private fun saveHistory() {
+        sharedPref.edit {
+            putString(SEARCH_HISTORY_KEY, gson.toJson(history))
         }
-        val currentHistory = ArrayList<Track>()
+    }
+
+    fun getHistory(): List<Track> {
+        if (history.isEmpty()) {
+            history.addAll(loadHistory())
+        }
+        val currentHistory = mutableListOf<Track>()
         currentHistory.addAll(history)
-        return currentHistory
+        return currentHistory.toList()
     }
 
-    private fun loadHistory(): ArrayList<Track> {
-        val itemType = object : TypeToken<ArrayList<Track>>() {}.type
+    private fun loadHistory(): List<Track> {
+        val itemType = object : TypeToken<MutableList<Track>>() {}.type
         val jsonString = sharedPref.getString(SEARCH_HISTORY_KEY, null)
-        if (jsonString!= null){
-            return gson.fromJson<ArrayList<Track>>(jsonString, itemType)
-        } else {
-            return ArrayList<Track>()
-        }
+        return if (jsonString!= null) gson.fromJson<MutableList<Track>>(jsonString, itemType) else mutableListOf<Track>()
     }
 
-    fun clearHistory(){
+    fun clearHistory() {
         history.clear()
         saveHistory()
     }
 
-    fun addHistory(newTrack: Track){
-        if (history.size >= SEARCH_HISTORY_SIZE){
+    fun addHistory(newTrack: Track) {
+        if (history.size >= SEARCH_HISTORY_SIZE) {
             history.removeAt(0)
         }
 
