@@ -25,7 +25,7 @@ class TrackViewHolder(itemView: View, private val adapter: TracksAdapter) : Recy
         trackTime.text = separator + SimpleDateFormat(
             "mm:ss",
             Locale.getDefault()
-        ).format(track.trackTimeMillis.toLong())
+        ).format(track.trackTimeMillis?.toLong() ?: String())
         artwork.clearColorFilter()
 
         Glide.with(itemView.context)

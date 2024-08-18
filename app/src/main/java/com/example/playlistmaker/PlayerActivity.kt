@@ -89,8 +89,17 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        track = savedInstanceState.getSerializable(SAVED_TRACK) as Track
+        track = savedInstanceState.customGetSerializable<Track>(SAVED_TRACK) as Track
         setValues()
+    }
+
+    @Suppress("DEPRECATION")
+    private inline fun <reified T : Serializable> Bundle.customGetSerializable(key: String): T? {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            getSerializable(key, T::class.java)
+        } else {
+            getSerializable(key) as? T
+        }
     }
 
     private inline fun <reified T : Serializable> Intent.serializable(key: String): T? = when {
@@ -105,14 +114,14 @@ class PlayerActivity : AppCompatActivity() {
     private fun setValues() {
         countryValue.text = track.country
         genreValue.text = track.primaryGenreName
-        yearValue.text = track.releaseDate.take(4)
+        yearValue.text = track.releaseDate?.take(4) ?: String()
         artistName.text = track.artistName
         trackName.text = track.trackName
 
         timePlayValue.text = SimpleDateFormat(
             "mm:ss",
             Locale.getDefault()
-        ).format(track.trackTimeMillis.toLong())
+        ).format(track.trackTimeMillis?.toLong() ?: String())
 
         if (track.collectionName != null) {
             albumNameValue.text = track.collectionName
@@ -124,7 +133,7 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun getCoverImage() {
-        val coverURL = track.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg")
+        val coverURL = track.artworkUrl100?.replaceAfterLast('/', "512x512bb.jpg")
         Glide.with(this)
             .load(coverURL)
             .placeholder(R.drawable.placeholder)
