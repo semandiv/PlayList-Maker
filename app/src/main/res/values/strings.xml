@@ -25,4 +25,23 @@
     <string name="youSearchHead">Вы искали</string>
     <string name="noContentIconDescript">Контент по запросу не найден</string>
     <string name="noConnectIconDescript">Нет подключения к сети</string>
+    <string name="country_name">Страна</string>
+    <string name="countryNamePlaceholder">Великобритания</string>
+    <string name="genreName">Жанр</string>
+    <string name="genreNamePlaceholder">Rock</string>
+    <string name="yearTrack">Год</string>
+    <string name="yearTrackPlaceholder">1965</string>
+    <string name="albumName">Альбом</string>
+    <string name="albumNamePlaceholder">Yesterday (Remastered 2009)</string>
+    <string name="trackDuration">Длительность</string>
+    <string name="trackDurationPlaceholder">5:35</string>
+    <string name="trackPlayPositionPlaceholder">3:30</string>
+    <string name="add_track_to_playlist">Add track to playlist</string>
+    <string name="play_track">Play track</string>
+    <string name="add_track_to_favorities">Add track to favorities</string>
+    <string name="artistNamePlaceholder">The Beatles</string>
+    <string name="trackNamePlaceholder">Yesterday (Remastered 2009)</string>
+    <string name="album_cover">Album Cover</string>
+    <string name="clear_text">Clear text</string>
+    <string name="search_button">Search button</string>
 </resources>

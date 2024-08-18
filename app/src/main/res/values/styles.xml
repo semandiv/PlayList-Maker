@@ -140,8 +140,8 @@
 
     <style name="trackItemRightArrow">
         <item name="android:layout_gravity">end|center_vertical</item>
-        <item name="android:layout_width">@dimen/itemRightArrow</item>
-        <item name="android:layout_height">@dimen/itemRightArrow</item>
+        <item name="android:layout_width">@dimen/dp24_size</item>
+        <item name="android:layout_height">@dimen/dp24_size</item>
         <item name="tint">@color/grayTint</item>
     </style>
 
@@ -187,12 +187,102 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:fontFamily">@font/ys_display_medium</item>
-        <item name="android:layout_marginLeft">@dimen/itemRightArrow</item>
-        <item name="android:layout_marginRight">@dimen/itemRightArrow</item>
+        <item name="android:layout_marginLeft">@dimen/dp24_size</item>
+        <item name="android:layout_marginRight">@dimen/dp24_size</item>
         <item name="android:gravity">center</item>
         <item name="android:textSize">@dimen/big_text_size</item>
         <item name="android:textFontWeight">400</item>
         <item name="android:paddingBottom">@dimen/big_padding</item>
+    </style>
+
+    <style name="trackInfoStaticText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/big_padding</item>
+        <item name="android:layout_marginTop">@dimen/dp9_size</item>
+        <item name="android:layout_marginEnd">@dimen/big_padding</item>
+        <item name="android:layout_marginBottom">@dimen/dp9_size</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textColor">@color/grayTintDarkMode</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:textSize">@dimen/sp13_text_size</item>
+    </style>
+
+    <style name="trackInfoLoadedText">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/big_padding</item>
+        <item name="android:layout_marginTop">@dimen/dp9_size</item>
+        <item name="android:layout_marginEnd">@dimen/big_padding</item>
+        <item name="android:layout_marginBottom">@dimen/dp9_size</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:gravity">end</item>
+        <item name="android:textColor">@color/darkBackground</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:textSize">@dimen/sp13_text_size</item>
+    </style>
+
+    <style name="playPosition">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/small_padding</item>
+        <item name="android:layout_marginBottom">@dimen/small_padding</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textColor">@color/text_icon_color</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:textSize">@dimen/medium_text_size</item>
+    </style>
+
+    <style name="artistName">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/small_padding</item>
+        <item name="android:layout_marginBottom">@dimen/small_padding</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textColor">@color/text_icon_color</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:textSize">@dimen/medium_text_size</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <style name="smallControlButton">
+        <item name="android:layout_width">@dimen/dp51_size</item>
+        <item name="android:layout_height">@dimen/dp51_size</item>
+        <item name="android:layout_marginBottom">@dimen/dp36_size</item>
+        <item name="android:background">@drawable/round_button_light</item>
+        <item name="android:scaleType">centerInside</item>
+    </style>
+
+    <style name="largeControlButton">
+        <item name="android:layout_width">@dimen/dp100_size</item>
+        <item name="android:layout_height">@dimen/dp100_size</item>
+        <item name="android:layout_marginBottom">@dimen/dp12_size</item>
+        <item name="android:background">@drawable/round_play_light</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="tint">@color/darkBackground</item>
+    </style>
+
+    <style name="trackInfoTrackName">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">@dimen/dp12_size</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textColor">@color/text_icon_color</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textSize">@dimen/primary_text_size</item>
+    </style>
+
+    <style name="trackInfoTrackCover">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_marginTop">@dimen/dp24_size</item>
+        <item name="android:layout_marginBottom">@dimen/dp24_size</item>
+        <item name="android:scaleType">centerCrop</item>
     </style>
 
 
