@@ -3,6 +3,8 @@ package com.example.playlistmaker
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.os.Parcelable
 import android.view.MenuItem
 import android.view.View
@@ -12,6 +14,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -37,7 +40,13 @@ class SearchActivity : AppCompatActivity() {
         const val RECYCLER_STATE_KEY = "Tracks"
         const val SEARCH_HISTORY_KEY = "searchHistory"
         const val SELECTED_TRACK = "selectedTrack"
+        const val SEARCH_DEBOUNCE_DELAY = 2000L
+        const val CLICK_DEBOUNCE_DELAY = 1000L
     }
+
+    private val searchRunnable = Runnable{searchRequest()}
+    private val handler = Handler(Looper.getMainLooper())
+    private var isClickAlowed = true
 
     private val retrofit = Retrofit.Builder()
         .baseUrl(APPLE_BASE_URL)
@@ -54,6 +63,7 @@ class SearchActivity : AppCompatActivity() {
 
     private var searchQuery = String()
 
+    private lateinit var inputText: EditText
     private lateinit var placeholder: LinearLayout
     private lateinit var historyLayout: NestedScrollView
     private lateinit var trackSearchList: RecyclerView
@@ -66,6 +76,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var historyAdapter: TracksAdapter
     private lateinit var historyRecyclerView: RecyclerView
     private lateinit var historyList: MutableList<Track>
+    private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,7 +102,7 @@ class SearchActivity : AppCompatActivity() {
         supportActionBar?.title = getString(R.string.search_text)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val inputText = findViewById<EditText>(R.id.search_edit_text)
+        inputText = findViewById<EditText>(R.id.search_edit_text)
         val clearTextButton = findViewById<ImageView>(R.id.clear_text)
 
         placeholder = findViewById(R.id.placeholderSearchView)
@@ -101,6 +112,7 @@ class SearchActivity : AppCompatActivity() {
         placeholderText = findViewById(R.id.placeholderText)
         refreshBtn = findViewById(R.id.refreshBtn)
         clearHistoryBtn = findViewById(R.id.clearHistoryBtn)
+        progressBar = findViewById(R.id.progressBar)
 
         placeholder.isVisible = false
         historyLayout.isVisible = false
@@ -114,6 +126,7 @@ class SearchActivity : AppCompatActivity() {
         inputText.addTextChangedListener(
             onTextChanged = { text: CharSequence?, _, _, _ ->
                 textChageListener(text, clearTextButton)
+                searchDebounce()
             }
         )
 
@@ -232,12 +245,14 @@ class SearchActivity : AppCompatActivity() {
     //запрос в сеть
     private fun searchTracks(inputText: EditText) {
         if (inputText.text.isNotEmpty()) {
+            progressBar.isVisible = true
             appleAPI.searchTrack(inputText.text.toString())
                 .enqueue(object : Callback<TracksResponse> {
                     override fun onResponse(
                         call: Call<TracksResponse>,
                         response: Response<TracksResponse>
                     ) {
+                        progressBar.isVisible = false
                         val body = response.body()
                         if (response.code() == 200) {
                             tracks.clear()
@@ -254,6 +269,7 @@ class SearchActivity : AppCompatActivity() {
                     }
 
                     override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
+                        progressBar.isVisible = false
                         showConnectErrorPlaceholder()
                     }
                 })
@@ -298,8 +314,32 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun startPlayer(track: Track) {
-        val intent = Intent(this, PlayerActivity::class.java)
-        intent.putExtra(SELECTED_TRACK, track)
-        startActivity(intent)
+        if (clickDebounce()){
+            val intent = Intent(this, PlayerActivity::class.java)
+            intent.putExtra(SELECTED_TRACK, track)
+            startActivity(intent)
+        }
+    }
+
+    private fun clickDebounce(): Boolean{
+        val current = isClickAlowed
+        if (isClickAlowed){
+            isClickAlowed = false
+            handler.postDelayed({isClickAlowed = true}, CLICK_DEBOUNCE_DELAY)
+        }
+        return current
+    }
+
+    private fun searchDebounce(){
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+    }
+
+    private fun searchRequest() {
+        if (inputText.text.isNotEmpty()) {
+            searchTracks(inputText)
+            inputText.hideKeyboard()
+            hideHistory()
+        }
     }
 }

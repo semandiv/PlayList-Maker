@@ -47,6 +47,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <ProgressBar android:id="@+id/progressBar"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="130dp"
+            android:indeterminateTint="@color/main_background"
+            android:visibility="invisible"/>
+
         <LinearLayout
             android:id="@+id/tracksLayout"
             android:layout_width="match_parent"
