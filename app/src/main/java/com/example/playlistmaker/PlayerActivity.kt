@@ -190,6 +190,7 @@ class PlayerActivity : AppCompatActivity() {
             mediaPlayer.setOnCompletionListener {
                 playerState = STATE_PREPARED
                 playingTime.text = DURATION_DEFAULT_VALUE
+                playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
             }
         }
     }
