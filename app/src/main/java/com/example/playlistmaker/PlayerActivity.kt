@@ -1,12 +1,11 @@
 package com.example.playlistmaker
 
-import android.annotation.SuppressLint
-import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
@@ -29,10 +28,12 @@ class PlayerActivity : AppCompatActivity() {
     private companion object {
         const val RECEIVED_TRACK = "selectedTrack"
         const val SAVED_TRACK = "savedTrack"
+
         const val STATE_DEFAULT = 0
         const val STATE_PREPARED = 1
         const val STATE_PLAYING = 2
         const val STATE_PAUSED = 3
+
         const val DELAY = 300L
         const val DURATION_DEFAULT_VALUE = "00:00"
     }
@@ -41,7 +42,7 @@ class PlayerActivity : AppCompatActivity() {
 
     private var playerState = STATE_DEFAULT
     private val mediaPlayer = MediaPlayer()
-    private var currentPosition = -1L
+    private var currentPosition = 0
     private var handler: Handler? = null
 
     private lateinit var countryValue: TextView
@@ -92,23 +93,24 @@ class PlayerActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         handler = Handler(Looper.getMainLooper())
-
         preparePlayer()
+
         playButton.setOnClickListener {
-            playbackControl()
-            changeButtonIcon()
+            playerControl()
         }
+
     }
 
     override fun onPause() {
         super.onPause()
+        stopTimeUpdate()
         pausePlayer()
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        stopTimeUpdate()
         mediaPlayer.release()
-        stopDurationValueUpdate()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -140,15 +142,6 @@ class PlayerActivity : AppCompatActivity() {
         } else {
             getSerializable(key) as? T
         }
-    }
-
-    private inline fun <reified T : Serializable> Intent.serializable(key: String): T? = when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> getSerializableExtra(
-            key,
-            T::class.java
-        )
-
-        else -> @Suppress("DEPRECATION") getSerializableExtra(key) as? T
     }
 
     private fun setValues() {
@@ -195,75 +188,62 @@ class PlayerActivity : AppCompatActivity() {
                 playerState = STATE_PREPARED
             }
             mediaPlayer.setOnCompletionListener {
-                stopDurationValueUpdate()
                 playerState = STATE_PREPARED
                 playingTime.text = DURATION_DEFAULT_VALUE
-                currentPosition = -1L
             }
         }
     }
 
     private fun startPlayer() {
-        mediaPlayer.start()
         playerState = STATE_PLAYING
-        playButton.setImageResource(R.drawable.baseline_pause_circle_filled_84)
-        startDurationValueUpdate()
+        mediaPlayer.start()
     }
 
     private fun pausePlayer() {
-        mediaPlayer.pause()
         playerState = STATE_PAUSED
-        playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
-        stopDurationValueUpdate()
+        mediaPlayer.pause()
     }
 
-    private fun changeButtonIcon() {
+    private fun playerControl() {
         when (playerState) {
             STATE_PLAYING -> {
-                playButton.setImageResource(R.drawable.baseline_pause_circle_filled_84)
-            }
-
-            STATE_PAUSED -> {
+                stopTimeUpdate()
+                pausePlayer()
                 playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
             }
 
-        }
-    }
-
-    private fun playbackControl() {
-        when (playerState) {
-            STATE_PLAYING -> {
-                pausePlayer()
-            }
-
             STATE_PREPARED, STATE_PAUSED -> {
+                startTimeUpdate()
                 startPlayer()
+                playButton.setImageResource(R.drawable.baseline_pause_circle_filled_84)
+
             }
         }
     }
 
-    private fun createUpdateDuration(): Runnable {
+    private fun timeUpdate(): Runnable {
         return object : Runnable {
-            @SuppressLint("DefaultLocale")
             override fun run() {
-                currentPosition = mediaPlayer.currentPosition.toLong()
-
-                if (currentPosition >= 0L && currentPosition <= 30000L) {
+                if (playerState == STATE_PLAYING) {
+                    currentPosition = mediaPlayer.currentPosition
+                    Log.d("CURRENT_TIME_POSITION", mediaPlayer.currentPosition.toString())
                     playingTime.text = SimpleDateFormat(
                         "mm:ss",
                         Locale.getDefault()
                     ).format(currentPosition)
                     handler?.postDelayed(this, DELAY)
+                } else {
+                    handler?.removeCallbacks(this)
                 }
             }
         }
     }
 
-    private fun startDurationValueUpdate() {
-        handler?.post(createUpdateDuration())
+    private fun startTimeUpdate() {
+        handler?.post(timeUpdate())
     }
 
-    private fun stopDurationValueUpdate() {
-        handler?.removeCallbacks(createUpdateDuration())
+    private fun stopTimeUpdate() {
+        handler?.removeCallbacks(timeUpdate())
     }
 }
