@@ -157,6 +157,7 @@
         android:id="@+id/playButton"
         android:contentDescription="@string/play_track"
         android:src="@drawable/baseline_play_circle_filled_84"
+        android:visibility="visible"
         app:layout_constraintEnd_toStartOf="@id/likeButton"
         app:layout_constraintStart_toEndOf="@id/addToPlaylist"
         app:layout_constraintBottom_toTopOf="@id/playingTime"

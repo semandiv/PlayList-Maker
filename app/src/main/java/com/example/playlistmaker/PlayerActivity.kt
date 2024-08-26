@@ -1,11 +1,15 @@
 package com.example.playlistmaker
 
-import android.content.Intent
+import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -25,9 +29,23 @@ class PlayerActivity : AppCompatActivity() {
     private companion object {
         const val RECEIVED_TRACK = "selectedTrack"
         const val SAVED_TRACK = "savedTrack"
+        const val DELAY = 300L
+        const val DURATION_DEFAULT_VALUE = "00:00"
+    }
+
+    enum class PlayerState {
+        DEFAULT,
+        PREPARED,
+        PLAYING,
+        PAUSED
     }
 
     private lateinit var track: Track
+
+    private var playerState = PlayerState.DEFAULT
+    private val mediaPlayer = MediaPlayer()
+    private var currentPosition = 0
+    private var handler: Handler? = null
 
     private lateinit var countryValue: TextView
     private lateinit var genreValue: TextView
@@ -38,6 +56,8 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var trackName: TextView
     private lateinit var albumCover: ImageView
     private lateinit var albumGroup: Group
+    private lateinit var playButton: ImageView
+    private lateinit var playingTime: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,12 +83,37 @@ class PlayerActivity : AppCompatActivity() {
         albumCover = findViewById(R.id.albumCover)
         albumGroup = findViewById(R.id.albumNameGroup)
 
+        playButton = findViewById(R.id.playButton)
+        playingTime = findViewById(R.id.playingTime)
+        playingTime.text = DURATION_DEFAULT_VALUE
+
         setValues()
 
         val toolbar = findViewById<Toolbar>(R.id.toolBar)
         setSupportActionBar(toolbar)
         supportActionBar?.title = String()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        handler = Handler(Looper.getMainLooper())
+        preparePlayer()
+
+        playButton.setOnClickListener {
+            playerControl()
+        }
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        stopTimeUpdate()
+        pausePlayer()
+        playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        stopTimeUpdate()
+        mediaPlayer.release()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -100,15 +145,6 @@ class PlayerActivity : AppCompatActivity() {
         } else {
             getSerializable(key) as? T
         }
-    }
-
-    private inline fun <reified T : Serializable> Intent.serializable(key: String): T? = when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> getSerializableExtra(
-            key,
-            T::class.java
-        )
-
-        else -> @Suppress("DEPRECATION") getSerializableExtra(key) as? T
     }
 
     private fun setValues() {
@@ -144,5 +180,77 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun hideAlbumName() {
         albumGroup.isVisible = false
+    }
+
+    private fun preparePlayer() {
+        if (track.previewUrl?.isNotEmpty() == true) {
+            mediaPlayer.setDataSource(track.previewUrl)
+            mediaPlayer.prepareAsync()
+
+            mediaPlayer.setOnPreparedListener {
+                playerState = PlayerState.PREPARED
+            }
+            mediaPlayer.setOnCompletionListener {
+                playerState = PlayerState.PREPARED
+                playingTime.text = DURATION_DEFAULT_VALUE
+                playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
+            }
+        }
+    }
+
+    private fun startPlayer() {
+        playerState = PlayerState.PLAYING
+        mediaPlayer.start()
+    }
+
+    private fun pausePlayer() {
+        playerState = PlayerState.PAUSED
+        mediaPlayer.pause()
+    }
+
+    private fun playerControl() {
+        when (playerState) {
+            PlayerState.PLAYING -> {
+                stopTimeUpdate()
+                pausePlayer()
+                playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
+            }
+
+            PlayerState.PREPARED, PlayerState.PAUSED-> {
+                startTimeUpdate()
+                startPlayer()
+                playButton.setImageResource(R.drawable.baseline_pause_circle_filled_84)
+
+            }
+
+            else -> {
+                Toast.makeText(this, "Плеер не готов к работе", Toast.LENGTH_SHORT).show()}
+        }
+    }
+
+    private fun timeUpdate(): Runnable {
+        return object : Runnable {
+            override fun run() {
+                if (playerState == PlayerState.PLAYING) {
+                    currentPosition = mediaPlayer.currentPosition
+                    Log.d("CURRENT_TIME_POSITION", mediaPlayer.currentPosition.toString())
+                    playingTime.text = SimpleDateFormat(
+                        "mm:ss",
+                        Locale.getDefault()
+                    ).format(currentPosition)
+                    handler?.postDelayed(this, DELAY)
+                } else {
+                    handler?.removeCallbacks(this)
+                }
+            }
+        }
+    }
+
+    private fun startTimeUpdate() {
+        handler?.post(timeUpdate())
+    }
+
+    private fun stopTimeUpdate() {
+        handler?.removeCallbacks(timeUpdate())
     }
 }
