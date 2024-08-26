@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -28,19 +29,20 @@ class PlayerActivity : AppCompatActivity() {
     private companion object {
         const val RECEIVED_TRACK = "selectedTrack"
         const val SAVED_TRACK = "savedTrack"
-
-        const val STATE_DEFAULT = 0
-        const val STATE_PREPARED = 1
-        const val STATE_PLAYING = 2
-        const val STATE_PAUSED = 3
-
         const val DELAY = 300L
         const val DURATION_DEFAULT_VALUE = "00:00"
     }
 
+    enum class PlayerState {
+        DEFAULT,
+        PREPARED,
+        PLAYING,
+        PAUSED
+    }
+
     private lateinit var track: Track
 
-    private var playerState = STATE_DEFAULT
+    private var playerState = PlayerState.DEFAULT
     private val mediaPlayer = MediaPlayer()
     private var currentPosition = 0
     private var handler: Handler? = null
@@ -105,6 +107,7 @@ class PlayerActivity : AppCompatActivity() {
         super.onPause()
         stopTimeUpdate()
         pausePlayer()
+        playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
     }
 
     override fun onDestroy() {
@@ -185,10 +188,10 @@ class PlayerActivity : AppCompatActivity() {
             mediaPlayer.prepareAsync()
 
             mediaPlayer.setOnPreparedListener {
-                playerState = STATE_PREPARED
+                playerState = PlayerState.PREPARED
             }
             mediaPlayer.setOnCompletionListener {
-                playerState = STATE_PREPARED
+                playerState = PlayerState.PREPARED
                 playingTime.text = DURATION_DEFAULT_VALUE
                 playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
             }
@@ -196,36 +199,39 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun startPlayer() {
-        playerState = STATE_PLAYING
+        playerState = PlayerState.PLAYING
         mediaPlayer.start()
     }
 
     private fun pausePlayer() {
-        playerState = STATE_PAUSED
+        playerState = PlayerState.PAUSED
         mediaPlayer.pause()
     }
 
     private fun playerControl() {
         when (playerState) {
-            STATE_PLAYING -> {
+            PlayerState.PLAYING -> {
                 stopTimeUpdate()
                 pausePlayer()
                 playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
             }
 
-            STATE_PREPARED, STATE_PAUSED -> {
+            PlayerState.PREPARED, PlayerState.PAUSED-> {
                 startTimeUpdate()
                 startPlayer()
                 playButton.setImageResource(R.drawable.baseline_pause_circle_filled_84)
 
             }
+
+            else -> {
+                Toast.makeText(this, "Плеер не готов к работе", Toast.LENGTH_SHORT).show()}
         }
     }
 
     private fun timeUpdate(): Runnable {
         return object : Runnable {
             override fun run() {
-                if (playerState == STATE_PLAYING) {
+                if (playerState == PlayerState.PLAYING) {
                     currentPosition = mediaPlayer.currentPosition
                     Log.d("CURRENT_TIME_POSITION", mediaPlayer.currentPosition.toString())
                     playingTime.text = SimpleDateFormat(
