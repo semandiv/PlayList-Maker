@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.ui.search
 
 import android.app.Activity
 import android.content.Intent
@@ -26,9 +26,11 @@ import androidx.core.widget.NestedScrollView
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.example.playlistmaker.data.network.AppleAPI
+import com.example.playlistmaker.ui.player.PlayerActivity
+import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.presenter.GetTrackImpl
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -44,8 +46,9 @@ class SearchActivity : AppCompatActivity() {
         const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 
-    private val searchRunnable = Runnable{searchRequest()}
+    private val searchRunnable = Runnable { searchRequest() }
     private val handler = Handler(Looper.getMainLooper())
+    private var newTrackRunnable: Runnable? = null
     private var isClickAlowed = true
 
     private val retrofit = Retrofit.Builder()
@@ -246,37 +249,42 @@ class SearchActivity : AppCompatActivity() {
     private fun searchTracks(inputText: EditText) {
         if (inputText.text.isNotEmpty()) {
             progressBar.isVisible = true
-            appleAPI.searchTrack(inputText.text.toString())
-                .enqueue(object : Callback<TracksResponse> {
-                    override fun onResponse(
-                        call: Call<TracksResponse>,
-                        response: Response<TracksResponse>
-                    ) {
-                        progressBar.isVisible = false
-                        val body = response.body()
-                        if (response.code() == 200) {
-                            tracks.clear()
-                            if (body != null && body.results.isNotEmpty()) {
-                                tracks.addAll(body.results)
-                                showTracks()
-                            }
-                            if (tracks.isEmpty()) {
-                                showResultZeroPlaceholder()
-                            }
-                        } else {
-                            showResultZeroPlaceholder()
-                        }
-                    }
 
-                    override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
-                        progressBar.isVisible = false
-                        showConnectErrorPlaceholder()
-                    }
+            val getTrack = GetTrackImpl()
+            getTrack.loadTrack(inputText.text.toString()) {
+                handler.post(Runnable {
+                    displayTracks(getTrack.getTrack())
                 })
+            }
+        }
+    }
+
+    private fun displayTracks(foundTracks: Pair<Int, List<Track>>) {
+        val (resultCode, newTracks) = foundTracks
+        when (resultCode) {
+            200 -> {
+                if (newTracks.isNotEmpty()) {
+                    tracks.clear()
+                    tracks.addAll(newTracks)
+                    showTracks()
+                } else {
+                    showResultZeroPlaceholder()
+                }
+            }
+
+            400 -> {
+                showConnectErrorPlaceholder()
+            }
+
+            else -> {
+                showResultZeroPlaceholder()
+            }
+
         }
     }
 
     private fun showTracks() {
+        progressBar.isVisible = false
         placeholder.isVisible = false
         historyLayout.isVisible = false
         trackSearchList.isVisible = true
@@ -285,6 +293,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun showResultZeroPlaceholder() {
+        progressBar.isVisible = false
         placeholder.isVisible = true
         placeholderNoResultIcon.isVisible = true
         placeholderNoConnectIcon.isVisible = false
@@ -294,6 +303,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun showConnectErrorPlaceholder() {
+        progressBar.isVisible = false
         placeholder.isVisible = true
         placeholderNoResultIcon.isVisible = false
         placeholderNoConnectIcon.isVisible = true
@@ -314,23 +324,23 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun startPlayer(track: Track) {
-        if (clickDebounce()){
+        if (clickDebounce()) {
             val intent = Intent(this, PlayerActivity::class.java)
             intent.putExtra(SELECTED_TRACK, track)
             startActivity(intent)
         }
     }
 
-    private fun clickDebounce(): Boolean{
+    private fun clickDebounce(): Boolean {
         val current = isClickAlowed
-        if (isClickAlowed){
+        if (isClickAlowed) {
             isClickAlowed = false
-            handler.postDelayed({isClickAlowed = true}, CLICK_DEBOUNCE_DELAY)
+            handler.postDelayed({ isClickAlowed = true }, CLICK_DEBOUNCE_DELAY)
         }
         return current
     }
 
-    private fun searchDebounce(){
+    private fun searchDebounce() {
         handler.removeCallbacks(searchRunnable)
         handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
     }

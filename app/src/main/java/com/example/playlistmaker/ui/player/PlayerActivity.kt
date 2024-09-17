@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.ui.player
 
 import android.media.MediaPlayer
 import android.os.Build
@@ -20,6 +20,8 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.models.Track
 import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -216,7 +218,7 @@ class PlayerActivity : AppCompatActivity() {
                 playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
             }
 
-            PlayerState.PREPARED, PlayerState.PAUSED-> {
+            PlayerState.PREPARED, PlayerState.PAUSED -> {
                 startTimeUpdate()
                 startPlayer()
                 playButton.setImageResource(R.drawable.baseline_pause_circle_filled_84)
