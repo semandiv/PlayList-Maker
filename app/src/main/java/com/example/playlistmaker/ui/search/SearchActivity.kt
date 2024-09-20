@@ -26,21 +26,23 @@ import androidx.core.widget.NestedScrollView
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.playlistmaker.data.network.AppleAPI
-import com.example.playlistmaker.ui.player.PlayerActivity
+import com.example.playlistmaker.Creator
 import com.example.playlistmaker.R
+import com.example.playlistmaker.data.network.AppleAPI
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.presenter.GetTrackImpl
+import com.example.playlistmaker.presenter.HistoryImpl
+import com.example.playlistmaker.ui.player.PlayerActivity
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class SearchActivity : AppCompatActivity() {
 
     private companion object {
-        const val APPLE_BASE_URL = "https://itunes.apple.com"
+        //const val APPLE_BASE_URL = "https://itunes.apple.com"
         const val SEARCH_FIELD_KEY = "SearchField"
         const val RECYCLER_STATE_KEY = "Tracks"
-        const val SEARCH_HISTORY_KEY = "searchHistory"
+        //const val SEARCH_HISTORY_KEY = "searchHistory"
         const val SELECTED_TRACK = "selectedTrack"
         const val SEARCH_DEBOUNCE_DELAY = 2000L
         const val CLICK_DEBOUNCE_DELAY = 1000L
@@ -51,11 +53,11 @@ class SearchActivity : AppCompatActivity() {
     private var newTrackRunnable: Runnable? = null
     private var isClickAlowed = true
 
-    private val retrofit = Retrofit.Builder()
+/*    private val retrofit = Retrofit.Builder()
         .baseUrl(APPLE_BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
-    private val appleAPI = retrofit.create(AppleAPI::class.java)
+    private val appleAPI = retrofit.create(AppleAPI::class.java)*/
 
     private val tracks = mutableListOf<Track>()
 
@@ -75,7 +77,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var placeholderText: TextView
     private lateinit var refreshBtn: Button
     private lateinit var clearHistoryBtn: Button
-    private lateinit var searchHistory: SearchHistory
+    private lateinit var searchHistory: HistoryImpl
     private lateinit var historyAdapter: TracksAdapter
     private lateinit var historyRecyclerView: RecyclerView
     private lateinit var historyList: MutableList<Track>
@@ -92,9 +94,9 @@ class SearchActivity : AppCompatActivity() {
         }
 
         //инициализация хранилища, нового адаптера и объекта работы с историей поиска
-        val sharedPref = getSharedPreferences(SEARCH_HISTORY_KEY, MODE_PRIVATE)
-        searchHistory = SearchHistory(sharedPref)
-        historyList = searchHistory.getHistory().toMutableList()
+
+        searchHistory = HistoryImpl(Creator.provideHistoryInteractor())
+        historyList = searchHistory.getTracks()
         historyAdapter = TracksAdapter(historyList) { track ->
             startPlayer(track)
         }
@@ -134,7 +136,7 @@ class SearchActivity : AppCompatActivity() {
         )
 
         inputText.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus && searchHistory.getHistory().size > 0) {
+            if (hasFocus && searchHistory.getTracks().size > 0) {
                 showHistory()
             } else {
                 hideHistory()
@@ -188,7 +190,6 @@ class SearchActivity : AppCompatActivity() {
         )
     }
 
-    @Suppress("DEPRECATION")
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         searchQuery = savedInstanceState.getString(SEARCH_FIELD_KEY, String())
@@ -234,7 +235,7 @@ class SearchActivity : AppCompatActivity() {
         view.isVisible = false
         tracks.clear()
         adapter.notifyDataSetChanged()
-        val newHistoryList = searchHistory.getHistory()
+        val newHistoryList = searchHistory.getTracks()
         if (newHistoryList.isNotEmpty()) {
             historyList.clear()
             historyList.addAll(newHistoryList)
@@ -319,7 +320,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun saveTrack(track: Track) {
-        searchHistory.addHistory(track)
+        searchHistory.addTrack(track)
         adapter.notifyItemInserted(0)
     }
 

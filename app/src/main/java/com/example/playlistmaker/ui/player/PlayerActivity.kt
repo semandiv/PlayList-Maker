@@ -1,11 +1,9 @@
 package com.example.playlistmaker.ui.player
 
-import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
@@ -20,7 +18,11 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.example.playlistmaker.Creator
 import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.api.PlayerInteractor
+import com.example.playlistmaker.domain.api.PlayerStateListener
+import com.example.playlistmaker.domain.models.PlayerState
 import com.example.playlistmaker.domain.models.Track
 import java.io.Serializable
 import java.text.SimpleDateFormat
@@ -35,17 +37,10 @@ class PlayerActivity : AppCompatActivity() {
         const val DURATION_DEFAULT_VALUE = "00:00"
     }
 
-    enum class PlayerState {
-        DEFAULT,
-        PREPARED,
-        PLAYING,
-        PAUSED
-    }
-
     private lateinit var track: Track
+    private lateinit var playerInteractor: PlayerInteractor
 
     private var playerState = PlayerState.DEFAULT
-    private val mediaPlayer = MediaPlayer()
     private var currentPosition = 0
     private var handler: Handler? = null
 
@@ -75,6 +70,14 @@ class PlayerActivity : AppCompatActivity() {
             track = it
         }
 
+        playerInteractor = track.previewUrl?.let { Creator.providePlayerInteractor(it) }!!
+
+        playerInteractor.observePlayerState(object : PlayerStateListener{
+            override fun onPlayerStateChanged(state: PlayerState) {
+                playerState = state
+            }
+        })
+
         countryValue = findViewById(R.id.countryValue)
         genreValue = findViewById(R.id.genreValue)
         yearValue = findViewById(R.id.yearValue)
@@ -97,7 +100,6 @@ class PlayerActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         handler = Handler(Looper.getMainLooper())
-        preparePlayer()
 
         playButton.setOnClickListener {
             playerControl()
@@ -115,7 +117,7 @@ class PlayerActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         stopTimeUpdate()
-        mediaPlayer.release()
+        playerInteractor.releasePlayer()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -184,30 +186,13 @@ class PlayerActivity : AppCompatActivity() {
         albumGroup.isVisible = false
     }
 
-    private fun preparePlayer() {
-        if (track.previewUrl?.isNotEmpty() == true) {
-            mediaPlayer.setDataSource(track.previewUrl)
-            mediaPlayer.prepareAsync()
-
-            mediaPlayer.setOnPreparedListener {
-                playerState = PlayerState.PREPARED
-            }
-            mediaPlayer.setOnCompletionListener {
-                playerState = PlayerState.PREPARED
-                playingTime.text = DURATION_DEFAULT_VALUE
-                playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
-            }
-        }
-    }
 
     private fun startPlayer() {
-        playerState = PlayerState.PLAYING
-        mediaPlayer.start()
+        playerInteractor.play()
     }
 
     private fun pausePlayer() {
-        playerState = PlayerState.PAUSED
-        mediaPlayer.pause()
+        playerInteractor.pause()
     }
 
     private fun playerControl() {
@@ -234,8 +219,7 @@ class PlayerActivity : AppCompatActivity() {
         return object : Runnable {
             override fun run() {
                 if (playerState == PlayerState.PLAYING) {
-                    currentPosition = mediaPlayer.currentPosition
-                    Log.d("CURRENT_TIME_POSITION", mediaPlayer.currentPosition.toString())
+                    currentPosition = playerInteractor.currentPosition()
                     playingTime.text = SimpleDateFormat(
                         "mm:ss",
                         Locale.getDefault()
