@@ -1,6 +1,5 @@
 package com.example.playlistmaker.domain.impl
 
-import com.example.playlistmaker.data.SharedPrefRepositoryImpl
 import com.example.playlistmaker.domain.api.HistoryInteractor
 import com.example.playlistmaker.domain.api.SharedPrefRepository
 import com.example.playlistmaker.domain.models.Track

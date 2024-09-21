@@ -4,43 +4,46 @@ import android.media.MediaPlayer
 import com.example.playlistmaker.domain.api.PlayerStateListener
 import com.example.playlistmaker.domain.models.PlayerState
 
-class PlayerRepository(private val mediaPlayer: MediaPlayer, previewUrl: String?) {
+class PlayerRepository(private val mediaPlayer: MediaPlayer, private val previewUrl: String?) {
     private var listener: PlayerStateListener? = null
+    private var playerState : PlayerState = PlayerState.DEFAULT
 
-    init {
-        preparePlayer(previewUrl)
+    private fun updatePlayerState(state: PlayerState){
+        listener?.onPlayerStateChanged(state)
     }
-
-
-    private var playerState = PlayerState.DEFAULT
 
     fun setPlayerStateListener(listener: PlayerStateListener) {
         this.listener = listener
     }
-    private fun preparePlayer(previewUrl: String?){
+
+    fun preparePlayer(){
         if (previewUrl?.isNotEmpty() == true) {
             mediaPlayer.setDataSource(previewUrl)
             mediaPlayer.prepareAsync()
+            playerState = PlayerState.PREPARED
+            updatePlayerState(playerState)
 
             mediaPlayer.setOnPreparedListener {
-                listener?.onPlayerStateChanged(PlayerState.PREPARED)
+                playerState = PlayerState.PREPARED
+                updatePlayerState(playerState)
             }
             mediaPlayer.setOnCompletionListener {
-                listener?.onPlayerStateChanged(PlayerState.PREPARED)
+                playerState = PlayerState.PREPARED
+                updatePlayerState(playerState)
             }
         }
     }
 
-    fun play(): PlayerState {
-        listener?.onPlayerStateChanged(PlayerState.PLAYING)
+    fun play() {
+        playerState = PlayerState.PLAYING
+        updatePlayerState(playerState)
         mediaPlayer.start()
-        return playerState
     }
 
-    fun pause(): PlayerState{
-        listener?.onPlayerStateChanged(PlayerState.PAUSED)
+    fun pause(){
+        playerState = PlayerState.PAUSED
+        updatePlayerState(playerState)
         mediaPlayer.pause()
-        return playerState
     }
 
     fun release() {

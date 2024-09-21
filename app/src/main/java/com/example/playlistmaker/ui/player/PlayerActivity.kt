@@ -18,12 +18,11 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.example.playlistmaker.Creator
 import com.example.playlistmaker.R
-import com.example.playlistmaker.domain.api.PlayerInteractor
-import com.example.playlistmaker.domain.api.PlayerStateListener
 import com.example.playlistmaker.domain.models.PlayerState
 import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.presenter.PlayTrackImpl
+import com.example.playlistmaker.presenter.api.PlayTrack
 import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -38,7 +37,7 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private lateinit var track: Track
-    private lateinit var playerInteractor: PlayerInteractor
+    private lateinit var playingControl: PlayTrack
 
     private var playerState = PlayerState.DEFAULT
     private var currentPosition = 0
@@ -70,13 +69,11 @@ class PlayerActivity : AppCompatActivity() {
             track = it
         }
 
-        playerInteractor = track.previewUrl?.let { Creator.providePlayerInteractor(it) }!!
-
-        playerInteractor.observePlayerState(object : PlayerStateListener{
-            override fun onPlayerStateChanged(state: PlayerState) {
-                playerState = state
-            }
-        })
+        if (track.previewUrl?.isNotEmpty() == true) {
+            playingControl = PlayTrackImpl(track.previewUrl!!)
+            playingControl.preparePlayer()
+            playerState = playingControl.getPlayerState()
+        } else handleNullPreviewUrl()
 
         countryValue = findViewById(R.id.countryValue)
         genreValue = findViewById(R.id.genreValue)
@@ -117,7 +114,9 @@ class PlayerActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         stopTimeUpdate()
-        playerInteractor.releasePlayer()
+        if (track.previewUrl?.isNotEmpty() == true){
+            playingControl.releasePlayer()
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -188,11 +187,13 @@ class PlayerActivity : AppCompatActivity() {
 
 
     private fun startPlayer() {
-        playerInteractor.play()
+        playingControl.play()
+        playerState = playingControl.getPlayerState()
     }
 
     private fun pausePlayer() {
-        playerInteractor.pause()
+        playingControl.pause()
+        playerState = playingControl.getPlayerState()
     }
 
     private fun playerControl() {
@@ -211,22 +212,32 @@ class PlayerActivity : AppCompatActivity() {
             }
 
             else -> {
-                Toast.makeText(this, "Плеер не готов к работе", Toast.LENGTH_SHORT).show()}
+                Toast.makeText(this, "Плеер не готов к работе, состояние: ${playerState}", Toast.LENGTH_SHORT).show()}
         }
     }
 
     private fun timeUpdate(): Runnable {
         return object : Runnable {
             override fun run() {
-                if (playerState == PlayerState.PLAYING) {
-                    currentPosition = playerInteractor.currentPosition()
-                    playingTime.text = SimpleDateFormat(
-                        "mm:ss",
-                        Locale.getDefault()
-                    ).format(currentPosition)
-                    handler?.postDelayed(this, DELAY)
-                } else {
-                    handler?.removeCallbacks(this)
+                playerState = playingControl.getPlayerState()
+                when (playerState) {
+                    PlayerState.PLAYING -> {
+                        currentPosition = playingControl.currentPosition()
+                        playingTime.text = SimpleDateFormat(
+                            "mm:ss",
+                            Locale.getDefault()
+                        ).format(currentPosition)
+                        handler?.postDelayed(this, DELAY)
+                    }
+                    PlayerState.PREPARED -> {
+                        playingTime.text = DURATION_DEFAULT_VALUE
+                        playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
+                        handler?.postDelayed(this, DELAY)
+                        handler?.removeCallbacks(this)
+                    }
+                    else -> {
+                        handler?.removeCallbacks(this)
+                    }
                 }
             }
         }
@@ -238,5 +249,13 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun stopTimeUpdate() {
         handler?.removeCallbacks(timeUpdate())
+    }
+
+    private fun handleNullPreviewUrl(): PlayTrackImpl {
+        playButton.isEnabled = false
+        Toast.makeText(this, "У трека нет превью, попробуйте другой трек", Toast.LENGTH_SHORT).show()
+
+        val playTrack = PlayTrackImpl(track.previewUrl ?: String())
+        return playTrack
     }
 }

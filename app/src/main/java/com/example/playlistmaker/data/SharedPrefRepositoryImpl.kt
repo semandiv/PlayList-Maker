@@ -35,7 +35,7 @@ class SharedPrefRepositoryImpl(private val sharedPref: SharedPreferences) : Shar
     }
 
     override fun addTrack(track: Track) {
-        if (history.size >= com.example.playlistmaker.ui.search.SEARCH_HISTORY_SIZE) {
+        if (history.size >= SEARCH_HISTORY_SIZE) {
             history.removeAt(0)
         }
 

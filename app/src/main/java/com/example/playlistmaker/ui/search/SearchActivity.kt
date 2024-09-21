@@ -28,21 +28,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.Creator
 import com.example.playlistmaker.R
-import com.example.playlistmaker.data.network.AppleAPI
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.presenter.GetTrackImpl
 import com.example.playlistmaker.presenter.HistoryImpl
 import com.example.playlistmaker.ui.player.PlayerActivity
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class SearchActivity : AppCompatActivity() {
 
     private companion object {
-        //const val APPLE_BASE_URL = "https://itunes.apple.com"
         const val SEARCH_FIELD_KEY = "SearchField"
         const val RECYCLER_STATE_KEY = "Tracks"
-        //const val SEARCH_HISTORY_KEY = "searchHistory"
         const val SELECTED_TRACK = "selectedTrack"
         const val SEARCH_DEBOUNCE_DELAY = 2000L
         const val CLICK_DEBOUNCE_DELAY = 1000L
@@ -53,11 +48,6 @@ class SearchActivity : AppCompatActivity() {
     private var newTrackRunnable: Runnable? = null
     private var isClickAlowed = true
 
-/*    private val retrofit = Retrofit.Builder()
-        .baseUrl(APPLE_BASE_URL)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    private val appleAPI = retrofit.create(AppleAPI::class.java)*/
 
     private val tracks = mutableListOf<Track>()
 
