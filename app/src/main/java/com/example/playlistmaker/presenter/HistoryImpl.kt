@@ -9,7 +9,7 @@ class HistoryImpl(private val historyInteractor: HistoryInteractor): History {
         historyInteractor.addTrack(track)
     }
 
-    override fun getTracks(): MutableList<Track> {
+    override fun getTracks(): List<Track> {
         return historyInteractor.getTrack()
     }
 

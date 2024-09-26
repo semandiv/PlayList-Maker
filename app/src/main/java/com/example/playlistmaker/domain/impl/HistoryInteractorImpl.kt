@@ -13,7 +13,7 @@ class HistoryInteractorImpl(private val sharedPrefRepository: SharedPrefReposito
         sharedPrefRepository.clearTrack()
     }
 
-    override fun getTrack(): MutableList<Track> {
+    override fun getTrack(): List<Track> {
         return sharedPrefRepository.getTrack()
     }
 }

@@ -4,6 +4,6 @@ import com.example.playlistmaker.domain.models.Track
 
 interface History {
     fun addTrack(track: Track)
-    fun getTracks(): MutableList<Track>
+    fun getTracks(): List<Track>
     fun clearHistory()
 }

@@ -18,6 +18,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.example.playlistmaker.Creator
 import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.models.PlayerState
 import com.example.playlistmaker.domain.models.Track
@@ -34,6 +35,7 @@ class PlayerActivity : AppCompatActivity() {
         const val SAVED_TRACK = "savedTrack"
         const val DELAY = 300L
         const val DURATION_DEFAULT_VALUE = "00:00"
+        const val TIME_FORMAT= "mm:ss"
     }
 
     private lateinit var track: Track
@@ -69,11 +71,12 @@ class PlayerActivity : AppCompatActivity() {
             track = it
         }
 
-        if (track.previewUrl?.isNotEmpty() == true) {
-            playingControl = PlayTrackImpl(track.previewUrl!!)
+        track.previewUrl?.let { previewUrl ->
+            playingControl = PlayTrackImpl(previewUrl, Creator.providePlayerInteractor(previewUrl))
             playingControl.preparePlayer()
             playerState = playingControl.getPlayerState()
-        } else handleNullPreviewUrl()
+        } ?: handleNullPreviewUrl()
+
 
         countryValue = findViewById(R.id.countryValue)
         genreValue = findViewById(R.id.genreValue)
@@ -114,10 +117,12 @@ class PlayerActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         stopTimeUpdate()
-        if (track.previewUrl?.isNotEmpty() == true){
+
+        track.previewUrl?.takeIf { !it.isNullOrEmpty() }?.let {
             playingControl.releasePlayer()
         }
     }
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
@@ -212,7 +217,8 @@ class PlayerActivity : AppCompatActivity() {
             }
 
             else -> {
-                Toast.makeText(this, "Плеер не готов к работе, состояние: ${playerState}", Toast.LENGTH_SHORT).show()}
+                Toast.makeText(this,
+                    getString(R.string.player_not_ready, playerState), Toast.LENGTH_SHORT).show()}
         }
     }
 
@@ -224,7 +230,7 @@ class PlayerActivity : AppCompatActivity() {
                     PlayerState.PLAYING -> {
                         currentPosition = playingControl.currentPosition()
                         playingTime.text = SimpleDateFormat(
-                            "mm:ss",
+                            TIME_FORMAT,
                             Locale.getDefault()
                         ).format(currentPosition)
                         handler?.postDelayed(this, DELAY)
@@ -253,9 +259,9 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun handleNullPreviewUrl(): PlayTrackImpl {
         playButton.isEnabled = false
-        Toast.makeText(this, "У трека нет превью, попробуйте другой трек", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.not_load_previewTrack), Toast.LENGTH_SHORT).show()
 
-        val playTrack = PlayTrackImpl(track.previewUrl ?: String())
+        val playTrack = PlayTrackImpl(track.previewUrl ?: String(), Creator.providePlayerInteractor(String()))
         return playTrack
     }
 }

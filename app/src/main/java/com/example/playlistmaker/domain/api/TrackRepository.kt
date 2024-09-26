@@ -1,7 +1,7 @@
 package com.example.playlistmaker.domain.api
 
-import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.domain.models.TrackSearchResult
 
 interface TrackRepository {
-    fun searchTracks(query: String): Pair<Int, List<Track>>
+    fun searchTracks(query: String): TrackSearchResult
 }

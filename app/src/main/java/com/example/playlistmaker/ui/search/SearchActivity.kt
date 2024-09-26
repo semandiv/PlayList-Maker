@@ -29,7 +29,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.Creator
 import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.models.Track
-import com.example.playlistmaker.presenter.GetTrackImpl
+import com.example.playlistmaker.domain.models.TrackSearchResult
 import com.example.playlistmaker.presenter.HistoryImpl
 import com.example.playlistmaker.ui.player.PlayerActivity
 
@@ -85,8 +85,8 @@ class SearchActivity : AppCompatActivity() {
 
         //инициализация хранилища, нового адаптера и объекта работы с историей поиска
 
-        searchHistory = HistoryImpl(Creator.provideHistoryInteractor())
-        historyList = searchHistory.getTracks()
+        searchHistory = HistoryImpl(Creator.provideHistoryInteractor(this))
+        historyList = searchHistory.getTracks().toMutableList()
         historyAdapter = TracksAdapter(historyList) { track ->
             startPlayer(track)
         }
@@ -241,7 +241,7 @@ class SearchActivity : AppCompatActivity() {
         if (inputText.text.isNotEmpty()) {
             progressBar.isVisible = true
 
-            val getTrack = GetTrackImpl()
+            val getTrack = Creator.provideGetTrack()
             getTrack.loadTrack(inputText.text.toString()) {
                 handler.post(Runnable {
                     displayTracks(getTrack.getTrack())
@@ -250,17 +250,11 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    private fun displayTracks(foundTracks: Pair<Int, List<Track>>) {
+    private fun displayTracks(foundTracks: TrackSearchResult) {
         val (resultCode, newTracks) = foundTracks
         when (resultCode) {
             200 -> {
-                if (newTracks.isNotEmpty()) {
-                    tracks.clear()
-                    tracks.addAll(newTracks)
-                    showTracks()
-                } else {
-                    showResultZeroPlaceholder()
-                }
+                showSearchedTracks(newTracks)
             }
 
             400 -> {
@@ -271,6 +265,16 @@ class SearchActivity : AppCompatActivity() {
                 showResultZeroPlaceholder()
             }
 
+        }
+    }
+
+    private fun showSearchedTracks(newTracks: List<Track>) {
+        if (newTracks.isNotEmpty()) {
+            tracks.clear()
+            tracks.addAll(newTracks)
+            showTracks()
+        } else {
+            showResultZeroPlaceholder()
         }
     }
 

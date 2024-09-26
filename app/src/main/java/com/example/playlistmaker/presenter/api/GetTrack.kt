@@ -1,7 +1,8 @@
 package com.example.playlistmaker.presenter.api
 
-import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.domain.models.TrackSearchResult
 
 interface GetTrack {
-    fun getTrack() : Pair<Int, List<Track>>
+    fun loadTrack(query: String, callback: () -> Unit): TrackSearchResult
+    fun getTrack() : TrackSearchResult
 }

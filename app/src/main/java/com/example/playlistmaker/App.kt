@@ -21,7 +21,6 @@ class App : Application() {
         val sharedPrefs = getSharedPreferences(THEME_SWITCH, MODE_PRIVATE)
         //грузим тему из настроек
         switchTheme(sharedPrefs.getBoolean(THEME_SWITCH, false))
-        sharedPreferences = getSharedPreferences(SEARCH_HISTORY_KEY, MODE_PRIVATE)
     }
 
     fun switchTheme(darkThemeEnabled: Boolean) {

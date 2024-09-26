@@ -1,23 +1,22 @@
 package com.example.playlistmaker.data
 
 import android.media.MediaPlayer
-import com.example.playlistmaker.domain.api.PlayerStateListener
 import com.example.playlistmaker.domain.models.PlayerState
 
 class PlayerRepository(private val mediaPlayer: MediaPlayer, private val previewUrl: String?) {
-    private var listener: PlayerStateListener? = null
+    private var listener: ((PlayerState) -> Unit)? = null
     private var playerState : PlayerState = PlayerState.DEFAULT
 
     private fun updatePlayerState(state: PlayerState){
-        listener?.onPlayerStateChanged(state)
+        listener?.invoke(state)
     }
 
-    fun setPlayerStateListener(listener: PlayerStateListener) {
+    fun setPlayerStateListener(listener: (PlayerState) -> Unit) {
         this.listener = listener
     }
 
     fun preparePlayer(){
-        if (previewUrl?.isNotEmpty() == true) {
+        if (!previewUrl.isNullOrEmpty()) {
             mediaPlayer.setDataSource(previewUrl)
             mediaPlayer.prepareAsync()
             playerState = PlayerState.PREPARED
@@ -51,6 +50,6 @@ class PlayerRepository(private val mediaPlayer: MediaPlayer, private val preview
     }
 
     fun getCurrentPosition(): Int {
-        return mediaPlayer.currentPosition.toInt()
+        return mediaPlayer.currentPosition
     }
 }

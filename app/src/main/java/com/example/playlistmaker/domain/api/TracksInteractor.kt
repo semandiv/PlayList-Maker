@@ -1,11 +1,11 @@
 package com.example.playlistmaker.domain.api
 
-import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.domain.models.TrackSearchResult
 
 interface TracksInteractor {
     fun searchTracks(query: String, consumer: TrackConsumer)
 
-    interface TrackConsumer {
-        fun consume(foundTracks: Pair<Int, List<Track>>)
+    fun interface TrackConsumer {
+        fun consume(foundTracks: TrackSearchResult)
     }
 }
