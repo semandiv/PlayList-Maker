@@ -34,15 +34,12 @@ class SharedPrefRepositoryImpl(private val sharedPref: SharedPreferences, privat
     }
 
     override fun addTrack(track: Track) {
-        if (history.size >= SEARCH_HISTORY_SIZE) {
-            history.removeAt(0)
-        }
-
-        history.removeIf {
-            it.trackId == track.trackId
-        }
-
-        history.add(track)
+        val tempHistory = history.apply { add(track)}
+            .sortedBy { track != it }
+            .toSet()
+            .take(SEARCH_HISTORY_SIZE)
+        history.clear()
+        history.addAll(tempHistory)
         saveTrack()
     }
 

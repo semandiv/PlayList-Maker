@@ -4,11 +4,11 @@ import android.media.MediaPlayer
 import com.example.playlistmaker.domain.models.PlayerState
 
 class PlayerRepository(private val mediaPlayer: MediaPlayer, private val previewUrl: String?) {
-    private var listener: ((PlayerState) -> Unit)? = null
+    private var listener: (PlayerState) -> Unit = {}
     private var playerState : PlayerState = PlayerState.DEFAULT
 
     private fun updatePlayerState(state: PlayerState){
-        listener?.invoke(state)
+        listener.invoke(state)
     }
 
     fun setPlayerStateListener(listener: (PlayerState) -> Unit) {

@@ -9,7 +9,7 @@ class TrackRepositoryImpl(private val networkClient: NetworkClient, private val 
     override fun searchTracks(query: String): TrackSearchResult {
         val response = networkClient.doRequest(TrackRequest(query))
         return when (response.resultCode) {
-            200 -> {TrackSearchResult(response.resultCode, trackMapper.map(response as TracksResponse))}
+            200 -> {TrackSearchResult(response.resultCode, trackMapper.map((response as TracksResponse).results))}
             400 -> {TrackSearchResult(response.resultCode, emptyList())}
             else -> {TrackSearchResult(response.resultCode, emptyList())}
         }

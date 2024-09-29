@@ -9,11 +9,6 @@ private const val SEARCH_HISTORY_KEY = "searchHistory"
 
 class App : Application() {
 
-    companion object {
-        lateinit var sharedPreferences: SharedPreferences
-            private set
-    }
-
     private var darkTheme = false
 
     override fun onCreate() {
