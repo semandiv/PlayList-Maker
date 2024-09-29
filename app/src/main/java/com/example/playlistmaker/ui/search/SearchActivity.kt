@@ -86,7 +86,7 @@ class SearchActivity : AppCompatActivity() {
         //инициализация хранилища, нового адаптера и объекта работы с историей поиска
 
         searchHistory = HistoryImpl(Creator.provideHistoryInteractor(this))
-        historyList = searchHistory.getTracks().toMutableList()
+        historyList = searchHistory.getTracks().reversed().toMutableList()
         historyAdapter = TracksAdapter(historyList) { track ->
             startPlayer(track)
         }
@@ -225,7 +225,7 @@ class SearchActivity : AppCompatActivity() {
         view.isVisible = false
         tracks.clear()
         adapter.notifyDataSetChanged()
-        val newHistoryList = searchHistory.getTracks()
+        val newHistoryList = searchHistory.getTracks().reversed().toMutableList()
         if (newHistoryList.isNotEmpty()) {
             historyList.clear()
             historyList.addAll(newHistoryList)
@@ -251,10 +251,9 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun displayTracks(foundTracks: TrackSearchResult) {
-        val (resultCode, newTracks) = foundTracks
-        when (resultCode) {
+        when (foundTracks.resultCode) {
             200 -> {
-                showSearchedTracks(newTracks)
+                showSearchedTracks(foundTracks.tracks)
             }
 
             400 -> {

@@ -34,12 +34,11 @@ class SharedPrefRepositoryImpl(private val sharedPref: SharedPreferences, privat
     }
 
     override fun addTrack(track: Track) {
-        val tempHistory = history.apply { add(track)}
-            .sortedBy { track != it }
-            .toSet()
-            .take(SEARCH_HISTORY_SIZE)
+        val tempHistory = mutableListOf(track).apply {
+            addAll(history)
+        }.distinctBy { it.trackId }
         history.clear()
-        history.addAll(tempHistory)
+        history.addAll(tempHistory.take(SEARCH_HISTORY_SIZE))
         saveTrack()
     }
 
