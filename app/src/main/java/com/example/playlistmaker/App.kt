@@ -1,9 +1,11 @@
 package com.example.playlistmaker
 
 import android.app.Application
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatDelegate
 
 private const val THEME_SWITCH = "theme_checker"
+private const val SEARCH_HISTORY_KEY = "searchHistory"
 
 class App : Application() {
 

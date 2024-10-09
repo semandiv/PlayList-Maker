@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.ui.search
 
 import android.app.Activity
 import android.content.Intent
@@ -26,33 +26,28 @@ import androidx.core.widget.NestedScrollView
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.example.playlistmaker.Creator
+import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.domain.models.TrackSearchResult
+import com.example.playlistmaker.presenter.HistoryImpl
+import com.example.playlistmaker.ui.player.PlayerActivity
 
 class SearchActivity : AppCompatActivity() {
 
     private companion object {
-        const val APPLE_BASE_URL = "https://itunes.apple.com"
         const val SEARCH_FIELD_KEY = "SearchField"
         const val RECYCLER_STATE_KEY = "Tracks"
-        const val SEARCH_HISTORY_KEY = "searchHistory"
         const val SELECTED_TRACK = "selectedTrack"
         const val SEARCH_DEBOUNCE_DELAY = 2000L
         const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 
-    private val searchRunnable = Runnable{searchRequest()}
+    private val searchRunnable = Runnable { searchRequest() }
     private val handler = Handler(Looper.getMainLooper())
+    private var newTrackRunnable: Runnable? = null
     private var isClickAlowed = true
 
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(APPLE_BASE_URL)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    private val appleAPI = retrofit.create(AppleAPI::class.java)
 
     private val tracks = mutableListOf<Track>()
 
@@ -72,7 +67,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var placeholderText: TextView
     private lateinit var refreshBtn: Button
     private lateinit var clearHistoryBtn: Button
-    private lateinit var searchHistory: SearchHistory
+    private lateinit var searchHistory: HistoryImpl
     private lateinit var historyAdapter: TracksAdapter
     private lateinit var historyRecyclerView: RecyclerView
     private lateinit var historyList: MutableList<Track>
@@ -89,9 +84,9 @@ class SearchActivity : AppCompatActivity() {
         }
 
         //инициализация хранилища, нового адаптера и объекта работы с историей поиска
-        val sharedPref = getSharedPreferences(SEARCH_HISTORY_KEY, MODE_PRIVATE)
-        searchHistory = SearchHistory(sharedPref)
-        historyList = searchHistory.getHistory().toMutableList()
+
+        searchHistory = HistoryImpl(Creator.provideHistoryInteractor(this))
+        historyList = searchHistory.getTracks().reversed().toMutableList()
         historyAdapter = TracksAdapter(historyList) { track ->
             startPlayer(track)
         }
@@ -131,7 +126,7 @@ class SearchActivity : AppCompatActivity() {
         )
 
         inputText.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus && searchHistory.getHistory().size > 0) {
+            if (hasFocus && searchHistory.getTracks().size > 0) {
                 showHistory()
             } else {
                 hideHistory()
@@ -185,7 +180,6 @@ class SearchActivity : AppCompatActivity() {
         )
     }
 
-    @Suppress("DEPRECATION")
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         searchQuery = savedInstanceState.getString(SEARCH_FIELD_KEY, String())
@@ -231,7 +225,7 @@ class SearchActivity : AppCompatActivity() {
         view.isVisible = false
         tracks.clear()
         adapter.notifyDataSetChanged()
-        val newHistoryList = searchHistory.getHistory()
+        val newHistoryList = searchHistory.getTracks().reversed().toMutableList()
         if (newHistoryList.isNotEmpty()) {
             historyList.clear()
             historyList.addAll(newHistoryList)
@@ -246,37 +240,45 @@ class SearchActivity : AppCompatActivity() {
     private fun searchTracks(inputText: EditText) {
         if (inputText.text.isNotEmpty()) {
             progressBar.isVisible = true
-            appleAPI.searchTrack(inputText.text.toString())
-                .enqueue(object : Callback<TracksResponse> {
-                    override fun onResponse(
-                        call: Call<TracksResponse>,
-                        response: Response<TracksResponse>
-                    ) {
-                        progressBar.isVisible = false
-                        val body = response.body()
-                        if (response.code() == 200) {
-                            tracks.clear()
-                            if (body != null && body.results.isNotEmpty()) {
-                                tracks.addAll(body.results)
-                                showTracks()
-                            }
-                            if (tracks.isEmpty()) {
-                                showResultZeroPlaceholder()
-                            }
-                        } else {
-                            showResultZeroPlaceholder()
-                        }
-                    }
 
-                    override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
-                        progressBar.isVisible = false
-                        showConnectErrorPlaceholder()
-                    }
+            val getTrack = Creator.provideGetTrack()
+            getTrack.loadTrack(inputText.text.toString()) {
+                handler.post(Runnable {
+                    displayTracks(getTrack.getTrack())
                 })
+            }
+        }
+    }
+
+    private fun displayTracks(foundTracks: TrackSearchResult) {
+        when (foundTracks.resultCode) {
+            200 -> {
+                showSearchedTracks(foundTracks.tracks)
+            }
+
+            400 -> {
+                showConnectErrorPlaceholder()
+            }
+
+            else -> {
+                showResultZeroPlaceholder()
+            }
+
+        }
+    }
+
+    private fun showSearchedTracks(newTracks: List<Track>) {
+        if (newTracks.isNotEmpty()) {
+            tracks.clear()
+            tracks.addAll(newTracks)
+            showTracks()
+        } else {
+            showResultZeroPlaceholder()
         }
     }
 
     private fun showTracks() {
+        progressBar.isVisible = false
         placeholder.isVisible = false
         historyLayout.isVisible = false
         trackSearchList.isVisible = true
@@ -285,6 +287,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun showResultZeroPlaceholder() {
+        progressBar.isVisible = false
         placeholder.isVisible = true
         placeholderNoResultIcon.isVisible = true
         placeholderNoConnectIcon.isVisible = false
@@ -294,6 +297,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun showConnectErrorPlaceholder() {
+        progressBar.isVisible = false
         placeholder.isVisible = true
         placeholderNoResultIcon.isVisible = false
         placeholderNoConnectIcon.isVisible = true
@@ -309,28 +313,28 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun saveTrack(track: Track) {
-        searchHistory.addHistory(track)
+        searchHistory.addTrack(track)
         adapter.notifyItemInserted(0)
     }
 
     private fun startPlayer(track: Track) {
-        if (clickDebounce()){
+        if (clickDebounce()) {
             val intent = Intent(this, PlayerActivity::class.java)
             intent.putExtra(SELECTED_TRACK, track)
             startActivity(intent)
         }
     }
 
-    private fun clickDebounce(): Boolean{
+    private fun clickDebounce(): Boolean {
         val current = isClickAlowed
-        if (isClickAlowed){
+        if (isClickAlowed) {
             isClickAlowed = false
-            handler.postDelayed({isClickAlowed = true}, CLICK_DEBOUNCE_DELAY)
+            handler.postDelayed({ isClickAlowed = true }, CLICK_DEBOUNCE_DELAY)
         }
         return current
     }
 
-    private fun searchDebounce(){
+    private fun searchDebounce() {
         handler.removeCallbacks(searchRunnable)
         handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
     }
