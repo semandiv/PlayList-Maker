@@ -30,9 +30,9 @@ class PlayerActivity : AppCompatActivity() {
     private companion object {
         const val RECEIVED_TRACK = "selectedTrack"
         const val SAVED_TRACK = "savedTrack"
-        const val DELAY = 300L
+        //const val DELAY = 300L
         const val DURATION_DEFAULT_VALUE = "00:00"
-        const val TIME_FORMAT= "mm:ss"
+        const val TIME_FORMAT = "mm:ss"
     }
 
     private lateinit var track: Track
@@ -41,10 +41,11 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlayerBinding
 
 
-
     private var playerState = PlayerState.DEFAULT
     private var currentPosition = 0
     private var handler: Handler? = null
+    private var isPlaying = false
+    private var isPrepared = false
 
     private lateinit var countryValue: TextView
     private lateinit var genreValue: TextView
@@ -61,7 +62,7 @@ class PlayerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding= ActivityPlayerBinding.inflate(layoutInflater)
+        binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setToolbar()
@@ -74,12 +75,24 @@ class PlayerActivity : AppCompatActivity() {
             playerViewModel = Creator.providePlayerViewModel(this, previewUrl)
         } ?: handleNullPreviewUrl()
 
-        playerViewModel.playerState.observe(this, {state ->
+        playerViewModel.playerState.observe(this, { state ->
             playerState = state
         })
 
         playerViewModel.currentPosition.observe(this, { position ->
-            currentPosition = position
+            playingTime.text = SimpleDateFormat(
+                TIME_FORMAT,
+                Locale.getDefault()
+            ).format(position)
+        })
+
+        playerViewModel.isPlaying.observe(this, { isPlaying ->
+            this.isPlaying = isPlaying
+        })
+
+        playerViewModel.isPrepared.observe(this, { prepared ->
+            this.isPrepared = prepared
+            isPreparedPlayer()
         })
 
 
@@ -99,7 +112,7 @@ class PlayerActivity : AppCompatActivity() {
 
         setValues()
 
-        handler = Handler(Looper.getMainLooper())
+        //handler = Handler(Looper.getMainLooper())
 
         playButton.setOnClickListener {
             playerControl()
@@ -109,18 +122,15 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        stopTimeUpdate()
         pausePlayer()
         playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
     }
 
     override fun onDestroy() {
-        super.onDestroy()
-        stopTimeUpdate()
-
         track.previewUrl?.takeIf { !it.isNullOrEmpty() }?.let {
             playerViewModel.releasePlayer()
         }
+        super.onDestroy()
     }
 
 
@@ -206,61 +216,31 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun playerControl() {
-        when (playerState) {
-            PlayerState.PLAYING -> {
-                stopTimeUpdate()
+        when (isPlaying) {
+            true -> {
+                isPreparedPlayer()
                 pausePlayer()
                 playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
             }
 
-            PlayerState.PREPARED, PlayerState.PAUSED -> {
-                startTimeUpdate()
+            false -> {
                 startPlayer()
                 playButton.setImageResource(R.drawable.baseline_pause_circle_filled_84)
-
-            }
-
-            else -> {
-                Toast.makeText(this,
-                    getString(R.string.player_not_ready, playerState), Toast.LENGTH_SHORT).show()}
-        }
-    }
-
-    private fun timeUpdate(): Runnable {
-        return object : Runnable {
-            override fun run() {
-                when (playerState) {
-                    PlayerState.PLAYING -> {
-                        playerViewModel.getCurrentPosition()
-                        playingTime.text = SimpleDateFormat(
-                            TIME_FORMAT,
-                            Locale.getDefault()
-                        ).format(currentPosition)
-                        handler?.postDelayed(this, DELAY)
-                    }
-                    PlayerState.PREPARED -> {
-                        playingTime.text = DURATION_DEFAULT_VALUE
-                        playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
-                        handler?.postDelayed(this, DELAY)
-                        handler?.removeCallbacks(this)
-                    }
-                    else -> {
-                        handler?.removeCallbacks(this)
-                    }
-                }
             }
         }
     }
 
-    private fun startTimeUpdate() {
-        handler?.post(timeUpdate())
+    private fun isPreparedPlayer() {
+        when (isPrepared) {
+            true -> {
+                playingTime.text = DURATION_DEFAULT_VALUE
+                playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
+            }
+            false -> { }
+        }
     }
 
-    private fun stopTimeUpdate() {
-        handler?.removeCallbacks(timeUpdate())
-    }
-
-    private fun handleNullPreviewUrl(): PlayerViewModel{
+    private fun handleNullPreviewUrl(): PlayerViewModel {
         playButton.isEnabled = false
         Toast.makeText(this, getString(R.string.not_load_previewTrack), Toast.LENGTH_SHORT).show()
 
