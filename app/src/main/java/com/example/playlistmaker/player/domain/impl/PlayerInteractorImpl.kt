@@ -5,13 +5,9 @@ import com.example.playlistmaker.player.domain.api.PlayerInteractor
 import com.example.playlistmaker.player.domain.models.PlayerState
 
 class PlayerInteractorImpl (private val playerRepository: PlayerRepository) : PlayerInteractor {
-    private var playerStateListener: ((PlayerState) -> Unit)? = null
 
     override fun observePlayerState(listener: (PlayerState) -> Unit) {
-        playerStateListener = listener
-        playerRepository.setPlayerStateListener { state ->
-            playerStateListener?.invoke(state)
-        }
+        playerRepository.setPlayerStateListener(listener)
     }
 
     override fun preparePlayer() {
@@ -34,4 +30,7 @@ class PlayerInteractorImpl (private val playerRepository: PlayerRepository) : Pl
         return playerRepository.getCurrentPosition()
     }
 
+    override fun isPlaying(): Boolean {
+        return playerRepository.isPlaying()
+    }
 }

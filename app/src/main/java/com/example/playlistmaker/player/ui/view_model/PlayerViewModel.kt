@@ -7,14 +7,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.playlistmaker.player.domain.api.PlayerInteractor
 import com.example.playlistmaker.player.domain.models.PlayerState
-import kotlinx.coroutines.Delay
 
 class PlayerViewModel(
     private val previewUrl: String,
     private val playerInteractor: PlayerInteractor
-): ViewModel() {
+) : ViewModel() {
 
-    private companion object{
+    private companion object {
         const val DELAY = 300L
     }
 
@@ -23,9 +22,6 @@ class PlayerViewModel(
 
     private val _currentPosition = MutableLiveData<Int>()
     val currentPosition: LiveData<Int> get() = _currentPosition
-
-    private val _isPlaying = MutableLiveData<Boolean>()
-    val isPlaying: LiveData<Boolean> get() = _isPlaying
 
     private val _isPrepared = MutableLiveData<Boolean>()
     val isPrepared: LiveData<Boolean> get() = _isPrepared
@@ -46,44 +42,30 @@ class PlayerViewModel(
     }
 
     private fun preparePlayer() {
+        _isPrepared.postValue(false)
         playerInteractor.preparePlayer()
-        _isPlaying.postValue(false)
         _isPrepared.postValue(true)
     }
 
-    private fun startUpdatingTime(): Runnable{
-        return object : Runnable {
+    private fun startUpdatingTime() {
+        handler.post(object : Runnable {
             override fun run() {
-                when(_playerState.value){
-                    PlayerState.DEFAULT -> handler.removeCallbacks(this)
-                    PlayerState.PREPARED -> {
-                        _isPrepared.postValue(true)
-                        //handler.postDelayed(this, DELAY)
-                        handler.removeCallbacks(this)
-                    }
-                    PlayerState.PLAYING -> {
-                        _isPrepared.postValue(false)
-                        getCurrentPosition()
-                        handler.postDelayed(this, DELAY)
-                        //handler.removeCallbacks(this)
-                    }
-                    PlayerState.PAUSED -> handler.removeCallbacks(this)
-                    null -> handler.removeCallbacks(this)
+                if (playerInteractor.isPlaying()) {
+                    _currentPosition.postValue(playerInteractor.currentPosition())
+                    handler.postDelayed(this, DELAY)
+                } else {
+                    stopUpdateTime()
                 }
             }
-        }
+        })
     }
 
     private fun stopUpdateTime() {
-        handler.removeCallbacks(startUpdatingTime())
+        handler.removeCallbacksAndMessages(null)
     }
 
-    private fun startUpdateTime() {
-        handler.post(startUpdatingTime())
-    }
-
-    private fun getCurrentPosition(){
-        if (previewUrl.isNotEmpty()) {
+    private fun getCurrentPosition() {
+        if (_playerState.value == PlayerState.PLAYING) {
             _currentPosition.postValue(playerInteractor.currentPosition())
         } else {
             _currentPosition.postValue(0)
@@ -92,10 +74,8 @@ class PlayerViewModel(
 
     fun play() {
         if (previewUrl.isNotEmpty()) {
-            startUpdateTime()
+            startUpdatingTime()
             playerInteractor.play()
-            _isPlaying.postValue(true)
-            _isPrepared.postValue(false)
         }
     }
 
@@ -103,7 +83,6 @@ class PlayerViewModel(
         if (previewUrl.isNotEmpty()) {
             stopUpdateTime()
             playerInteractor.pause()
-            _isPlaying.postValue(false)
         }
     }
 

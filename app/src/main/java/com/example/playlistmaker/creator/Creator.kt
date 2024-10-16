@@ -22,7 +22,11 @@ import com.example.playlistmaker.search.domain.impl.HistoryInteractorImpl
 import com.example.playlistmaker.search.domain.impl.TracksInteractorImpl
 import com.example.playlistmaker.search.ui.view_model.SearchViewModel
 import com.example.playlistmaker.search.ui.view_model.SearchViewModelFactory
+import com.example.playlistmaker.settings.ui.view_model.SettingsViewModel
+import com.example.playlistmaker.settings.ui.view_model.SettingsViewModelFactory
 import com.google.gson.Gson
+
+const val THEME_SWITCHER = "theme_checker"
 
 object Creator {
 
@@ -64,5 +68,11 @@ object Creator {
     fun providePlayerViewModel(activity: AppCompatActivity, previewUrl: String): PlayerViewModel {
         val playerFactory = PlayerViewModelFactory(previewUrl,providePlayerInteractor(previewUrl))
         return ViewModelProvider(activity, playerFactory).get(PlayerViewModel::class.java)
+    }
+
+    fun provideSettingsViewModel(activity: AppCompatActivity): SettingsViewModel {
+        val sharedPrefs = activity.getSharedPreferences(THEME_SWITCHER, Context.MODE_PRIVATE)
+        val factory = SettingsViewModelFactory(activity.application,sharedPrefs)
+        return ViewModelProvider(activity, factory).get(SettingsViewModel::class.java)
     }
 }

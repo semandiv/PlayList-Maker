@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.playlistmaker.library.LibraryActivity
 import com.example.playlistmaker.search.ui.activity.SearchActivity
-import com.example.playlistmaker.settings.SettingsActivity
+import com.example.playlistmaker.settings.ui.activity.SettingsActivity
 
 class MainViewModel: ViewModel(){
 

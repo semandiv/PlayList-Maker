@@ -52,4 +52,8 @@ class PlayerRepository(private val mediaPlayer: MediaPlayer, private val preview
     fun getCurrentPosition(): Int {
         return mediaPlayer.currentPosition
     }
+
+    fun isPlaying(): Boolean {
+        return mediaPlayer.isPlaying
+    }
 }

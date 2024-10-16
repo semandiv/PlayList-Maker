@@ -3,9 +3,9 @@ package com.example.playlistmaker.player.ui.activity
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.os.Looper
 import android.view.MenuItem
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -30,7 +30,6 @@ class PlayerActivity : AppCompatActivity() {
     private companion object {
         const val RECEIVED_TRACK = "selectedTrack"
         const val SAVED_TRACK = "savedTrack"
-        //const val DELAY = 300L
         const val DURATION_DEFAULT_VALUE = "00:00"
         const val TIME_FORMAT = "mm:ss"
     }
@@ -44,8 +43,6 @@ class PlayerActivity : AppCompatActivity() {
     private var playerState = PlayerState.DEFAULT
     private var currentPosition = 0
     private var handler: Handler? = null
-    private var isPlaying = false
-    private var isPrepared = false
 
     private lateinit var countryValue: TextView
     private lateinit var genreValue: TextView
@@ -58,12 +55,27 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var albumGroup: Group
     private lateinit var playButton: ImageView
     private lateinit var playingTime: TextView
+    private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        countryValue = binding.countryValue
+        genreValue = binding.genreValue
+        yearValue = binding.yearValue
+        albumNameValue = binding.albumNameValue
+        timePlayValue = binding.timePlayValue
+        artistName = binding.artistName
+        trackName = binding.trackName
+        albumCover = binding.albumCover
+        albumGroup = binding.albumNameGroup
+        playButton = binding.playButton
+        playingTime = binding.playingTime
+        playingTime.text = DURATION_DEFAULT_VALUE
+        progressBar = binding.progressBar
 
         setToolbar()
 
@@ -75,8 +87,20 @@ class PlayerActivity : AppCompatActivity() {
             playerViewModel = Creator.providePlayerViewModel(this, previewUrl)
         } ?: handleNullPreviewUrl()
 
+        setValues()
+
         playerViewModel.playerState.observe(this, { state ->
-            playerState = state
+            when (state) {
+                PlayerState.DEFAULT -> playButton.isEnabled = false
+                PlayerState.PREPARED -> {
+                    playButton.isEnabled = true
+                    playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
+                    playingTime.text = DURATION_DEFAULT_VALUE
+                }
+                PlayerState.PLAYING ->  playButton.setImageResource(R.drawable.baseline_pause_circle_filled_84)
+                PlayerState.PAUSED -> playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
+                null -> playButton.isEnabled = false
+            }
         })
 
         playerViewModel.currentPosition.observe(this, { position ->
@@ -86,36 +110,20 @@ class PlayerActivity : AppCompatActivity() {
             ).format(position)
         })
 
-        playerViewModel.isPlaying.observe(this, { isPlaying ->
-            this.isPlaying = isPlaying
-        })
-
         playerViewModel.isPrepared.observe(this, { prepared ->
-            this.isPrepared = prepared
-            isPreparedPlayer()
+            if (!prepared) {
+                progressBar.isVisible = true
+            } else {
+                progressBar.isVisible = false
+            }
         })
-
-
-        countryValue = binding.countryValue
-        genreValue = binding.genreValue
-        yearValue = binding.yearValue
-        albumNameValue = binding.albumNameValue
-        timePlayValue = binding.timePlayValue
-        artistName = binding.artistName
-        trackName = binding.trackName
-        albumCover = binding.albumCover
-        albumGroup = binding.albumNameGroup
-
-        playButton = binding.playButton
-        playingTime = binding.playingTime
-        playingTime.text = DURATION_DEFAULT_VALUE
-
-        setValues()
-
-        //handler = Handler(Looper.getMainLooper())
 
         playButton.setOnClickListener {
-            playerControl()
+            if(playerViewModel.playerState.value == PlayerState.PLAYING) {
+                playerViewModel.pause()
+            } else {
+                playerViewModel.play()
+            }
         }
 
     }
@@ -206,38 +214,12 @@ class PlayerActivity : AppCompatActivity() {
         albumGroup.isVisible = false
     }
 
-
     private fun startPlayer() {
         playerViewModel.play()
     }
 
     private fun pausePlayer() {
         playerViewModel.pause()
-    }
-
-    private fun playerControl() {
-        when (isPlaying) {
-            true -> {
-                isPreparedPlayer()
-                pausePlayer()
-                playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
-            }
-
-            false -> {
-                startPlayer()
-                playButton.setImageResource(R.drawable.baseline_pause_circle_filled_84)
-            }
-        }
-    }
-
-    private fun isPreparedPlayer() {
-        when (isPrepared) {
-            true -> {
-                playingTime.text = DURATION_DEFAULT_VALUE
-                playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
-            }
-            false -> { }
-        }
     }
 
     private fun handleNullPreviewUrl(): PlayerViewModel {

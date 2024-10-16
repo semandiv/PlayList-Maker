@@ -25,7 +25,8 @@ class SearchViewModel(
     private val _history = MutableLiveData<List<Track>>()
     val history: LiveData<List<Track>> get() = _history
 
-    val isLoading = MutableLiveData<Boolean>()
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> get() = _isLoading
 
 
     init {
@@ -33,22 +34,22 @@ class SearchViewModel(
     }
 
     fun searchTracks(query: String) {
-        isLoading.value = true
+        _isLoading.value = true
         tracksInteractor.searchTracks(query, { result ->
             when (result) {
                 is NetworkResult.Success -> {
                     _tracks.postValue(result.data)
-                    isLoading.postValue(false)
+                    _isLoading.postValue(false)
                 }
 
                 is NetworkResult.Error -> {
                     _loadError.postValue(result.message)
-                    isLoading.postValue(false)
+                    _isLoading.postValue(false)
                 }
 
                 is NetworkResult.NetworkException -> {
                     _loadError.postValue("Ошибка сети")
-                    isLoading.postValue(false)
+                    _isLoading.postValue(false)
                 }
             }
         })

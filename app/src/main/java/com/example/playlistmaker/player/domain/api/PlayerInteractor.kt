@@ -9,4 +9,5 @@ interface PlayerInteractor {
     fun releasePlayer()
     fun observePlayerState(listener: (PlayerState) -> Unit)
     fun currentPosition(): Int
+    fun isPlaying(): Boolean
 }

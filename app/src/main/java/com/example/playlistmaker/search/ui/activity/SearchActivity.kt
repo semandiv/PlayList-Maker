@@ -48,6 +48,8 @@ class SearchActivity : AppCompatActivity() {
     private val searchRunnable = Runnable { searchRequest() }
     private val handler = Handler(Looper.getMainLooper())
     private var isClickAlowed = true
+    private var isLoading = false
+
 
 
     private val tracks = mutableListOf<Track>()
@@ -88,6 +90,10 @@ class SearchActivity : AppCompatActivity() {
             handler.post(Runnable {
                 showSearchedTracks(tracks)
             })
+        })
+
+        viewModel.isLoading.observe(this, { isLoading ->
+            progressBar.isVisible = isLoading
         })
 
         viewModel.loadError.observe(this, {
