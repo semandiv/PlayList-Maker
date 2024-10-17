@@ -18,15 +18,14 @@ class App : Application() {
     }
 
     fun switchTheme(darkThemeEnabled: Boolean) {
-        if (darkTheme != darkThemeEnabled) {
-            darkTheme = darkThemeEnabled
-            AppCompatDelegate.setDefaultNightMode(
-                if (darkThemeEnabled) {
-                    AppCompatDelegate.MODE_NIGHT_YES
-                } else {
-                    AppCompatDelegate.MODE_NIGHT_NO
-                }
-            )
-        }
+        darkTheme = darkThemeEnabled
+
+        AppCompatDelegate.setDefaultNightMode(
+            if (darkThemeEnabled) {
+                AppCompatDelegate.MODE_NIGHT_YES
+            } else {
+                AppCompatDelegate.MODE_NIGHT_NO
+            }
+        )
     }
 }

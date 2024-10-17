@@ -1,16 +1,13 @@
 package com.example.playlistmaker.settings.ui.view_model
 
-import android.app.Application
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.playlistmaker.App
 
-class SettingsViewModel(application: Application, private val sharedPrefs: SharedPreferences): AndroidViewModel(application){
+class SettingsViewModel(private val sharedPrefs: SharedPreferences): ViewModel(){
 
     private companion object{
         const val THEME_SWITCHER = "theme_checker"
@@ -29,8 +26,8 @@ class SettingsViewModel(application: Application, private val sharedPrefs: Share
     }
 
     fun changeTheme(isChecked: Boolean) {
+        _isDarkTheme.value = isChecked
         sharedPrefs.edit().putBoolean(THEME_SWITCHER, isChecked).apply()
-        (getApplication() as App).switchTheme(isChecked)
     }
 
     fun getShareIntent(): Intent {

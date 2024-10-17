@@ -72,7 +72,7 @@ object Creator {
 
     fun provideSettingsViewModel(activity: AppCompatActivity): SettingsViewModel {
         val sharedPrefs = activity.getSharedPreferences(THEME_SWITCHER, Context.MODE_PRIVATE)
-        val factory = SettingsViewModelFactory(activity.application,sharedPrefs)
+        val factory = SettingsViewModelFactory(sharedPrefs)
         return ViewModelProvider(activity, factory).get(SettingsViewModel::class.java)
     }
 }
