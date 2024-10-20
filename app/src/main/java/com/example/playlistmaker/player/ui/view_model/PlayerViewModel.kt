@@ -30,9 +30,7 @@ class PlayerViewModel(
     private val handler = Handler(Looper.getMainLooper())
 
     init {
-        playerInteractor.observePlayerState { state ->
-            _playerState.postValue(state)
-        }
+        playerInteractor.observePlayerState (_playerState::postValue)
         preparePlayer()
     }
 
@@ -64,13 +62,13 @@ class PlayerViewModel(
         handler.removeCallbacksAndMessages(null)
     }
 
-    private fun getCurrentPosition() {
+/*    private fun getCurrentPosition() {
         if (_playerState.value == PlayerState.PLAYING) {
             _currentPosition.postValue(playerInteractor.currentPosition())
         } else {
             _currentPosition.postValue(0)
         }
-    }
+    }*/
 
     fun play() {
         if (previewUrl.isNotEmpty()) {

@@ -16,11 +16,11 @@ class TrackRepositoryImpl(private val networkClient: NetworkClient, private val 
                     val tracks = trackMapper.map(response.data) as List<T>
                     NetworkResult.Success(tracks)
                 } else{
-                    NetworkResult.Error(400, "Неверный тип данных: ожидаются треки")
+                    NetworkResult.Error(400)
                 }
             }
             is NetworkResult.Error -> {
-                NetworkResult.Error(400, "Треки не найдены")
+                NetworkResult.Error(400)
             }
             is NetworkResult.NetworkException -> {
                 NetworkResult.NetworkException(response.exception)

@@ -111,11 +111,7 @@ class PlayerActivity : AppCompatActivity() {
         })
 
         playerViewModel.isPrepared.observe(this, { prepared ->
-            if (!prepared) {
-                progressBar.isVisible = true
-            } else {
-                progressBar.isVisible = false
-            }
+            progressBar.isVisible = !prepared
         })
 
         playButton.setOnClickListener {

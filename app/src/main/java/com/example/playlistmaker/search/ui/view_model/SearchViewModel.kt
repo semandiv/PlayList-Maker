@@ -16,11 +16,11 @@ class SearchViewModel(
     private val _tracks = MutableLiveData<List<Track>>()
     val tracks: LiveData<List<Track>> get() = _tracks
 
-    private val _loadError = MutableLiveData<Any>()
-    val loadError: LiveData<Any> get() = _loadError
+    private val _loadError = MutableLiveData<Unit>()
+    val loadError: LiveData<Unit> get() = _loadError
 
-    private val _networkError = MutableLiveData<Any>()
-    val networkError: LiveData<Any> get() = _networkError
+    private val _networkError = MutableLiveData<Unit>()
+    val networkError: LiveData<Unit> get() = _networkError
 
     private val _history = MutableLiveData<List<Track>>()
     val history: LiveData<List<Track>> get() = _history
@@ -43,12 +43,12 @@ class SearchViewModel(
                 }
 
                 is NetworkResult.Error -> {
-                    _loadError.postValue(result.message)
+                    _loadError.postValue(Unit)
                     _isLoading.postValue(false)
                 }
 
                 is NetworkResult.NetworkException -> {
-                    _loadError.postValue("Ошибка сети")
+                    _loadError.postValue(Unit)
                     _isLoading.postValue(false)
                 }
             }

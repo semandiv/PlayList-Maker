@@ -96,17 +96,13 @@ class SearchActivity : AppCompatActivity() {
             progressBar.isVisible = isLoading
         })
 
-        viewModel.loadError.observe(this, {
-            handler.post(Runnable {
-                showResultZeroPlaceholder()
-            })
-        })
+        viewModel.loadError.observe(this) {
+            handler.post{showResultZeroPlaceholder()}
+        }
 
-        viewModel.networkError.observe(this, {
-            handler.post(Runnable {
-                showConnectErrorPlaceholder()
-            })
-        })
+        viewModel.networkError.observe(this) {
+            handler.post{showConnectErrorPlaceholder()}
+        }
 
         historyList = mutableListOf()
 

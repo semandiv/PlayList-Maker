@@ -16,13 +16,13 @@ class RetrofitNetworkClient(private val appleAPI: AppleAPI) : NetworkClient {
                         if (data != null) {
                             NetworkResult.Success(data)
                         } else {
-                            NetworkResult.Error(400, "Ошибка преобразования данных")
+                            NetworkResult.Error(400)
                         }
                     } else {
-                        NetworkResult.Error(response.code(), "Треки не найдены")
+                        NetworkResult.Error(response.code())
                     }
                 } else {
-                    NetworkResult.Error(response.code(), "Ошибка связи с сервером")
+                    NetworkResult.Error(response.code())
                 }
 
             } catch (e: Exception) {
@@ -30,7 +30,7 @@ class RetrofitNetworkClient(private val appleAPI: AppleAPI) : NetworkClient {
             }
 
         } else {
-            NetworkResult.Error(400, "Неизвестная ошибка")
+            NetworkResult.Error(400)
         }
     }
 }

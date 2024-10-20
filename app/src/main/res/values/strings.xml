@@ -46,4 +46,5 @@
     <string name="search_button">Search button</string>
     <string name="player_not_ready">Плеер не готов к работе, состояние: %1$s</string>
     <string name="not_load_previewTrack">У трека нет превью, попробуйте другой трек</string>
+    <string name="theme_checker">theme_checker</string>
 </resources>
