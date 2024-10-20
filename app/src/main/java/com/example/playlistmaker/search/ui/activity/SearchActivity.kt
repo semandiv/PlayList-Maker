@@ -28,6 +28,7 @@ import com.example.playlistmaker.databinding.ActivitySearchBinding
 import com.example.playlistmaker.player.ui.activity.PlayerActivity
 import com.example.playlistmaker.search.domain.models.Track
 import com.example.playlistmaker.search.ui.view_model.SearchViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
 
@@ -39,7 +40,8 @@ class SearchActivity : AppCompatActivity() {
         const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 
-    private lateinit var viewModel: SearchViewModel
+    //private lateinit var viewModel: SearchViewModel
+    private val searchViewModel: SearchViewModel by viewModel()
     private lateinit var binding: ActivitySearchBinding
 
     private var errorMessage = String()
@@ -84,34 +86,34 @@ class SearchActivity : AppCompatActivity() {
         //тулбар
         setToolBar()
 
-        viewModel = Creator.provideSearchViewModel(this)
+        //searchViewModel = Creator.provideSearchViewModel(this)
 
-        viewModel.tracks.observe(this, { tracks ->
+        searchViewModel.tracks.observe(this, { tracks ->
             handler.post(Runnable {
                 showSearchedTracks(tracks)
             })
         })
 
-        viewModel.isLoading.observe(this, { isLoading ->
+        searchViewModel.isLoading.observe(this, { isLoading ->
             progressBar.isVisible = isLoading
         })
 
-        viewModel.loadError.observe(this) {
+        searchViewModel.loadError.observe(this) {
             handler.post{showResultZeroPlaceholder()}
         }
 
-        viewModel.networkError.observe(this) {
+        searchViewModel.networkError.observe(this) {
             handler.post{showConnectErrorPlaceholder()}
         }
 
         historyList = mutableListOf()
 
-        viewModel.history.observe(this, {history->
+        searchViewModel.history.observe(this, { history->
             historyList.clear()
             historyList.addAll(history)
         })
 
-        viewModel.loadHistory()
+        searchViewModel.loadHistory()
 
         historyAdapter = TracksAdapter(historyList) { track ->
             startPlayer(track)
@@ -155,7 +157,7 @@ class SearchActivity : AppCompatActivity() {
 
         inputText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                viewModel.searchTracks(inputText.text.toString())
+                searchViewModel.searchTracks(inputText.text.toString())
                 inputText.hideKeyboard()
                 hideHistory()
                 true
@@ -219,7 +221,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun clearHistoryBtnClick() {
         hideHistory()
-        viewModel.clearHistory()
+        searchViewModel.clearHistory()
         historyAdapter.notifyDataSetChanged()
     }
 
@@ -237,7 +239,7 @@ class SearchActivity : AppCompatActivity() {
     private fun refreshBtnClick(inputText: EditText) {
         placeholder.isVisible = false
         trackSearchList.isVisible = true
-        viewModel.searchTracks(inputText.text.toString())
+        searchViewModel.searchTracks(inputText.text.toString())
     }
 
     private fun textChageListener(text: CharSequence?, clearTextButton: ImageView) {
@@ -253,7 +255,7 @@ class SearchActivity : AppCompatActivity() {
         view.isVisible = false
         tracks.clear()
         adapter.notifyDataSetChanged()
-        viewModel.loadHistory()
+        searchViewModel.loadHistory()
         if (historyList.isNotEmpty()) {
             showHistory()
         } else {
@@ -308,7 +310,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun saveTrack(track: Track) {
-        viewModel.saveTrackToHistory(track)
+        searchViewModel.saveTrackToHistory(track)
         adapter.notifyItemInserted(0)
     }
 
@@ -336,7 +338,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun searchRequest() {
         if (inputText.text.isNotEmpty()) {
-            viewModel.searchTracks(inputText.text.toString())
+            searchViewModel.searchTracks(inputText.text.toString())
             inputText.hideKeyboard()
             hideHistory()
         }

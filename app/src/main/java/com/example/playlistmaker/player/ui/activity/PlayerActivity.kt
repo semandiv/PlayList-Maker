@@ -21,6 +21,8 @@ import com.example.playlistmaker.databinding.ActivityPlayerBinding
 import com.example.playlistmaker.player.domain.models.PlayerState
 import com.example.playlistmaker.player.ui.view_model.PlayerViewModel
 import com.example.playlistmaker.search.domain.models.Track
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -35,7 +37,8 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private lateinit var track: Track
-    private lateinit var playerViewModel: PlayerViewModel
+    private lateinit var previewUrl: String
+    private val playerViewModel: PlayerViewModel by viewModel{ parametersOf(previewUrl) }
 
     private lateinit var binding: ActivityPlayerBinding
 
@@ -83,9 +86,7 @@ class PlayerActivity : AppCompatActivity() {
             track = it
         }
 
-        track.previewUrl?.let { previewUrl ->
-            playerViewModel = Creator.providePlayerViewModel(this, previewUrl)
-        } ?: handleNullPreviewUrl()
+        previewUrl = track.previewUrl ?: handleNullPreviewUrl()
 
         setValues()
 
@@ -218,11 +219,10 @@ class PlayerActivity : AppCompatActivity() {
         playerViewModel.pause()
     }
 
-    private fun handleNullPreviewUrl(): PlayerViewModel {
+    private fun handleNullPreviewUrl(): String {
         playButton.isEnabled = false
         Toast.makeText(this, getString(R.string.not_load_previewTrack), Toast.LENGTH_SHORT).show()
 
-        val playerViewModelZero = Creator.providePlayerViewModel(this, String())
-        return playerViewModelZero
+        return String()
     }
 }

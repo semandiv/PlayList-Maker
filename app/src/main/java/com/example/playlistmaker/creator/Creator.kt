@@ -30,40 +30,40 @@ const val THEME_SWITCHER = "theme_checker"
 
 object Creator {
 
-    private val retrofitProvider = RetrofitProvider()
+/*    private val retrofitProvider = RetrofitProvider()
 
     private fun getTracksRepository(): TrackRepository {
         val appleAPI = retrofitProvider.provideAppleAPI()
         return TrackRepositoryImpl(RetrofitNetworkClient(appleAPI), TrackMapper())
-    }
+    }*/
 
     private fun getPlayerRepository(previewUrl: String): PlayerRepository {
         return PlayerRepository(MediaPlayer(), previewUrl)
     }
 
-    private fun getSharedPrefRepositiry(context: Context): SharedPrefRepository {
+/*    private fun getSharedPrefRepositiry(context: Context): SharedPrefRepository {
         return SharedPrefRepositoryImpl( context.getSharedPreferences(
             "SEARCH_HISTORY_KEY",
             Context.MODE_PRIVATE), gson = Gson()
         )
-    }
-    fun provideTracksInteractor(): TracksInteractor {
+    }*/
+/*    fun provideTracksInteractor(): TracksInteractor {
         return TracksInteractorImpl(getTracksRepository())
     }
 
     fun provideHistoryInteractor(context: Context): HistoryInteractor {
         return HistoryInteractorImpl(getSharedPrefRepositiry(context))
-    }
+    }*/
 
     fun providePlayerInteractor(previewUrl: String): PlayerInteractor {
         return PlayerInteractorImpl(getPlayerRepository(previewUrl))
     }
 
-    fun provideSearchViewModel(activity: AppCompatActivity): SearchViewModel {
+/*    fun provideSearchViewModel(activity: AppCompatActivity): SearchViewModel {
         val searchFactory = SearchViewModelFactory(provideTracksInteractor(),
             provideHistoryInteractor(activity))
         return ViewModelProvider(activity, searchFactory).get(SearchViewModel::class.java)
-    }
+    }*/
 
     fun providePlayerViewModel(activity: AppCompatActivity, previewUrl: String): PlayerViewModel {
         val playerFactory = PlayerViewModelFactory(previewUrl,providePlayerInteractor(previewUrl))
