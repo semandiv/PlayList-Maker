@@ -23,7 +23,6 @@ import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
-import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.databinding.ActivitySearchBinding
 import com.example.playlistmaker.player.ui.activity.PlayerActivity
 import com.example.playlistmaker.search.domain.models.Track
@@ -40,7 +39,6 @@ class SearchActivity : AppCompatActivity() {
         const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 
-    //private lateinit var viewModel: SearchViewModel
     private val searchViewModel: SearchViewModel by viewModel()
     private lateinit var binding: ActivitySearchBinding
 
@@ -85,8 +83,6 @@ class SearchActivity : AppCompatActivity() {
 
         //тулбар
         setToolBar()
-
-        //searchViewModel = Creator.provideSearchViewModel(this)
 
         searchViewModel.tracks.observe(this, { tracks ->
             handler.post(Runnable {

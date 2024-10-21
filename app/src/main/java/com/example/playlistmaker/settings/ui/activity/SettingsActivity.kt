@@ -7,22 +7,21 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.example.playlistmaker.App
 import com.example.playlistmaker.R
-import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.databinding.ActivitySettingsBinding
 import com.example.playlistmaker.settings.ui.view_model.SettingsViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 const val THEME_SWITCHER = "theme_checker"
 
 class SettingsActivity : AppCompatActivity() {
 
-    private lateinit var settingsViewModel: SettingsViewModel
+    private val settingsViewModel: SettingsViewModel by viewModel()
     private lateinit var binding: ActivitySettingsBinding
     private var currentTheme = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        settingsViewModel = Creator.provideSettingsViewModel(this)
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -33,7 +32,6 @@ class SettingsActivity : AppCompatActivity() {
                 binding.themeSwitch.isChecked = checked
                 (application as App).switchTheme(checked)
                 currentTheme = checked
-                //finish()
             }
         })
 

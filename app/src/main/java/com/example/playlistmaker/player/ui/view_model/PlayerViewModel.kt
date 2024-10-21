@@ -39,6 +39,26 @@ class PlayerViewModel(
         stopUpdateTime()
     }
 
+    fun play() {
+        if (previewUrl.isNotEmpty()) {
+            startUpdatingTime()
+            playerInteractor.play()
+        }
+    }
+
+    fun pause() {
+        if (previewUrl.isNotEmpty()) {
+            stopUpdateTime()
+            playerInteractor.pause()
+        }
+    }
+
+    fun releasePlayer() {
+        if (previewUrl.isNotEmpty()) {
+            playerInteractor.releasePlayer()
+        }
+    }
+
     private fun preparePlayer() {
         _isPrepared.postValue(false)
         playerInteractor.preparePlayer()
@@ -61,33 +81,4 @@ class PlayerViewModel(
     private fun stopUpdateTime() {
         handler.removeCallbacksAndMessages(null)
     }
-
-/*    private fun getCurrentPosition() {
-        if (_playerState.value == PlayerState.PLAYING) {
-            _currentPosition.postValue(playerInteractor.currentPosition())
-        } else {
-            _currentPosition.postValue(0)
-        }
-    }*/
-
-    fun play() {
-        if (previewUrl.isNotEmpty()) {
-            startUpdatingTime()
-            playerInteractor.play()
-        }
-    }
-
-    fun pause() {
-        if (previewUrl.isNotEmpty()) {
-            stopUpdateTime()
-            playerInteractor.pause()
-        }
-    }
-
-    fun releasePlayer() {
-        if (previewUrl.isNotEmpty()) {
-            playerInteractor.releasePlayer()
-        }
-    }
-
 }

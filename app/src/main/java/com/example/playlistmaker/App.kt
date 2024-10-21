@@ -7,6 +7,7 @@ import com.example.playlistmaker.player.di.playerViewModelModule
 import com.example.playlistmaker.search.di.searchDataModule
 import com.example.playlistmaker.search.di.searchDomainModule
 import com.example.playlistmaker.search.di.searchViewModelModule
+import com.example.playlistmaker.settings.di.settingsViewModelModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
@@ -28,7 +29,8 @@ class App : Application() {
                 searchDomainModule,
                 searchViewModelModule,
                 playerDataModule,
-                playerViewModelModule)
+                playerViewModelModule,
+                settingsViewModelModule)
         }
 
         //грузим тему из настроек

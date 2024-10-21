@@ -1,21 +1,19 @@
 package com.example.playlistmaker.search.di
 
 import android.content.Context
+import android.content.SharedPreferences
 import com.example.playlistmaker.search.data.NetworkClient
-import com.example.playlistmaker.search.data.TrackMapper
 import com.example.playlistmaker.search.data.SharedPrefRepositoryImpl
+import com.example.playlistmaker.search.data.TrackMapper
 import com.example.playlistmaker.search.data.TrackRepositoryImpl
 import com.example.playlistmaker.search.data.network.AppleAPI
 import com.example.playlistmaker.search.data.network.RetrofitNetworkClient
 import com.example.playlistmaker.search.data.network.RetrofitProvider
-import com.example.playlistmaker.search.domain.api.HistoryInteractor
 import com.example.playlistmaker.search.domain.api.SharedPrefRepository
 import com.example.playlistmaker.search.domain.api.TrackRepository
-import com.example.playlistmaker.search.domain.api.TracksInteractor
-import com.example.playlistmaker.search.domain.impl.HistoryInteractorImpl
-import com.example.playlistmaker.search.domain.impl.TracksInteractorImpl
 import com.google.gson.Gson
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -47,9 +45,12 @@ val searchDataModule = module {
     }
 
     //SharedPrefRepository
-    single {
-        androidContext().getSharedPreferences("SEARCH_HISTORY_KEY", Context.MODE_PRIVATE)
+    single {(name: String) ->
+        androidContext().getSharedPreferences(name, Context.MODE_PRIVATE)
     }
 
-    single<SharedPrefRepository> { SharedPrefRepositoryImpl(get(), get()) }
+    factory<SharedPrefRepository> { (name: String) ->
+        val sharedPrefs: SharedPreferences = get { parametersOf(name) }
+        SharedPrefRepositoryImpl(sharedPrefs, get())
+    }
 }
