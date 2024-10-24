@@ -36,28 +36,10 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private lateinit var track: Track
-    private lateinit var previewUrl: String
-    private val playerViewModel: PlayerViewModel by viewModel{ parametersOf(previewUrl) }
+    private val playerViewModel: PlayerViewModel by viewModel()
 
     private lateinit var binding: ActivityPlayerBinding
 
-
-    private var playerState = PlayerState.DEFAULT
-    private var currentPosition = 0
-    private var handler: Handler? = null
-
-    private lateinit var countryValue: TextView
-    private lateinit var genreValue: TextView
-    private lateinit var yearValue: TextView
-    private lateinit var albumNameValue: TextView
-    private lateinit var timePlayValue: TextView
-    private lateinit var artistName: TextView
-    private lateinit var trackName: TextView
-    private lateinit var albumCover: ImageView
-    private lateinit var albumGroup: Group
-    private lateinit var playButton: ImageView
-    private lateinit var playingTime: TextView
-    private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,56 +47,44 @@ class PlayerActivity : AppCompatActivity() {
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        countryValue = binding.countryValue
-        genreValue = binding.genreValue
-        yearValue = binding.yearValue
-        albumNameValue = binding.albumNameValue
-        timePlayValue = binding.timePlayValue
-        artistName = binding.artistName
-        trackName = binding.trackName
-        albumCover = binding.albumCover
-        albumGroup = binding.albumNameGroup
-        playButton = binding.playButton
-        playingTime = binding.playingTime
-        playingTime.text = DURATION_DEFAULT_VALUE
-        progressBar = binding.progressBar
+        binding.playingTime.text = DURATION_DEFAULT_VALUE
+
 
         setToolbar()
 
-        IntentCompat.getSerializableExtra(intent, RECEIVED_TRACK, Track::class.java)?.let {
-            track = it
+        if (playerViewModel.getTrack() != null) {
+            track = playerViewModel.getTrack()!!
+            setValues()
+        } else {
+            handleNullPreviewUrl()
         }
-
-        previewUrl = track.previewUrl ?: handleNullPreviewUrl()
-
-        setValues()
 
         playerViewModel.playerState.observe(this, { state ->
             when (state) {
-                PlayerState.DEFAULT -> playButton.isEnabled = false
+                PlayerState.DEFAULT -> binding.playButton.isEnabled = false
                 PlayerState.PREPARED -> {
-                    playButton.isEnabled = true
-                    playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
-                    playingTime.text = DURATION_DEFAULT_VALUE
+                    binding.playButton.isEnabled = true
+                    binding.playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
+                    binding.playingTime.text = DURATION_DEFAULT_VALUE
                 }
-                PlayerState.PLAYING ->  playButton.setImageResource(R.drawable.baseline_pause_circle_filled_84)
-                PlayerState.PAUSED -> playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
-                null -> playButton.isEnabled = false
+                PlayerState.PLAYING ->  binding.playButton.setImageResource(R.drawable.baseline_pause_circle_filled_84)
+                PlayerState.PAUSED -> binding.playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
+                null -> binding.playButton.isEnabled = false
             }
         })
 
         playerViewModel.currentPosition.observe(this, { position ->
-            playingTime.text = SimpleDateFormat(
+            binding.playingTime.text = SimpleDateFormat(
                 TIME_FORMAT,
                 Locale.getDefault()
             ).format(position)
         })
 
         playerViewModel.isPrepared.observe(this, { prepared ->
-            progressBar.isVisible = !prepared
+            binding.progressBar.isVisible = !prepared
         })
 
-        playButton.setOnClickListener {
+        binding.playButton.setOnClickListener {
             if(playerViewModel.playerState.value == PlayerState.PLAYING) {
                 playerViewModel.pause()
             } else {
@@ -127,7 +97,7 @@ class PlayerActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         pausePlayer()
-        playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
+        binding.playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
     }
 
     override fun onDestroy() {
@@ -177,19 +147,19 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun setValues() {
-        countryValue.text = track.country
-        genreValue.text = track.primaryGenreName
-        yearValue.text = track.releaseDate?.take(4) ?: String()
-        artistName.text = track.artistName
-        trackName.text = track.trackName
+        binding.countryValue.text = track.country
+        binding.genreValue.text = track.primaryGenreName
+        binding.yearValue.text = track.releaseDate?.take(4) ?: String()
+        binding.artistName.text = track.artistName
+        binding.trackName.text = track.trackName
 
-        timePlayValue.text = SimpleDateFormat(
+        binding.timePlayValue.text = SimpleDateFormat(
             TIME_FORMAT,
             Locale.getDefault()
         ).format(track.trackTimeMillis?.toLong() ?: String())
 
         if (track.collectionName != null) {
-            albumNameValue.text = track.collectionName
+            binding.albumNameValue.text = track.collectionName
         } else {
             hideAlbumName()
         }
@@ -203,25 +173,19 @@ class PlayerActivity : AppCompatActivity() {
             .placeholder(R.drawable.placeholder)
             .error(R.drawable.placeholder)
             .transform(RoundedCorners(8))
-            .into(albumCover)
+            .into(binding.albumCover)
     }
 
     private fun hideAlbumName() {
-        albumGroup.isVisible = false
-    }
-
-    private fun startPlayer() {
-        playerViewModel.play()
+        binding.albumNameGroup.isVisible = false
     }
 
     private fun pausePlayer() {
         playerViewModel.pause()
     }
 
-    private fun handleNullPreviewUrl(): String {
-        playButton.isEnabled = false
+    private fun handleNullPreviewUrl() {
+        binding.playButton.isEnabled = false
         Toast.makeText(this, getString(R.string.not_load_previewTrack), Toast.LENGTH_SHORT).show()
-
-        return String()
     }
 }

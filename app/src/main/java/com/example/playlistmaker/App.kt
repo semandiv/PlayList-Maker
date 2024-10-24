@@ -12,7 +12,6 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
 private const val THEME_SWITCH = "theme_checker"
-private const val SEARCH_HISTORY_KEY = "searchHistory"
 
 class App : Application() {
 

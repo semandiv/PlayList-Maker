@@ -7,15 +7,19 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.playlistmaker.player.domain.api.PlayerInteractor
 import com.example.playlistmaker.player.domain.models.PlayerState
+import com.example.playlistmaker.search.domain.models.Track
 
 class PlayerViewModel(
-    private val previewUrl: String,
+    //private val previewUrl: String,
     private val playerInteractor: PlayerInteractor
 ) : ViewModel() {
 
     private companion object {
         const val DELAY = 300L
     }
+
+    private val track: Track? = playerInteractor.loadTrack()
+    private val previewUrl: String = track?.previewUrl ?: String()
 
     private val _playerState = MutableLiveData<PlayerState>()
     val playerState: LiveData<PlayerState> get() = _playerState
@@ -39,6 +43,8 @@ class PlayerViewModel(
         stopUpdateTime()
     }
 
+    fun getTrack(): Track? = track
+
     fun play() {
         if (previewUrl.isNotEmpty()) {
             startUpdatingTime()
@@ -58,6 +64,8 @@ class PlayerViewModel(
             playerInteractor.releasePlayer()
         }
     }
+
+
 
     private fun preparePlayer() {
         _isPrepared.postValue(false)

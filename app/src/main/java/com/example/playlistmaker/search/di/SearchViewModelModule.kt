@@ -6,5 +6,5 @@ import org.koin.dsl.module
 
 val searchViewModelModule = module {
 
-    viewModel { SearchViewModel(tracksInteractor = get(), historyInteractor = get()) }
+    viewModel { SearchViewModel(tracksInteractor = get(), historyInteractor = get(), toPlayerInteractor = get()) }
 }

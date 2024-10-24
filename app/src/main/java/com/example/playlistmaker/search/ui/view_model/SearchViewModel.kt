@@ -5,12 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.playlistmaker.search.data.network.NetworkResult
 import com.example.playlistmaker.search.domain.api.HistoryInteractor
+import com.example.playlistmaker.search.domain.api.ToPlayerInteractor
 import com.example.playlistmaker.search.domain.api.TracksInteractor
 import com.example.playlistmaker.search.domain.models.Track
 
 class SearchViewModel(
     private val tracksInteractor: TracksInteractor,
-    private val historyInteractor: HistoryInteractor
+    private val historyInteractor: HistoryInteractor,
+    private val toPlayerInteractor: ToPlayerInteractor
 ) : ViewModel() {
 
     private val _tracks = MutableLiveData<List<Track>>()
@@ -53,6 +55,10 @@ class SearchViewModel(
                 }
             }
         })
+    }
+
+    fun playTrack(track: Track) {
+        toPlayerInteractor.toPlayer(track)
     }
 
     fun loadHistory() {

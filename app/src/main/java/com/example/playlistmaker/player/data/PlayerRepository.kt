@@ -1,9 +1,24 @@
 package com.example.playlistmaker.player.data
 
+import android.content.SharedPreferences
 import android.media.MediaPlayer
 import com.example.playlistmaker.player.domain.models.PlayerState
+import com.example.playlistmaker.search.domain.models.Track
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
-class PlayerRepository(private val mediaPlayer: MediaPlayer, private val previewUrl: String?) {
+
+private const val TO_PLAY = "track_to_play"
+private const val SAVED_TRACK = "saved_track_to_play"
+
+class PlayerRepository(
+    private val mediaPlayer: MediaPlayer,
+    private val sharedPref: SharedPreferences,
+    private val gson: Gson
+    ) {
+
+    private val track = getTrack()
+    private val previewUrl = track?.previewUrl ?: String()
     private var listener: (PlayerState) -> Unit = {}
     private var playerState : PlayerState = PlayerState.DEFAULT
 
@@ -15,8 +30,16 @@ class PlayerRepository(private val mediaPlayer: MediaPlayer, private val preview
         this.listener = listener
     }
 
+    private fun getTrack(): Track? {
+        return (sharedPref
+            .getString(SAVED_TRACK, null)
+            ?. let { jsonString -> gson.fromJson(jsonString, Track::class.java) })
+    }
+
+    fun sendTrack(): Track? = track
+
     fun preparePlayer(){
-        if (!previewUrl.isNullOrEmpty()) {
+        if (previewUrl.isNotEmpty()) {
             mediaPlayer.setDataSource(previewUrl)
             mediaPlayer.prepareAsync()
             playerState = PlayerState.PREPARED

@@ -3,6 +3,7 @@ package com.example.playlistmaker.player.domain.impl
 import com.example.playlistmaker.player.data.PlayerRepository
 import com.example.playlistmaker.player.domain.api.PlayerInteractor
 import com.example.playlistmaker.player.domain.models.PlayerState
+import com.example.playlistmaker.search.domain.models.Track
 
 class PlayerInteractorImpl (private val playerRepository: PlayerRepository) : PlayerInteractor {
 
@@ -32,5 +33,9 @@ class PlayerInteractorImpl (private val playerRepository: PlayerRepository) : Pl
 
     override fun isPlaying(): Boolean {
         return playerRepository.isPlaying()
+    }
+
+    override fun loadTrack(): Track? {
+        return playerRepository.sendTrack()
     }
 }

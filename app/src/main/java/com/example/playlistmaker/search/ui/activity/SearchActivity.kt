@@ -312,8 +312,8 @@ class SearchActivity : AppCompatActivity() {
 
     private fun startPlayer(track: Track) {
         if (clickDebounce()) {
+            searchViewModel.playTrack(track)
             val intent = Intent(this, PlayerActivity::class.java)
-            intent.putExtra(SELECTED_TRACK, track)
             startActivity(intent)
         }
     }

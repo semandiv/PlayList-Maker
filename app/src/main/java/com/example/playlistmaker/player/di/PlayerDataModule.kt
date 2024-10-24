@@ -1,5 +1,6 @@
 package com.example.playlistmaker.player.di
 
+import android.content.SharedPreferences
 import android.media.MediaPlayer
 import com.example.playlistmaker.player.data.PlayerRepository
 import com.example.playlistmaker.player.domain.api.PlayerInteractor
@@ -10,10 +11,13 @@ import org.koin.dsl.module
 val playerDataModule = module {
     factory { MediaPlayer() }
 
-    factory { (previewUrl: String?) -> PlayerRepository(mediaPlayer = get(), previewUrl = previewUrl) }
+    factory {
+        val sharedPref: SharedPreferences = get() { parametersOf("track_to_play") }
+        PlayerRepository(mediaPlayer = get(), sharedPref = sharedPref, gson = get())
+    }
 
-    factory<PlayerInteractor> { (previewUrl: String?) ->
-        PlayerInteractorImpl(playerRepository = get { parametersOf(previewUrl) })
+    factory<PlayerInteractor> {
+        PlayerInteractorImpl(playerRepository = get())
     }
 
 }
