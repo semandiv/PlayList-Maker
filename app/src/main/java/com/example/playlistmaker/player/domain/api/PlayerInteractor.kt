@@ -1,5 +1,6 @@
 package com.example.playlistmaker.player.domain.api
 
+import com.example.playlistmaker.player.domain.models.MediaState
 import com.example.playlistmaker.player.domain.models.PlayerState
 import com.example.playlistmaker.search.domain.models.Track
 
@@ -9,6 +10,7 @@ interface PlayerInteractor {
     fun pause()
     fun releasePlayer()
     fun observePlayerState(listener: (PlayerState) -> Unit)
+    fun observeMediaState(listener: (MediaState) -> Unit)
     fun currentPosition(): Int
     fun isPlaying(): Boolean
     fun loadTrack(): Track?

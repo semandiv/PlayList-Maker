@@ -3,6 +3,7 @@ package com.example.playlistmaker.player.di
 import android.content.SharedPreferences
 import android.media.MediaPlayer
 import com.example.playlistmaker.player.data.PlayerRepository
+import com.example.playlistmaker.player.domain.api.MediaStateListener
 import com.example.playlistmaker.player.domain.api.PlayerInteractor
 import com.example.playlistmaker.player.domain.impl.PlayerInteractorImpl
 import org.koin.core.parameter.parametersOf
@@ -17,7 +18,8 @@ val playerDataModule = module {
     }
 
     factory<PlayerInteractor> {
-        PlayerInteractorImpl(playerRepository = get())
+        PlayerInteractorImpl(get())
     }
+    factory<MediaStateListener> { get<PlayerInteractor>() as MediaStateListener }
 
 }

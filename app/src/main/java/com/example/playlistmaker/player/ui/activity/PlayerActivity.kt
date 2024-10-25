@@ -2,26 +2,19 @@ package com.example.playlistmaker.player.ui.activity
 
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.view.MenuItem
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.constraintlayout.widget.Group
-import androidx.core.content.IntentCompat
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityPlayerBinding
-import com.example.playlistmaker.player.domain.models.PlayerState
+import com.example.playlistmaker.player.domain.models.MediaState
 import com.example.playlistmaker.player.ui.view_model.PlayerViewModel
 import com.example.playlistmaker.search.domain.models.Track
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.parameter.parametersOf
 import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -29,7 +22,6 @@ import java.util.Locale
 class PlayerActivity : AppCompatActivity() {
 
     private companion object {
-        const val RECEIVED_TRACK = "selectedTrack"
         const val SAVED_TRACK = "savedTrack"
         const val DURATION_DEFAULT_VALUE = "00:00"
         const val TIME_FORMAT = "mm:ss"
@@ -59,49 +51,42 @@ class PlayerActivity : AppCompatActivity() {
             handleNullPreviewUrl()
         }
 
-        playerViewModel.playerState.observe(this, { state ->
-            when (state) {
-                PlayerState.DEFAULT -> binding.playButton.isEnabled = false
-                PlayerState.PREPARED -> {
-                    binding.playButton.isEnabled = true
-                    binding.playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
-                    binding.playingTime.text = DURATION_DEFAULT_VALUE
-                }
-                PlayerState.PLAYING ->  binding.playButton.setImageResource(R.drawable.baseline_pause_circle_filled_84)
-                PlayerState.PAUSED -> binding.playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
-                null -> binding.playButton.isEnabled = false
+        playerViewModel.mediaState.observe(this){ mediaState ->
+            when (mediaState) {
+                MediaState.Prepared -> playerPrepared()
+                MediaState.Playing -> binding.playButton.setImageResource(R.drawable.baseline_pause_circle_filled_84)
+                MediaState.Default -> binding.playButton.isEnabled = false
+                MediaState.Paused -> binding.playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
             }
-        })
+        }
 
-        playerViewModel.currentPosition.observe(this, { position ->
+        playerViewModel.currentPosition.observe(this) { position ->
             binding.playingTime.text = SimpleDateFormat(
                 TIME_FORMAT,
                 Locale.getDefault()
             ).format(position)
-        })
-
-        playerViewModel.isPrepared.observe(this, { prepared ->
-            binding.progressBar.isVisible = !prepared
-        })
+        }
 
         binding.playButton.setOnClickListener {
-            if(playerViewModel.playerState.value == PlayerState.PLAYING) {
-                playerViewModel.pause()
-            } else {
-                playerViewModel.play()
-            }
+            playerViewModel.onClickPlayButton()
         }
 
     }
 
+    private fun playerPrepared() {
+        binding.playButton.isEnabled = true
+        binding.playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
+        binding.playingTime.text = DURATION_DEFAULT_VALUE
+    }
+
     override fun onPause() {
         super.onPause()
-        pausePlayer()
+        playerViewModel.pause()
         binding.playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
     }
 
     override fun onDestroy() {
-        track.previewUrl?.takeIf { !it.isNullOrEmpty() }?.let {
+        track.previewUrl?.takeIf { it.isNotEmpty() }?.let {
             playerViewModel.releasePlayer()
         }
         super.onDestroy()
@@ -147,41 +132,40 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun setValues() {
+        binding.progressBar.isVisible = true
         binding.countryValue.text = track.country
         binding.genreValue.text = track.primaryGenreName
         binding.yearValue.text = track.releaseDate?.take(4) ?: String()
         binding.artistName.text = track.artistName
         binding.trackName.text = track.trackName
 
-        binding.timePlayValue.text = SimpleDateFormat(
-            TIME_FORMAT,
-            Locale.getDefault()
-        ).format(track.trackTimeMillis?.toLong() ?: String())
+        binding.timePlayValue.text = playerViewModel.timePlay
 
-        if (track.collectionName != null) {
+        if (track.collectionName.isNullOrEmpty()) {
             binding.albumNameValue.text = track.collectionName
         } else {
             hideAlbumName()
         }
+
         getCoverImage()
+        binding.progressBar.isVisible = false
     }
 
     private fun getCoverImage() {
-        val coverURL = track.artworkUrl100?.replaceAfterLast('/', "512x512bb.jpg")
-        Glide.with(this)
-            .load(coverURL)
-            .placeholder(R.drawable.placeholder)
-            .error(R.drawable.placeholder)
-            .transform(RoundedCorners(8))
-            .into(binding.albumCover)
+        if (!playerViewModel.coverUrl.isNullOrEmpty()){
+            Glide.with(this)
+                .load(playerViewModel.coverUrl)
+                .placeholder(R.drawable.placeholder)
+                .error(R.drawable.placeholder)
+                .transform(RoundedCorners(8))
+                .into(binding.albumCover)
+        } else{
+            handleNullPreviewUrl()
+        }
     }
 
     private fun hideAlbumName() {
         binding.albumNameGroup.isVisible = false
-    }
-
-    private fun pausePlayer() {
-        playerViewModel.pause()
     }
 
     private fun handleNullPreviewUrl() {
