@@ -7,7 +7,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.playlistmaker.player.domain.api.PlayerInteractor
 import com.example.playlistmaker.player.domain.models.MediaState
-import com.example.playlistmaker.player.domain.models.PlayerState
 import com.example.playlistmaker.search.domain.models.Track
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -24,11 +23,8 @@ class PlayerViewModel(
     private val track: Track? = playerInteractor.loadTrack()
     private val previewUrl: String = track?.previewUrl ?: String()
 
-    private val _playerState = MutableLiveData<PlayerState>()
-
-
-    private val _currentPosition = MutableLiveData<Int>()
-    val currentPosition: LiveData<Int> get() = _currentPosition
+    private val _currentPosition = MutableLiveData<String>()
+    val currentPosition: LiveData<String> get() = _currentPosition
 
     private val _mediaState = MutableLiveData<MediaState>()
     val mediaState: LiveData<MediaState> get() = _mediaState
@@ -38,13 +34,9 @@ class PlayerViewModel(
         Locale.getDefault()
     ).format(track?.trackTimeMillis?.toLong() ?: String())
 
-    val coverUrl: String? = track?.artworkUrl100?.replaceAfterLast('/', "512x512bb.jpg")
-
-
     private val handler = Handler(Looper.getMainLooper())
 
     init {
-        playerInteractor.observePlayerState (_playerState::postValue)
         playerInteractor.observeMediaState (_mediaState::postValue)
         preparePlayer()
     }
@@ -53,6 +45,8 @@ class PlayerViewModel(
         releasePlayer()
         stopUpdateTime()
     }
+
+    fun getCoverUrl() = track?.artworkUrl100?.replaceAfterLast('/', "512x512bb.jpg")
 
     fun onClickPlayButton(){
         when(mediaState.value){
@@ -86,8 +80,6 @@ class PlayerViewModel(
         }
     }
 
-
-
     private fun preparePlayer() {
         playerInteractor.preparePlayer()
     }
@@ -96,7 +88,7 @@ class PlayerViewModel(
         handler.post(object : Runnable {
             override fun run() {
                 if (playerInteractor.isPlaying()) {
-                    _currentPosition.postValue(playerInteractor.currentPosition())
+                    _currentPosition.postValue(getPositionToString(playerInteractor.currentPosition()))
                     handler.postDelayed(this, DELAY)
                 } else {
                     stopUpdateTime()
@@ -107,5 +99,12 @@ class PlayerViewModel(
 
     private fun stopUpdateTime() {
         handler.removeCallbacksAndMessages(null)
+    }
+
+    private fun getPositionToString(position: Int): String {
+        return SimpleDateFormat(
+            TIME_FORMAT,
+            Locale.getDefault()
+        ).format(position)
     }
 }

@@ -13,21 +13,16 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityPlayerBinding
 import com.example.playlistmaker.player.domain.models.MediaState
 import com.example.playlistmaker.player.ui.view_model.PlayerViewModel
-import com.example.playlistmaker.search.domain.models.Track
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.Serializable
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class PlayerActivity : AppCompatActivity() {
 
     private companion object {
         const val SAVED_TRACK = "savedTrack"
         const val DURATION_DEFAULT_VALUE = "00:00"
-        const val TIME_FORMAT = "mm:ss"
     }
 
-    private lateinit var track: Track
     private val playerViewModel: PlayerViewModel by viewModel()
 
     private lateinit var binding: ActivityPlayerBinding
@@ -41,15 +36,9 @@ class PlayerActivity : AppCompatActivity() {
 
         binding.playingTime.text = DURATION_DEFAULT_VALUE
 
-
         setToolbar()
 
-        if (playerViewModel.getTrack() != null) {
-            track = playerViewModel.getTrack()!!
-            setValues()
-        } else {
-            handleNullPreviewUrl()
-        }
+        setValues()
 
         playerViewModel.mediaState.observe(this){ mediaState ->
             when (mediaState) {
@@ -61,22 +50,13 @@ class PlayerActivity : AppCompatActivity() {
         }
 
         playerViewModel.currentPosition.observe(this) { position ->
-            binding.playingTime.text = SimpleDateFormat(
-                TIME_FORMAT,
-                Locale.getDefault()
-            ).format(position)
+            binding.playingTime.text = position
         }
 
         binding.playButton.setOnClickListener {
             playerViewModel.onClickPlayButton()
         }
 
-    }
-
-    private fun playerPrepared() {
-        binding.playButton.isEnabled = true
-        binding.playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
-        binding.playingTime.text = DURATION_DEFAULT_VALUE
     }
 
     override fun onPause() {
@@ -86,12 +66,11 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        track.previewUrl?.takeIf { it.isNotEmpty() }?.let {
+        playerViewModel.getTrack()?.previewUrl?.takeIf { it.isNotEmpty() }?.let {
             playerViewModel.releasePlayer()
         }
         super.onDestroy()
     }
-
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
@@ -106,13 +85,14 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putSerializable(SAVED_TRACK, track)
+        playerViewModel.getTrack()?.let {
+            outState.putSerializable(SAVED_TRACK, it)
+        }
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        track = savedInstanceState.customGetSerializable<Track>(SAVED_TRACK) as Track
-        setValues()
+        playerViewModel.getTrack()?.let { setValues() }
     }
 
     private fun setToolbar() {
@@ -133,42 +113,49 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun setValues() {
         binding.progressBar.isVisible = true
-        binding.countryValue.text = track.country
-        binding.genreValue.text = track.primaryGenreName
-        binding.yearValue.text = track.releaseDate?.take(4) ?: String()
-        binding.artistName.text = track.artistName
-        binding.trackName.text = track.trackName
+        playerViewModel.getTrack()?.let {
+            binding.progressBar.isVisible = true
+            binding.countryValue.text = it.country
+            binding.genreValue.text = it.primaryGenreName
+            binding.yearValue.text = it.releaseDate?.take(4) ?: String()
+            binding.artistName.text = it.artistName
+            binding.trackName.text = it.trackName
+            binding.timePlayValue.text = playerViewModel.timePlay
 
-        binding.timePlayValue.text = playerViewModel.timePlay
-
-        if (track.collectionName.isNullOrEmpty()) {
-            binding.albumNameValue.text = track.collectionName
-        } else {
-            hideAlbumName()
+            if (it.collectionName.isNullOrEmpty()) {
+                binding.albumNameValue.text = it.collectionName
+            } else {
+                hideAlbumName()
+            }
+            getCoverImage()
+        } ?: run {
+            handleNullTrack()
         }
-
-        getCoverImage()
         binding.progressBar.isVisible = false
     }
 
     private fun getCoverImage() {
-        if (!playerViewModel.coverUrl.isNullOrEmpty()){
+        playerViewModel.getCoverUrl()?.let {
             Glide.with(this)
-                .load(playerViewModel.coverUrl)
+                .load(it)
                 .placeholder(R.drawable.placeholder)
                 .error(R.drawable.placeholder)
                 .transform(RoundedCorners(8))
                 .into(binding.albumCover)
-        } else{
-            handleNullPreviewUrl()
         }
+    }
+
+    private fun playerPrepared() {
+        binding.playButton.isEnabled = true
+        binding.playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
+        binding.playingTime.text = DURATION_DEFAULT_VALUE
     }
 
     private fun hideAlbumName() {
         binding.albumNameGroup.isVisible = false
     }
 
-    private fun handleNullPreviewUrl() {
+    private fun handleNullTrack() {
         binding.playButton.isEnabled = false
         Toast.makeText(this, getString(R.string.not_load_previewTrack), Toast.LENGTH_SHORT).show()
     }

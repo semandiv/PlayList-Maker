@@ -16,7 +16,6 @@ import com.example.playlistmaker.search.domain.api.TrackRepository
 import com.google.gson.Gson
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.parameter.parametersOf
-import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
