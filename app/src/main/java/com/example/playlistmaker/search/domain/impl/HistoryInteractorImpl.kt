@@ -11,7 +11,7 @@ class HistoryInteractorImpl(private val sharedPrefRepository: SharedPrefReposito
     }
 
     override fun clearTrack() {
-        sharedPrefRepository.clearTrack()
+        sharedPrefRepository.clearHistory()
     }
 
     override fun getTrack(): List<Track> {

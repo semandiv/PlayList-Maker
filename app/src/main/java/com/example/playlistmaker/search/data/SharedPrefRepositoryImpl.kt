@@ -16,30 +16,33 @@ class SharedPrefRepositoryImpl(private val sharedPref: SharedPreferences, privat
 
     private val history = mutableListOf<Track>()
 
-    init {
+/*    init {
         history.addAll(loadHistory())
-    }
+    }*/
 
-    override fun getTrack(): MutableList<Track> {
+    override fun getTrack(): List<Track> {
         if (history.isEmpty()) {
             history.addAll(loadHistory())
         }
-        val currentHistory = mutableListOf<Track>()
-        currentHistory.addAll(history)
-        return currentHistory
+        return history.toList()
     }
 
-    override fun clearTrack() {
-        history.clear()
-        saveTrack()
+    override fun clearHistory() {
+        sharedPref.edit().clear().apply()
+        history.addAll(loadHistory())
     }
 
     override fun addTrack(track: Track) {
-        val tempHistory = mutableListOf(track).apply {
-            addAll(history)
-        }.distinctBy { it.trackId }
+        (loadHistory() + listOf(track))
+            .distinct()
+            .sortedBy { it != track }
+            .take(SEARCH_HISTORY_SIZE)
+            .let { updateHistory(it)}
+    }
+
+    private fun updateHistory(it: List<Track>){
         history.clear()
-        history.addAll(tempHistory.take(SEARCH_HISTORY_SIZE))
+        history.addAll(it)
         saveTrack()
     }
 
@@ -50,10 +53,10 @@ class SharedPrefRepositoryImpl(private val sharedPref: SharedPreferences, privat
     }
 
     private fun loadHistory(): List<Track> {
-        val itemType = object : TypeToken<MutableList<Track>>() {}.type
+        val itemType = object : TypeToken<List<Track>>() {}.type
         return sharedPref
             .getString(SEARCH_HISTORY_KEY, null)
-            ?.let {jsonString -> gson.fromJson<MutableList<Track>>(jsonString, itemType)}
+            ?.let {jsonString -> gson.fromJson(jsonString, itemType)}
             ?:emptyList()
     }
 }

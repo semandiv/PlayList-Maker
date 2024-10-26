@@ -4,13 +4,12 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.example.playlistmaker.search.data.NetworkClient
 import com.example.playlistmaker.search.data.SharedPrefRepositoryImpl
-import com.example.playlistmaker.search.data.TrackMapper
 import com.example.playlistmaker.search.data.TrackPlayRepositoryImpl
 import com.example.playlistmaker.search.data.TrackRepositoryImpl
 import com.example.playlistmaker.search.data.network.AppleAPI
 import com.example.playlistmaker.search.data.network.RetrofitNetworkClient
-import com.example.playlistmaker.search.data.network.RetrofitProvider
 import com.example.playlistmaker.search.domain.api.SharedPrefRepository
+import com.example.playlistmaker.search.domain.api.TrackMapper
 import com.example.playlistmaker.search.domain.api.TrackPlayRepository
 import com.example.playlistmaker.search.domain.api.TrackRepository
 import com.google.gson.Gson
@@ -32,7 +31,7 @@ val searchDataModule = module {
 
     factory { Gson() }
 
-    single { RetrofitProvider(get()) }
+    /*single { RetrofitProvider(get()) }*/
 
     //RetrofitNetworkClient
     single<NetworkClient> {
@@ -43,7 +42,7 @@ val searchDataModule = module {
     single { TrackMapper() }
 
     single<TrackRepository> {
-        TrackRepositoryImpl(get(), get())
+        TrackRepositoryImpl(get())
     }
 
     //SharedPrefRepository
