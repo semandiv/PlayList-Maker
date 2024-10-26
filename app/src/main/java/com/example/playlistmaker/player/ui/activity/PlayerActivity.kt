@@ -1,6 +1,5 @@
 package com.example.playlistmaker.player.ui.activity
 
-import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
@@ -14,12 +13,10 @@ import com.example.playlistmaker.databinding.ActivityPlayerBinding
 import com.example.playlistmaker.player.domain.models.MediaState
 import com.example.playlistmaker.player.ui.view_model.PlayerViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.io.Serializable
 
 class PlayerActivity : AppCompatActivity() {
 
     private companion object {
-        const val SAVED_TRACK = "savedTrack"
         const val DURATION_DEFAULT_VALUE = "00:00"
     }
 
@@ -83,13 +80,6 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        playerViewModel.getTrack()?.let {
-            outState.putSerializable(SAVED_TRACK, it)
-        }
-    }
-
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         playerViewModel.getTrack()?.let { setValues() }
@@ -100,15 +90,6 @@ class PlayerActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         supportActionBar?.title = String()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-    }
-
-    @Suppress("DEPRECATION")
-    private inline fun <reified T : Serializable> Bundle.customGetSerializable(key: String): T? {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            getSerializable(key, T::class.java)
-        } else {
-            getSerializable(key) as? T
-        }
     }
 
     private fun setValues() {
