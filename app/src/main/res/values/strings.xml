@@ -35,7 +35,7 @@
     <string name="albumNamePlaceholder">Yesterday (Remastered 2009)</string>
     <string name="trackDuration">Длительность</string>
     <string name="trackDurationPlaceholder">5:35</string>
-    <string name="trackPlayPositionPlaceholder">3:30</string>
+    <string name="trackPlayPositionPlaceholder">00:00</string>
     <string name="add_track_to_playlist">Add track to playlist</string>
     <string name="play_track">Play track</string>
     <string name="add_track_to_favorities">Add track to favorities</string>
@@ -48,4 +48,9 @@
     <string name="not_load_previewTrack">Трек не загрузился или у трека нет превью, попробуйте другой трек и проверьте настройки сети</string>
     <string name="theme_checker">theme_checker</string>
     <string name="sendApp">Поделиться приложением</string>
+    <string name="tabLayoutDescription">Описание для tabLayout</string>
+    <string name="noFavorites">Ваша медиатека пуста</string>
+    <string name="newPlaylistBtnText">Новый плейлист</string>
+    <string name="noPlaylist">Вы не создали\nни одного плейлиста</string>
+    <string name="libraryTitle">Медиатека</string>
 </resources>

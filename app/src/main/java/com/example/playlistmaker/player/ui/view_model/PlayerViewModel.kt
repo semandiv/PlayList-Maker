@@ -53,7 +53,7 @@ class PlayerViewModel(
             MediaState.Default -> { }
             MediaState.Paused -> play()
             MediaState.Playing -> pause()
-            MediaState.Prepared -> play()
+            is MediaState.Prepared -> play()
             null -> { }
         }
     }

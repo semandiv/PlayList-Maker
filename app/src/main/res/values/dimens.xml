@@ -20,4 +20,6 @@
     <dimen name="dp12_size">12dp</dimen>
     <dimen name="sp13_text_size">13sp</dimen>
     <dimen name="dp9_size">9dp</dimen>
+    <dimen name="toolbarTitleTopPadd">10dp</dimen>
+    <dimen name="dp34_size">34dp</dimen>
 </resources>

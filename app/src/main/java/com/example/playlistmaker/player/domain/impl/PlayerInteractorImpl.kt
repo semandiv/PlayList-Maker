@@ -6,7 +6,9 @@ import com.example.playlistmaker.player.domain.models.MediaState
 import com.example.playlistmaker.player.domain.models.PlayerState
 import com.example.playlistmaker.search.domain.models.Track
 
-class PlayerInteractorImpl (private val playerRepository: PlayerRepository) : PlayerInteractor {
+private const val DEF_TIME = "00:00"
+
+class PlayerInteractorImpl(private val playerRepository: PlayerRepository) : PlayerInteractor {
 
     private var stateListener: (MediaState) -> Unit = {}
 
@@ -15,9 +17,9 @@ class PlayerInteractorImpl (private val playerRepository: PlayerRepository) : Pl
     }
 
     override fun observeMediaState(listener: (MediaState) -> Unit) {
-        playerRepository.setPlayerStateListener { newState->
+        playerRepository.setPlayerStateListener { newState ->
             when (newState) {
-                PlayerState.PREPARED -> updateState(MediaState.Prepared)
+                PlayerState.PREPARED -> updateState(MediaState.Prepared(DEF_TIME))
                 PlayerState.PLAYING -> updateState(MediaState.Playing)
                 PlayerState.PAUSED -> updateState(MediaState.Paused)
                 PlayerState.DEFAULT -> updateState(MediaState.Default)

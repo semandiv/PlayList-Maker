@@ -23,8 +23,9 @@
             android:exported="false"
             android:theme="@style/Theme.SearchView"/>
         <activity
-            android:name=".library.LibraryActivity"
-            android:exported="false" />
+            android:name=".library.ui.LibraryActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SearchView"/>
         <activity
             android:name=".search.ui.activity.SearchActivity"
             android:configChanges="orientation|screenSize"

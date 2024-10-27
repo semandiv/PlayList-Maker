@@ -11,4 +11,6 @@
     <color name="cursorColor">#3772E7</color>
     <color name="darkBackground">#1A1B22</color>
     <color name="grayTintDarkMode">#AEAFB4</color>
+    <color name="tabLayoutColor">#FFFFFF</color>
+    <color name="tabIndicatorColor">#1A1B22</color>
 </resources>

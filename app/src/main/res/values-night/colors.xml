@@ -10,4 +10,6 @@
     <color name="grayTint">#FF000000</color>
     <color name="darkBackground">#1A1B22</color>
     <color name="grayTintDarkMode">#AEAFB4</color>
+    <color name="tabLayoutColor">#1A1B22</color>
+    <color name="tabIndicatorColor">#FFFFFF</color>
 </resources>
