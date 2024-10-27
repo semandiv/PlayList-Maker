@@ -325,5 +325,15 @@
         <item name="android:textFontWeight">500</item>
     </style>
 
+    <style name="tabLayoutStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:backgroundTint">@color/white</item>
+        <item name="android:contentDescription">@string/tabLayoutDescription</item>
+        <item name="tabTextColor">@color/darkBackground</item>
+        <item name="tabSelectedTextColor">@color/darkBackground</item>
+        <item name="tabIndicatorColor">@color/tabIndicatorColor</item>
+    </style>
+
 
 </resources>

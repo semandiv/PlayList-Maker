@@ -304,5 +304,16 @@
         <item name="android:textSize">@dimen/medium_text_size</item>
         <item name="android:textFontWeight">500</item>
     </style>
+    <style name="tabLayoutStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:backgroundTint">@color/darkBackground</item>
+        <item name="android:contentDescription">@string/tabLayoutDescription</item>
+        <item name="tabTextColor">@color/white</item>
+        <item name="tabSelectedTextColor">@color/white</item>
+        <item name="tabIndicatorColor">@color/tabIndicatorColor</item>
+        <item name="backgroundTint">@color/darkBackground</item>
+        <item name="background">@color/darkBackground</item>
+    </style>
 
 </resources>

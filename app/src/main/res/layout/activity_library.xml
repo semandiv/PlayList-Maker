@@ -19,18 +19,15 @@
     </androidx.appcompat.widget.Toolbar>
 
     <com.google.android.material.tabs.TabLayout
+        android:theme="@style/Theme.SearchView"
         android:id="@+id/tab_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:tabTextColor="@color/darkBackground"
-        app:tabSelectedTextColor="@color/darkBackground"
-        app:tabIndicatorColor="@color/darkBackground"
-        app:layout_constraintVertical_bias="0"
-        android:contentDescription="@string/tabLayoutDescription"
+        style="@style/tabLayoutStyle"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/library_toolbar"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintVertical_bias="0"
+        app:tabInlineLabel="false" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view_pager"
