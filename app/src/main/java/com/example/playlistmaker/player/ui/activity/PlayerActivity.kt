@@ -16,14 +16,9 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlayerActivity : AppCompatActivity() {
 
-    private companion object {
-        const val DURATION_DEFAULT_VALUE = "00:00"
-    }
-
     private val playerViewModel: PlayerViewModel by viewModel()
 
     private lateinit var binding: ActivityPlayerBinding
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,18 +26,19 @@ class PlayerActivity : AppCompatActivity() {
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.playingTime.text = DURATION_DEFAULT_VALUE
-
         setToolbar()
 
         setValues()
 
-        playerViewModel.mediaState.observe(this){ mediaState ->
+        playerViewModel.mediaState.observe(this) { mediaState ->
             when (mediaState) {
-                MediaState.Prepared -> playerPrepared()
                 MediaState.Playing -> binding.playButton.setImageResource(R.drawable.baseline_pause_circle_filled_84)
                 MediaState.Default -> binding.playButton.isEnabled = false
                 MediaState.Paused -> binding.playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
+                is MediaState.Prepared -> {
+                    binding.playingTime.text = mediaState.defTime
+                    playerPrepared()
+                }
             }
         }
 
@@ -63,9 +59,7 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        playerViewModel.getTrack()?.previewUrl?.takeIf { it.isNotEmpty() }?.let {
-            playerViewModel.releasePlayer()
-        }
+        playerViewModel.releasePlayer()
         super.onDestroy()
     }
 
@@ -129,7 +123,6 @@ class PlayerActivity : AppCompatActivity() {
     private fun playerPrepared() {
         binding.playButton.isEnabled = true
         binding.playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
-        binding.playingTime.text = DURATION_DEFAULT_VALUE
     }
 
     private fun hideAlbumName() {

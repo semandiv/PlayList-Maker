@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="top|center"
+    android:orientation="vertical"
+    tools:ignore="UseCompoundDrawables">
+
+
+    <ImageView
+        android:id="@+id/favoritesFragmentIcon"
+        style="@style/fragmentIconPlaceholder"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/favoritesFragmentPlacholderText"
+        android:text="@string/noFavorites"
+        style="@style/fragment_text_placeholder" />
+
+</LinearLayout>

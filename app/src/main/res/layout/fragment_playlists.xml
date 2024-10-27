@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="top|center"
+    android:orientation="vertical"
+    android:theme="@style/Theme.SearchView"
+    tools:ignore="UseCompoundDrawables">
+
+    <Button
+        android:id="@+id/playlist_upd_button"
+        style="@style/refreshBtnStyle"
+        android:layout_marginTop="@dimen/dp24_size"
+        android:text="@string/newPlaylistBtnText" />
+
+    <ImageView
+        android:id="@+id/playlistFragmentIcon"
+        android:layout_marginTop="@dimen/dp34_size"
+        style="@style/fragmentIconPlaceholder"
+        android:contentDescription="@string/placeholder" />
+
+    <TextView
+        android:id="@+id/playlistFragmentPlacholderText"
+        style="@style/fragment_text_placeholder"
+        android:text="@string/noPlaylist" />
+
+</LinearLayout>
