@@ -1,6 +1,7 @@
 package com.example.playlistmaker.search.domain.models
 
-data class TrackSearchResult(
-    val resultCode: Int,
-    val tracks: List<Track>
-)
+sealed class TrackSearchResult{
+    data class SearchResult(val tracks: List<Track>): TrackSearchResult()
+    data object NoResult: TrackSearchResult()
+    data object NetworkError: TrackSearchResult()
+}

@@ -1,7 +1,10 @@
 package com.example.playlistmaker.search.data.network
 
-sealed class NetworkResult<T> {
-    data class Success<T>(val data: T) : NetworkResult<T>()
-    data class Error<T>(val code: Int) : NetworkResult<T>()
-    class NetworkException<T>(val exception: Exception) : NetworkResult<T>()
+import com.example.playlistmaker.search.data.dto.TrackDTO
+
+sealed class NetworkResult {
+    data class Success(val data: List<TrackDTO>?) : NetworkResult()
+    data object EmptyResult: NetworkResult()
+    data object Error : NetworkResult()
+    data object NetworkException : NetworkResult()
 }

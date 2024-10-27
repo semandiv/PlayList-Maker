@@ -6,31 +6,38 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.playlistmaker.player.domain.api.PlayerInteractor
-import com.example.playlistmaker.player.domain.models.PlayerState
+import com.example.playlistmaker.player.domain.models.MediaState
+import com.example.playlistmaker.search.domain.models.Track
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class PlayerViewModel(
-    private val previewUrl: String,
     private val playerInteractor: PlayerInteractor
 ) : ViewModel() {
 
     private companion object {
         const val DELAY = 300L
+        const val TIME_FORMAT = "mm:ss"
     }
 
-    private val _playerState = MutableLiveData<PlayerState>()
-    val playerState: LiveData<PlayerState> get() = _playerState
+    private val track: Track? = playerInteractor.loadTrack()
+    private val previewUrl: String = track?.previewUrl ?: String()
 
-    private val _currentPosition = MutableLiveData<Int>()
-    val currentPosition: LiveData<Int> get() = _currentPosition
+    private val _currentPosition = MutableLiveData<String>()
+    val currentPosition: LiveData<String> get() = _currentPosition
 
-    private val _isPrepared = MutableLiveData<Boolean>()
-    val isPrepared: LiveData<Boolean> get() = _isPrepared
+    private val _mediaState = MutableLiveData<MediaState>()
+    val mediaState: LiveData<MediaState> get() = _mediaState
 
+    val timePlay: String = SimpleDateFormat(
+        TIME_FORMAT,
+        Locale.getDefault()
+    ).format(track?.trackTimeMillis?.toLong() ?: String())
 
     private val handler = Handler(Looper.getMainLooper())
 
     init {
-        playerInteractor.observePlayerState (_playerState::postValue)
+        playerInteractor.observeMediaState (_mediaState::postValue)
         preparePlayer()
     }
 
@@ -39,38 +46,21 @@ class PlayerViewModel(
         stopUpdateTime()
     }
 
-    private fun preparePlayer() {
-        _isPrepared.postValue(false)
-        playerInteractor.preparePlayer()
-        _isPrepared.postValue(true)
-    }
+    fun getCoverUrl() = track?.artworkUrl100?.replaceAfterLast('/', "512x512bb.jpg")
 
-    private fun startUpdatingTime() {
-        handler.post(object : Runnable {
-            override fun run() {
-                if (playerInteractor.isPlaying()) {
-                    _currentPosition.postValue(playerInteractor.currentPosition())
-                    handler.postDelayed(this, DELAY)
-                } else {
-                    stopUpdateTime()
-                }
-            }
-        })
-    }
-
-    private fun stopUpdateTime() {
-        handler.removeCallbacksAndMessages(null)
-    }
-
-/*    private fun getCurrentPosition() {
-        if (_playerState.value == PlayerState.PLAYING) {
-            _currentPosition.postValue(playerInteractor.currentPosition())
-        } else {
-            _currentPosition.postValue(0)
+    fun onClickPlayButton(){
+        when(mediaState.value){
+            MediaState.Default -> { }
+            MediaState.Paused -> play()
+            MediaState.Playing -> pause()
+            MediaState.Prepared -> play()
+            null -> { }
         }
-    }*/
+    }
 
-    fun play() {
+    fun getTrack(): Track? = track
+
+    private fun play() {
         if (previewUrl.isNotEmpty()) {
             startUpdatingTime()
             playerInteractor.play()
@@ -90,4 +80,31 @@ class PlayerViewModel(
         }
     }
 
+    private fun preparePlayer() {
+        playerInteractor.preparePlayer()
+    }
+
+    private fun startUpdatingTime() {
+        handler.post(object : Runnable {
+            override fun run() {
+                if (playerInteractor.isPlaying()) {
+                    _currentPosition.postValue(getPositionToString(playerInteractor.currentPosition()))
+                    handler.postDelayed(this, DELAY)
+                } else {
+                    stopUpdateTime()
+                }
+            }
+        })
+    }
+
+    private fun stopUpdateTime() {
+        handler.removeCallbacksAndMessages(null)
+    }
+
+    private fun getPositionToString(position: Int): String {
+        return SimpleDateFormat(
+            TIME_FORMAT,
+            Locale.getDefault()
+        ).format(position)
+    }
 }

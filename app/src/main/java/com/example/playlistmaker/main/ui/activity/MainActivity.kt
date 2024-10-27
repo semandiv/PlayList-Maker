@@ -3,12 +3,12 @@ package com.example.playlistmaker.main.ui.activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.example.playlistmaker.databinding.ActivityMainBinding
-import com.example.playlistmaker.main.view_model.MainViewModel
+import com.example.playlistmaker.library.LibraryActivity
+import com.example.playlistmaker.search.ui.activity.SearchActivity
+import com.example.playlistmaker.settings.ui.activity.SettingsActivity
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var viewModel: MainViewModel
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,25 +17,19 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-
-        viewModel.navigateToScreen.observe(this) { activityClass ->
-            activityClass?.let {
-                val intent = Intent(this@MainActivity, it)
-                startActivity(intent)
-            }
-        }
-
         binding.searchButton.setOnClickListener {
-            viewModel.onSearchButtonClicked()
+            val intent = Intent(this@MainActivity, SearchActivity::class.java)
+            startActivity(intent)
         }
 
         binding.libraryButton.setOnClickListener {
-            viewModel.onLibraryButtonClicked()
+            val intent = Intent(this@MainActivity, LibraryActivity::class.java)
+            startActivity(intent)
         }
 
         binding.settingsButton.setOnClickListener {
-            viewModel.onSettingsButtonClicked()
+            val intent = Intent(this@MainActivity, SettingsActivity::class.java)
+            startActivity(intent)
         }
     }
 }
