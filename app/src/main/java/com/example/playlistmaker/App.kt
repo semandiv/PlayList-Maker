@@ -36,11 +36,11 @@ class App : Application() {
         switchTheme(sharedPrefs.getBoolean(THEME_SWITCH, false))
     }
 
-    fun switchTheme(darkThemeEnabled: Boolean) {
-        darkTheme = darkThemeEnabled
+    fun switchTheme(isDarkTheme: Boolean) {
+        darkTheme = isDarkTheme
 
         AppCompatDelegate.setDefaultNightMode(
-            if (darkThemeEnabled) {
+            if (isDarkTheme) {
                 AppCompatDelegate.MODE_NIGHT_YES
             } else {
                 AppCompatDelegate.MODE_NIGHT_NO

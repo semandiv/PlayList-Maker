@@ -1,6 +1,7 @@
 package com.example.playlistmaker.settings.ui.activity
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
@@ -11,7 +12,6 @@ import com.example.playlistmaker.databinding.ActivitySettingsBinding
 import com.example.playlistmaker.settings.ui.view_model.SettingsViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-const val THEME_SWITCHER = "theme_checker"
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -27,33 +27,44 @@ class SettingsActivity : AppCompatActivity() {
 
         setToolbar()
 
-        settingsViewModel.isDarkTheme.observe(this, { checked ->
+        settingsViewModel.isDarkTheme.observe(this) { checked ->
             if (currentTheme != checked) {
                 binding.themeSwitch.isChecked = checked
                 (application as App).switchTheme(checked)
                 currentTheme = checked
             }
-        })
+        }
 
         binding.themeSwitch.setOnCheckedChangeListener { _, isChecked ->
             settingsViewModel.changeTheme(isChecked)
         }
 
         binding.shareLayout.setOnClickListener {
+            val shareIntent = Intent().apply {
+                action = Intent.ACTION_SEND
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, getString(R.string.sendApp))
+            }
             startActivity(
-                Intent.createChooser(
-                    settingsViewModel.getShareIntent(),
-                    getString(R.string.share_header)
+                Intent.createChooser(shareIntent, getString(R.string.share_header))
                 )
-            )
         }
 
         binding.supportLayout.setOnClickListener {
-            startActivity(settingsViewModel.getSupportEmailIntent())
+            val supportIntent = Intent(Intent.ACTION_SENDTO).apply {
+                data = Uri.parse("mailto:")
+                putExtra(Intent.EXTRA_EMAIL, arrayOf(R.string.user_email))
+                putExtra(Intent.EXTRA_SUBJECT, R.string.mail_subject)
+                putExtra(Intent.EXTRA_TEXT, R.string.mail_body)
+            }
+            startActivity(supportIntent)
         }
 
         binding.userAgreementLayout.setOnClickListener {
-            startActivity(settingsViewModel.getUserAgreementIntent())
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                data = Uri.parse(getString(R.string.user_agreement))
+            }
+            startActivity(intent)
         }
     }
 

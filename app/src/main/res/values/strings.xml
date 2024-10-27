@@ -47,4 +47,5 @@
     <string name="player_not_ready">Плеер не готов к работе, состояние: %1$s</string>
     <string name="not_load_previewTrack">Трек не загрузился или у трека нет превью, попробуйте другой трек и проверьте настройки сети</string>
     <string name="theme_checker">theme_checker</string>
+    <string name="sendApp">Поделиться приложением</string>
 </resources>

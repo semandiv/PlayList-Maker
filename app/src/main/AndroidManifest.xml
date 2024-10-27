@@ -32,7 +32,6 @@
             android:theme="@style/Theme.SearchView" />
         <activity
             android:name=".settings.ui.activity.SettingsActivity"
-            android:launchMode="singleTask"
             android:exported="false"
             android:theme="@style/Theme.SettingsView" />
         <activity

@@ -64,8 +64,8 @@ class SearchActivity : AppCompatActivity() {
         searchViewModel.searchResult.observe(this) { result ->
             binding.progressBar.isVisible = false
             when (result) {
-                TrackSearchResult.NetworkError -> showConnectErrorPlaceholder()
-                TrackSearchResult.NoResult -> showResultZeroPlaceholder()
+                TrackSearchResult.NetworkError -> showPlaceHolders(false)
+                TrackSearchResult.NoResult -> showPlaceHolders(true)
                 is TrackSearchResult.SearchResult -> showSearchedTracks(result.tracks)
             }
         }
@@ -234,7 +234,7 @@ class SearchActivity : AppCompatActivity() {
             tracks.addAll(newTracks)
             showTracks()
         } else {
-            showResultZeroPlaceholder()
+            showPlaceHolders(true)
         }
     }
 
@@ -248,24 +248,17 @@ class SearchActivity : AppCompatActivity() {
         binding.trackList.scrollToPosition(0)
     }
 
-    private fun showResultZeroPlaceholder() {
+    private fun showPlaceHolders(zeroValue: Boolean){
+        //true если нет результата и false если ошибка сети/нет соединения
         binding.progressBar.isVisible = false
         binding.placeholderSearchView.isVisible = true
-        binding.placeholderImageNoResult.isVisible = true
-        binding.placeholderImageNoConnect.isVisible = false
-        binding.placeholderText.text = getString(R.string.noResultMessage)
+        binding.placeholderImageNoResult.isVisible = zeroValue
+        binding.placeholderImageNoConnect.isVisible = !zeroValue
+        if(zeroValue){
+            binding.placeholderText.text = getString(R.string.noResultMessage)
+        } else binding.placeholderText.text = this.getString(R.string.noConnectMessage)
         binding.trackList.isVisible = false
-        binding.refreshBtn.isVisible = false
-    }
-
-    private fun showConnectErrorPlaceholder() {
-        binding.progressBar.isVisible = false
-        binding.placeholderSearchView.isVisible = true
-        binding.placeholderImageNoResult.isVisible = false
-        binding.placeholderImageNoConnect.isVisible = true
-        binding.placeholderText.text = this.getString(R.string.noConnectMessage)
-        binding.trackList.isVisible = false
-        binding.refreshBtn.isVisible = true
+        binding.refreshBtn.isVisible = !zeroValue
     }
 
     private fun View.hideKeyboard() {
