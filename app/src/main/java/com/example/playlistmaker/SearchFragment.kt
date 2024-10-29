@@ -1,41 +1,40 @@
-package com.example.playlistmaker.search.ui.activity
+package com.example.playlistmaker
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.os.Parcelable
-import android.view.MenuItem
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.playlistmaker.R
-import com.example.playlistmaker.databinding.ActivitySearchBinding
+import com.example.playlistmaker.databinding.FragmentSearchBinding
 import com.example.playlistmaker.player.ui.activity.PlayerActivity
 import com.example.playlistmaker.search.domain.models.Track
 import com.example.playlistmaker.search.domain.models.TrackSearchResult
+import com.example.playlistmaker.search.ui.activity.TracksAdapter
 import com.example.playlistmaker.search.ui.view_model.SearchViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SearchActivity : AppCompatActivity() {
+private const val ARG_PARAM1 = "param1"
+private const val ARG_PARAM2 = "param2"
 
-    private companion object {
-        const val SEARCH_FIELD_KEY = "SearchField"
-        const val RECYCLER_STATE_KEY = "Tracks"
-        const val SEARCH_DEBOUNCE_DELAY = 2000L
-        const val CLICK_DEBOUNCE_DELAY = 1000L
-    }
+class SearchFragment : Fragment() {
+    // TODO: Rename and change types of parameters
+    private var param1: String? = null
+    private var param2: String? = null
 
     private val searchViewModel: SearchViewModel by viewModel()
-    private lateinit var binding: ActivitySearchBinding
+    private var _binding: FragmentSearchBinding? = null
+    val binding get() = _binding!!
 
     private val searchRunnable = Runnable { searchRequest() }
     private val handler = Handler(Looper.getMainLooper())
@@ -55,13 +54,28 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        arguments?.let {
+            param1 = it.getString(ARG_PARAM1)
+            param2 = it.getString(ARG_PARAM2)
+        }
+    }
 
-        binding = ActivitySearchBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = FragmentSearchBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        setToolBar()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        searchViewModel.searchResult.observe(this) { result ->
+        val toolbar = binding.searchToolbar
+        (activity as? AppCompatActivity)?.setSupportActionBar(toolbar)
+        toolbar.title = getString(R.string.search_text)
+
+        searchViewModel.searchResult.observe(viewLifecycleOwner) { result ->
             binding.progressBar.isVisible = false
             when (result) {
                 TrackSearchResult.NetworkError -> showPlaceHolders(false)
@@ -72,7 +86,7 @@ class SearchActivity : AppCompatActivity() {
 
         historyList = mutableListOf()
 
-        searchViewModel.history.observe(this) { history ->
+        searchViewModel.history.observe(viewLifecycleOwner) { history ->
             historyList.clear()
             historyList.addAll(history)
         }
@@ -120,13 +134,13 @@ class SearchActivity : AppCompatActivity() {
         binding.searchEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 searchViewModel.searchedTracks(binding.searchEditText.text.toString())
-                binding.searchEditText.hideKeyboard()
+                //binding.searchEditText.hideKeyboard()
                 hideHistory()
                 true
             } else false
         }
 
-        binding.trackList.layoutManager = LinearLayoutManager(this)
+        binding.trackList.layoutManager = LinearLayoutManager(requireContext())
         binding.trackList.adapter = adapter
 
 
@@ -134,7 +148,7 @@ class SearchActivity : AppCompatActivity() {
             refreshBtnClick(binding.searchEditText)
         }
 
-        val linearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true)
+        val linearLayoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
         binding.historyList.layoutManager = linearLayoutManager
         binding.historyList.adapter = historyAdapter
 
@@ -143,41 +157,20 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            android.R.id.home -> {
-                finish()
-                true
+    companion object {
+        @JvmStatic
+        fun newInstance(param1: String, param2: String) =
+            SearchFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_PARAM1, param1)
+                    putString(ARG_PARAM2, param2)
+                }
             }
 
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(SEARCH_FIELD_KEY, searchQuery)
-        outState.putParcelable(
-            RECYCLER_STATE_KEY,
-            binding.trackList.layoutManager?.onSaveInstanceState()
-        )
-    }
-
-    @Suppress("DEPRECATION")
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        searchQuery = savedInstanceState.getString(SEARCH_FIELD_KEY, String())
-        val recyclerState = savedInstanceState.getParcelable<Parcelable>(RECYCLER_STATE_KEY)
-        if (recyclerState != null) {
-            binding.trackList.layoutManager?.onRestoreInstanceState(recyclerState)
-        }
-    }
-
-    private fun setToolBar() {
-        val toolbar = binding.searchToolbar
-        setSupportActionBar(toolbar)
-        supportActionBar?.title = getString(R.string.search_text)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        const val SEARCH_FIELD_KEY = "SearchField"
+        const val RECYCLER_STATE_KEY = "Tracks"
+        const val SEARCH_DEBOUNCE_DELAY = 2000L
+        const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -225,7 +218,7 @@ class SearchActivity : AppCompatActivity() {
         } else {
             hideHistory()
         }
-        view.hideKeyboard()
+        //view.hideKeyboard()
     }
 
     private fun showSearchedTracks(newTracks: List<Track>) {
@@ -261,11 +254,11 @@ class SearchActivity : AppCompatActivity() {
         binding.refreshBtn.isVisible = !zeroValue
     }
 
-    private fun View.hideKeyboard() {
+/*    private fun View.hideKeyboard() {
         val inputMethodManager =
-            getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+            getSystemService(requireContext().INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(windowToken, 0)
-    }
+    }*/
 
     private fun saveTrack(track: Track) {
         searchViewModel.saveTrackToHistory(track)
@@ -275,7 +268,7 @@ class SearchActivity : AppCompatActivity() {
     private fun startPlayer(track: Track) {
         if (clickDebounce()) {
             searchViewModel.playTrack(track)
-            val intent = Intent(this, PlayerActivity::class.java)
+            val intent = Intent(requireContext(), PlayerActivity::class.java)
             startActivity(intent)
         }
     }
@@ -298,7 +291,7 @@ class SearchActivity : AppCompatActivity() {
         if (binding.searchEditText.text.isNotEmpty()) {
             binding.progressBar.isVisible = true
             searchViewModel.searchedTracks(binding.searchEditText.text.toString())
-            binding.searchEditText.hideKeyboard()
+            //binding.searchEditText.hideKeyboard()
             hideHistory()
         }
     }

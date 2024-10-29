@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import com.example.playlistmaker.App
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivitySettingsBinding
 import com.example.playlistmaker.settings.ui.view_model.SettingsViewModel
@@ -17,7 +16,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private val settingsViewModel: SettingsViewModel by viewModel()
     private lateinit var binding: ActivitySettingsBinding
-    private var currentTheme = false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,11 +27,7 @@ class SettingsActivity : AppCompatActivity() {
         setToolbar()
 
         settingsViewModel.isDarkTheme.observe(this) { checked ->
-            if (currentTheme != checked) {
                 binding.themeSwitch.isChecked = checked
-                (application as App).switchTheme(checked)
-                currentTheme = checked
-            }
         }
 
         binding.themeSwitch.setOnCheckedChangeListener { _, isChecked ->
