@@ -1,6 +1,7 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.search.ui
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -9,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
@@ -16,25 +18,20 @@ import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentSearchBinding
 import com.example.playlistmaker.player.ui.activity.PlayerActivity
 import com.example.playlistmaker.search.domain.models.Track
 import com.example.playlistmaker.search.domain.models.TrackSearchResult
-import com.example.playlistmaker.search.ui.activity.TracksAdapter
 import com.example.playlistmaker.search.ui.view_model.SearchViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 class SearchFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
     private val searchViewModel: SearchViewModel by viewModel()
     private var _binding: FragmentSearchBinding? = null
-    val binding get() = _binding!!
+    private val binding get() = _binding!!
 
     private val searchRunnable = Runnable { searchRequest() }
     private val handler = Handler(Looper.getMainLooper())
@@ -52,18 +49,10 @@ class SearchFragment : Fragment() {
 
     private var searchQuery = String()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -74,6 +63,7 @@ class SearchFragment : Fragment() {
         val toolbar = binding.searchToolbar
         (activity as? AppCompatActivity)?.setSupportActionBar(toolbar)
         toolbar.title = getString(R.string.search_text)
+
 
         searchViewModel.searchResult.observe(viewLifecycleOwner) { result ->
             binding.progressBar.isVisible = false
@@ -102,16 +92,16 @@ class SearchFragment : Fragment() {
 
         binding.searchEditText.setText(searchQuery)
 
-        binding.clearText.setOnClickListener { view ->
-            clearTextField(binding.searchEditText, view)
+        binding.clearText.setOnClickListener {
+            clearTextField(binding.searchEditText, it)
         }
 
         binding.searchEditText.addTextChangedListener(
-            beforeTextChanged = {text: CharSequence?, _, _, _ ->
+            beforeTextChanged = { text: CharSequence?, _, _, _ ->
                 previousTextLength = text?.length ?: 0
             },
             onTextChanged = { text: CharSequence?, _, _, _ ->
-                textChageListener(text, binding.clearText)
+                textChangeListener(text, binding.clearText)
                 searchDebounce()
             },
             afterTextChanged = { text: CharSequence? ->
@@ -134,7 +124,6 @@ class SearchFragment : Fragment() {
         binding.searchEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 searchViewModel.searchedTracks(binding.searchEditText.text.toString())
-                //binding.searchEditText.hideKeyboard()
                 hideHistory()
                 true
             } else false
@@ -148,7 +137,8 @@ class SearchFragment : Fragment() {
             refreshBtnClick(binding.searchEditText)
         }
 
-        val linearLayoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
+        val linearLayoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
         binding.historyList.layoutManager = linearLayoutManager
         binding.historyList.adapter = historyAdapter
 
@@ -157,18 +147,12 @@ class SearchFragment : Fragment() {
         }
     }
 
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            SearchFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 
-        const val SEARCH_FIELD_KEY = "SearchField"
-        const val RECYCLER_STATE_KEY = "Tracks"
+    companion object {
         const val SEARCH_DEBOUNCE_DELAY = 2000L
         const val CLICK_DEBOUNCE_DELAY = 1000L
     }
@@ -198,7 +182,7 @@ class SearchFragment : Fragment() {
         searchViewModel.searchedTracks(inputText.text.toString())
     }
 
-    private fun textChageListener(text: CharSequence?, clearTextButton: ImageView) {
+    private fun textChangeListener(text: CharSequence?, clearTextButton: ImageView) {
         if (text != null) {
             searchQuery += text.toString()
             clearTextButton.isVisible = true
@@ -218,7 +202,7 @@ class SearchFragment : Fragment() {
         } else {
             hideHistory()
         }
-        //view.hideKeyboard()
+        hideKeyboard()
     }
 
     private fun showSearchedTracks(newTracks: List<Track>) {
@@ -241,24 +225,18 @@ class SearchFragment : Fragment() {
         binding.trackList.scrollToPosition(0)
     }
 
-    private fun showPlaceHolders(zeroValue: Boolean){
+    private fun showPlaceHolders(zeroValue: Boolean) {
         //true если нет результата и false если ошибка сети/нет соединения
         binding.progressBar.isVisible = false
         binding.placeholderSearchView.isVisible = true
         binding.placeholderImageNoResult.isVisible = zeroValue
         binding.placeholderImageNoConnect.isVisible = !zeroValue
-        if(zeroValue){
+        if (zeroValue) {
             binding.placeholderText.text = getString(R.string.noResultMessage)
         } else binding.placeholderText.text = this.getString(R.string.noConnectMessage)
         binding.trackList.isVisible = false
         binding.refreshBtn.isVisible = !zeroValue
     }
-
-/*    private fun View.hideKeyboard() {
-        val inputMethodManager =
-            getSystemService(requireContext().INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.hideSoftInputFromWindow(windowToken, 0)
-    }*/
 
     private fun saveTrack(track: Track) {
         searchViewModel.saveTrackToHistory(track)
@@ -271,6 +249,12 @@ class SearchFragment : Fragment() {
             val intent = Intent(requireContext(), PlayerActivity::class.java)
             startActivity(intent)
         }
+    }
+
+    private fun hideKeyboard() {
+        val inputMethodManager = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val view = requireActivity().currentFocus ?: View(requireContext())
+        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
     private fun clickDebounce(): Boolean {
@@ -288,10 +272,11 @@ class SearchFragment : Fragment() {
     }
 
     private fun searchRequest() {
-        if (binding.searchEditText.text.isNotEmpty()) {
+        val query = binding.searchEditText.text
+        if (query.isNotEmpty() && query.toString() != searchQuery) {
             binding.progressBar.isVisible = true
-            searchViewModel.searchedTracks(binding.searchEditText.text.toString())
-            //binding.searchEditText.hideKeyboard()
+            searchViewModel.searchedTracks(query.toString())
+            hideKeyboard()
             hideHistory()
         }
     }

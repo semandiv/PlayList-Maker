@@ -1,33 +1,42 @@
-package com.example.playlistmaker.settings.ui.activity
+package com.example.playlistmaker.settings.ui
 
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.MenuItem
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.Fragment
 import com.example.playlistmaker.R
-import com.example.playlistmaker.databinding.ActivitySettingsBinding
+import com.example.playlistmaker.databinding.FragmentSettingsBinding
 import com.example.playlistmaker.settings.ui.view_model.SettingsViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+class SettingsFragment : Fragment() {
 
-class SettingsActivity : AppCompatActivity() {
+    private var _binding: FragmentSettingsBinding? = null
+    private val binding get() = _binding!!
 
     private val settingsViewModel: SettingsViewModel by viewModel()
-    private lateinit var binding: ActivitySettingsBinding
 
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentSettingsBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        binding = ActivitySettingsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        val toolBar = binding.settingsToolbar
+        (activity as? AppCompatActivity)?.setSupportActionBar(toolBar)
+        toolBar.title = getString(R.string.settings_title)
 
-        setToolbar()
-
-        settingsViewModel.isDarkTheme.observe(this) { checked ->
-                binding.themeSwitch.isChecked = checked
+        settingsViewModel.isDarkTheme.observe(viewLifecycleOwner) { checked ->
+            binding.themeSwitch.isChecked = checked
         }
 
         binding.themeSwitch.setOnCheckedChangeListener { _, isChecked ->
@@ -40,9 +49,7 @@ class SettingsActivity : AppCompatActivity() {
                 type = "text/plain"
                 putExtra(Intent.EXTRA_TEXT, getString(R.string.sendApp))
             }
-            startActivity(
-                Intent.createChooser(shareIntent, getString(R.string.share_header))
-                )
+            startActivity(Intent.createChooser(shareIntent, getString(R.string.share_header)))
         }
 
         binding.supportLayout.setOnClickListener {
@@ -63,21 +70,8 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            android.R.id.home -> {
-                finish()
-                true
-            }
-
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    private fun setToolbar() {
-        val toolbar = findViewById<Toolbar>(R.id.settings_toolbar)
-        setSupportActionBar(toolbar)
-        supportActionBar?.title = getString(R.string.settings_title)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

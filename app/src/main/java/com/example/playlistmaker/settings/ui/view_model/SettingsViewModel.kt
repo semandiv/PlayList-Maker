@@ -1,6 +1,7 @@
 package com.example.playlistmaker.settings.ui.view_model
 
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -23,7 +24,7 @@ class SettingsViewModel(
 
     fun changeTheme(isChecked: Boolean) {
         _isDarkTheme.value = isChecked
-        sharedPrefs.edit().putBoolean(THEME_SWITCHER, isChecked).apply()
+        sharedPrefs.edit{putBoolean(THEME_SWITCHER, isChecked).apply()}
         themeSwitcher.switchTheme(isChecked)
     }
 

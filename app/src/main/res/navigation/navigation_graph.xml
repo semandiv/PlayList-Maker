@@ -6,17 +6,17 @@
     app:startDestination="@id/searchFragment">
     <fragment
         android:id="@+id/searchFragment"
-        android:name="com.example.playlistmaker.SearchFragment"
+        android:name="com.example.playlistmaker.search.ui.SearchFragment"
         android:label="fragment_search"
         tools:layout="@layout/fragment_search" />
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.example.playlistmaker.SettingsFragment"
+        android:name="com.example.playlistmaker.settings.ui.SettingsFragment"
         android:label="fragment_settings"
         tools:layout="@layout/fragment_settings" />
     <fragment
         android:id="@+id/fragmentLibrary"
-        android:name="com.example.playlistmaker.LibraryFragment"
+        android:name="com.example.playlistmaker.library.ui.LibraryFragment"
         android:label="fragment_library"
         tools:layout="@layout/fragment_library" />
 </navigation>

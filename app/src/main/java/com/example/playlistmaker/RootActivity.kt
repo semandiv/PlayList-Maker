@@ -20,7 +20,5 @@ class RootActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
 
         binding.bottomNavigationView.setupWithNavController(navController)
-
-
     }
 }

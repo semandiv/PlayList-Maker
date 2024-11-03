@@ -50,7 +50,7 @@ class PlayerViewModel(
 
     fun onClickPlayButton(){
         when(mediaState.value){
-            MediaState.Default -> { }
+            MediaState.Default -> { /* NOP*/}
             MediaState.Paused -> play()
             MediaState.Playing -> pause()
             is MediaState.Prepared -> play()
@@ -59,13 +59,6 @@ class PlayerViewModel(
     }
 
     fun getTrack(): Track? = track
-
-    private fun play() {
-        if (previewUrl.isNotEmpty()) {
-            startUpdatingTime()
-            playerInteractor.play()
-        }
-    }
 
     fun pause() {
         if (previewUrl.isNotEmpty()) {
@@ -82,6 +75,13 @@ class PlayerViewModel(
 
     private fun preparePlayer() {
         playerInteractor.preparePlayer()
+    }
+
+    private fun play() {
+        if (previewUrl.isNotEmpty()) {
+            startUpdatingTime()
+            playerInteractor.play()
+        }
     }
 
     private fun startUpdatingTime() {

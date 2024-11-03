@@ -29,6 +29,7 @@
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginStart">@dimen/small_padding</item>
         <item name="android:padding">@dimen/big_padding</item>
         <item name="android:textSize">@dimen/list_text_size</item>
         <item name="android:textColor">@color/black</item>
@@ -38,6 +39,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">@dimen/big_padding</item>
+        <item name="android:layout_marginEnd">@dimen/small_padding</item>
     </style>
 
     <style name="SearchFieldBlock">
@@ -335,5 +337,32 @@
         <item name="tabIndicatorColor">@color/tabIndicatorColor</item>
     </style>
 
+    <style name="BottomNavigation.ActiveItemTextAppearance" parent="TextAppearance.AppCompat">
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontWeight">400</item>
+
+    </style>
+
+    <style name="BottomNavigation.InActiveItemTextAppearance" parent="TextAppearance.AppCompat">
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontWeight">400</item>
+    </style>
+
+    <style name="nav_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:elevation">0dp</item>
+        <item name="itemIconTint">@color/navigation_item_color</item>
+        <item name="itemTextColor">@color/navigation_item_color</item>
+    </style>
+
+    <style name="switch_material_style" parent="Widget.MaterialComponents.CompoundButton.Switch">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.PlaylistMaker.CustomSwitch</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/big_padding</item>
+    </style>
 
 </resources>

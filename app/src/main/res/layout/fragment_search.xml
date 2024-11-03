@@ -7,8 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/fragBackground"
-    tools:context=".search.ui.activity.SearchActivity">
+    android:background="@color/fragBackground">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/search_toolbar"
@@ -27,6 +26,7 @@
             <EditText
                 android:id="@+id/search_edit_text"
                 style="@style/EditTextField"
+                android:autofillHints="searchRequest"
                 android:imeOptions="actionDone"
                 android:hint="@string/search_text" />
 

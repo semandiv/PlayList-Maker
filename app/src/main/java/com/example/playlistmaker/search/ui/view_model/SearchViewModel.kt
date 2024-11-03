@@ -21,14 +21,15 @@ class SearchViewModel(
     private val _searchResult = MutableLiveData<TrackSearchResult>()
     val searchResult: LiveData<TrackSearchResult> get() = _searchResult
 
-    fun searchedTracks(query: String) {
-        tracksInteractor.searchTracks(query){ result ->
-            _searchResult.postValue(result)
-        }
-    }
-
     init {
         loadHistory()
+    }
+
+
+    fun searchedTracks(query: String) {
+        tracksInteractor.searchTracks(query) { result ->
+            _searchResult.postValue(result)
+        }
     }
 
     fun playTrack(track: Track) {

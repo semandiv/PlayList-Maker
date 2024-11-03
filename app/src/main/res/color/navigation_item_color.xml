@@ -1,0 +1,5 @@
+<!-- res/color/navigation_item_color.xml -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="@color/main_background" android:state_checked="true" /> <!-- Активное состояние -->
+    <item android:color="@color/darkBackground" /> <!-- Неактивное состояние -->
+</selector>
