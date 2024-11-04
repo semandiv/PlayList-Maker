@@ -92,6 +92,7 @@ class SearchFragment : Fragment() {
 
         binding.searchEditText.setText(searchQuery)
 
+        binding.clearText.isVisible = false
         binding.clearText.setOnClickListener {
             clearTextField(binding.searchEditText, it)
         }
@@ -101,6 +102,7 @@ class SearchFragment : Fragment() {
                 previousTextLength = text?.length ?: 0
             },
             onTextChanged = { text: CharSequence?, _, _, _ ->
+                binding.clearText.isVisible = !text.isNullOrEmpty()
                 textChangeListener(text, binding.clearText)
                 searchDebounce()
             },
