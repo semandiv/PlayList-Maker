@@ -31,8 +31,6 @@ val searchDataModule = module {
 
     factory { Gson() }
 
-    /*single { RetrofitProvider(get()) }*/
-
     //RetrofitNetworkClient
     single<NetworkClient> {
         RetrofitNetworkClient(get())

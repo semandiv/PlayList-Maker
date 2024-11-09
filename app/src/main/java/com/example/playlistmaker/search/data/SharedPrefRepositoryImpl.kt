@@ -7,18 +7,16 @@ import com.example.playlistmaker.search.domain.models.Track
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-class SharedPrefRepositoryImpl(private val sharedPref: SharedPreferences, private val gson: Gson) :
-    SharedPrefRepository {
+class SharedPrefRepositoryImpl(
+    private val sharedPref: SharedPreferences,
+    private val gson: Gson
+) : SharedPrefRepository {
     private companion object {
         const val SEARCH_HISTORY_KEY = "searchHistory"
         const val SEARCH_HISTORY_SIZE = 10
     }
 
     private val history = mutableListOf<Track>()
-
-/*    init {
-        history.addAll(loadHistory())
-    }*/
 
     override fun getTrack(): List<Track> {
         if (history.isEmpty()) {
@@ -37,10 +35,10 @@ class SharedPrefRepositoryImpl(private val sharedPref: SharedPreferences, privat
             .distinct()
             .sortedBy { it != track }
             .take(SEARCH_HISTORY_SIZE)
-            .let { updateHistory(it)}
+            .let { updateHistory(it) }
     }
 
-    private fun updateHistory(it: List<Track>){
+    private fun updateHistory(it: List<Track>) {
         history.clear()
         history.addAll(it)
         saveTrack()
@@ -56,7 +54,7 @@ class SharedPrefRepositoryImpl(private val sharedPref: SharedPreferences, privat
         val itemType = object : TypeToken<List<Track>>() {}.type
         return sharedPref
             .getString(SEARCH_HISTORY_KEY, null)
-            ?.let {jsonString -> gson.fromJson(jsonString, itemType)}
-            ?:emptyList()
+            ?.let { jsonString -> gson.fromJson(jsonString, itemType) }
+            ?: emptyList()
     }
 }

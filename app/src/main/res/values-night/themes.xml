@@ -1,31 +1,36 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="Base.Theme.PlaylistMaker" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:background">@color/darkBackground</item>
+    <style name="Base.Theme.PlaylistMaker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:background">@android:color/transparent</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:font">@font/ys_display_medium</item>
         <item name="android:fontWeight">500</item>
     </style>
 
     <style name="Theme.SettingsView" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="android:background">@color/darkBackground</item>
+        <item name="android:background">@android:color/transparent</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:font">@font/ys_display_medium</item>
         <item name="android:fontWeight">500</item>
         <item name="android:colorAccent">@color/cursorColor</item>
-
     </style>
 
     <style name="Theme.SearchView" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="android:background">@color/darkBackground</item>
+        <item name="android:background">@android:color/transparent</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:font">@font/ys_display_medium</item>
         <item name="android:fontWeight">500</item>
         <item name="android:colorAccent">@color/cursorColor</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
-        <item name="android:windowIsTranslucent">true</item>
     </style>
 
     <style name="Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker" />
+
+    <style name="ThemeOverlay.PlaylistMaker.CustomSwitch" parent="ThemeOverlay.MaterialComponents.Light">
+        <item name="colorControlActivated">@color/main_background</item> <!-- Цвет для активного состояния -->
+        <item name="colorOnSurface">@color/main_background</item> <!-- Цвет выключенного состояния -->
+        <item name="trackTint">@color/trackTintColor</item>
+        <item name="thumbTint">@color/main_background</item>
+    </style>
 </resources>

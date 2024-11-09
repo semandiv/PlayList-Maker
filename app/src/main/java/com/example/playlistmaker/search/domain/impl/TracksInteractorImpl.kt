@@ -18,8 +18,9 @@ class TracksInteractorImpl(
         executor.execute {
             val result = when (val response = trackRepository.searchTracks(query)) {
                 is NetworkResult.Success -> {
-                    response.data?.let { TrackSearchResult.SearchResult(trackMapper.map(it)) }
-                        ?: TrackSearchResult.NoResult
+                    val tracks = response.data.map { trackMapper.map(it) }
+                    if (tracks.isNotEmpty()) TrackSearchResult.SearchResult(tracks)
+                    else TrackSearchResult.NoResult
                 }
                 is NetworkResult.EmptyResult -> TrackSearchResult.NoResult
                 is NetworkResult.Error, is NetworkResult.NetworkException -> TrackSearchResult.NetworkError

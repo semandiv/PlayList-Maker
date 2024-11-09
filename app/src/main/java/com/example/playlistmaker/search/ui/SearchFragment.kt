@@ -1,14 +1,14 @@
-package com.example.playlistmaker.search.ui.activity
+package com.example.playlistmaker.search.ui
 
 import android.annotation.SuppressLint
-import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.os.Parcelable
-import android.view.MenuItem
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -16,30 +16,26 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlistmaker.R
-import com.example.playlistmaker.databinding.ActivitySearchBinding
+import com.example.playlistmaker.databinding.FragmentSearchBinding
 import com.example.playlistmaker.player.ui.activity.PlayerActivity
 import com.example.playlistmaker.search.domain.models.Track
 import com.example.playlistmaker.search.domain.models.TrackSearchResult
 import com.example.playlistmaker.search.ui.view_model.SearchViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SearchActivity : AppCompatActivity() {
 
-    private companion object {
-        const val SEARCH_FIELD_KEY = "SearchField"
-        const val RECYCLER_STATE_KEY = "Tracks"
-        const val SEARCH_DEBOUNCE_DELAY = 2000L
-        const val CLICK_DEBOUNCE_DELAY = 1000L
-    }
+class SearchFragment : Fragment() {
 
     private val searchViewModel: SearchViewModel by viewModel()
-    private lateinit var binding: ActivitySearchBinding
+    private var _binding: FragmentSearchBinding? = null
+    private val binding get() = _binding!!
 
     private val searchRunnable = Runnable { searchRequest() }
     private val handler = Handler(Looper.getMainLooper())
-    private var isClickAlowed = true
+    private var isClickAllowed = true
     private lateinit var historyAdapter: TracksAdapter
     private lateinit var historyList: MutableList<Track>
     private var previousTextLength = 0
@@ -53,15 +49,23 @@ class SearchActivity : AppCompatActivity() {
 
     private var searchQuery = String()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentSearchBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        binding = ActivitySearchBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        setToolBar()
+        val toolbar = binding.searchToolbar
+        (activity as? AppCompatActivity)?.setSupportActionBar(toolbar)
+        toolbar.title = getString(R.string.search_text)
 
-        searchViewModel.searchResult.observe(this) { result ->
+
+        searchViewModel.searchResult.observe(viewLifecycleOwner) { result ->
             binding.progressBar.isVisible = false
             when (result) {
                 TrackSearchResult.NetworkError -> showPlaceHolders(false)
@@ -72,7 +76,7 @@ class SearchActivity : AppCompatActivity() {
 
         historyList = mutableListOf()
 
-        searchViewModel.history.observe(this) { history ->
+        searchViewModel.history.observe(viewLifecycleOwner) { history ->
             historyList.clear()
             historyList.addAll(history)
         }
@@ -88,16 +92,18 @@ class SearchActivity : AppCompatActivity() {
 
         binding.searchEditText.setText(searchQuery)
 
-        binding.clearText.setOnClickListener { view ->
-            clearTextField(binding.searchEditText, view)
+        binding.clearText.isVisible = false
+        binding.clearText.setOnClickListener {
+            clearTextField(binding.searchEditText, it)
         }
 
         binding.searchEditText.addTextChangedListener(
-            beforeTextChanged = {text: CharSequence?, _, _, _ ->
+            beforeTextChanged = { text: CharSequence?, _, _, _ ->
                 previousTextLength = text?.length ?: 0
             },
             onTextChanged = { text: CharSequence?, _, _, _ ->
-                textChageListener(text, binding.clearText)
+                binding.clearText.isVisible = !text.isNullOrEmpty()
+                textChangeListener(text, binding.clearText)
                 searchDebounce()
             },
             afterTextChanged = { text: CharSequence? ->
@@ -120,13 +126,12 @@ class SearchActivity : AppCompatActivity() {
         binding.searchEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 searchViewModel.searchedTracks(binding.searchEditText.text.toString())
-                binding.searchEditText.hideKeyboard()
                 hideHistory()
                 true
             } else false
         }
 
-        binding.trackList.layoutManager = LinearLayoutManager(this)
+        binding.trackList.layoutManager = LinearLayoutManager(requireContext())
         binding.trackList.adapter = adapter
 
 
@@ -134,7 +139,8 @@ class SearchActivity : AppCompatActivity() {
             refreshBtnClick(binding.searchEditText)
         }
 
-        val linearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true)
+        val linearLayoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
         binding.historyList.layoutManager = linearLayoutManager
         binding.historyList.adapter = historyAdapter
 
@@ -143,41 +149,14 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            android.R.id.home -> {
-                finish()
-                true
-            }
-
-            else -> super.onOptionsItemSelected(item)
-        }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(SEARCH_FIELD_KEY, searchQuery)
-        outState.putParcelable(
-            RECYCLER_STATE_KEY,
-            binding.trackList.layoutManager?.onSaveInstanceState()
-        )
-    }
-
-    @Suppress("DEPRECATION")
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        searchQuery = savedInstanceState.getString(SEARCH_FIELD_KEY, String())
-        val recyclerState = savedInstanceState.getParcelable<Parcelable>(RECYCLER_STATE_KEY)
-        if (recyclerState != null) {
-            binding.trackList.layoutManager?.onRestoreInstanceState(recyclerState)
-        }
-    }
-
-    private fun setToolBar() {
-        val toolbar = binding.searchToolbar
-        setSupportActionBar(toolbar)
-        supportActionBar?.title = getString(R.string.search_text)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    companion object {
+        const val SEARCH_DEBOUNCE_DELAY = 2000L
+        const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -205,7 +184,7 @@ class SearchActivity : AppCompatActivity() {
         searchViewModel.searchedTracks(inputText.text.toString())
     }
 
-    private fun textChageListener(text: CharSequence?, clearTextButton: ImageView) {
+    private fun textChangeListener(text: CharSequence?, clearTextButton: ImageView) {
         if (text != null) {
             searchQuery += text.toString()
             clearTextButton.isVisible = true
@@ -225,7 +204,7 @@ class SearchActivity : AppCompatActivity() {
         } else {
             hideHistory()
         }
-        view.hideKeyboard()
+        hideKeyboard()
     }
 
     private fun showSearchedTracks(newTracks: List<Track>) {
@@ -248,23 +227,17 @@ class SearchActivity : AppCompatActivity() {
         binding.trackList.scrollToPosition(0)
     }
 
-    private fun showPlaceHolders(zeroValue: Boolean){
+    private fun showPlaceHolders(zeroValue: Boolean) {
         //true если нет результата и false если ошибка сети/нет соединения
         binding.progressBar.isVisible = false
         binding.placeholderSearchView.isVisible = true
         binding.placeholderImageNoResult.isVisible = zeroValue
         binding.placeholderImageNoConnect.isVisible = !zeroValue
-        if(zeroValue){
+        if (zeroValue) {
             binding.placeholderText.text = getString(R.string.noResultMessage)
         } else binding.placeholderText.text = this.getString(R.string.noConnectMessage)
         binding.trackList.isVisible = false
         binding.refreshBtn.isVisible = !zeroValue
-    }
-
-    private fun View.hideKeyboard() {
-        val inputMethodManager =
-            getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.hideSoftInputFromWindow(windowToken, 0)
     }
 
     private fun saveTrack(track: Track) {
@@ -275,16 +248,22 @@ class SearchActivity : AppCompatActivity() {
     private fun startPlayer(track: Track) {
         if (clickDebounce()) {
             searchViewModel.playTrack(track)
-            val intent = Intent(this, PlayerActivity::class.java)
+            val intent = Intent(requireContext(), PlayerActivity::class.java)
             startActivity(intent)
         }
     }
 
+    private fun hideKeyboard() {
+        val inputMethodManager = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val view = requireActivity().currentFocus ?: View(requireContext())
+        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
     private fun clickDebounce(): Boolean {
-        val current = isClickAlowed
-        if (isClickAlowed) {
-            isClickAlowed = false
-            handler.postDelayed({ isClickAlowed = true }, CLICK_DEBOUNCE_DELAY)
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
         }
         return current
     }
@@ -295,10 +274,11 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun searchRequest() {
-        if (binding.searchEditText.text.isNotEmpty()) {
+        val query = binding.searchEditText.text
+        if (query.isNotEmpty() && query.toString() != searchQuery) {
             binding.progressBar.isVisible = true
-            searchViewModel.searchedTracks(binding.searchEditText.text.toString())
-            binding.searchEditText.hideKeyboard()
+            searchViewModel.searchedTracks(query.toString())
+            hideKeyboard()
             hideHistory()
         }
     }

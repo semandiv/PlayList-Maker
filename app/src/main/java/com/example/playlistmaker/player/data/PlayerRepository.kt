@@ -29,9 +29,9 @@ class PlayerRepository(
     }
 
     private fun getTrack(): Track? {
-        return (sharedPref.getString(SAVED_TRACK, null)
+        return sharedPref.getString(SAVED_TRACK, null)
             ?.let { jsonString ->
-                gson.fromJson(jsonString, Track::class.java) })
+                gson.fromJson(jsonString, Track::class.java) }
     }
 
     fun sendTrack(): Track? = track

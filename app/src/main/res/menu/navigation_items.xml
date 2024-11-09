@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/searchFragment"
+        android:icon="@drawable/search"
+        app:itemRippleColor="@color/fragBackground"
+        android:title="@string/search_text" />
+
+    <item
+        android:id="@+id/fragmentLibrary"
+        android:icon="@drawable/library"
+        app:itemRippleColor="@color/fragBackground"
+        android:title="@string/libraryTitle" />
+
+    <item
+        android:id="@+id/settingsFragment"
+        android:icon="@drawable/settings"
+        app:itemRippleColor="@color/fragBackground"
+        android:title="@string/settings_title" />
+</menu>

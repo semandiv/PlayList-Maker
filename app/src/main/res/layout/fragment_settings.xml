@@ -5,9 +5,8 @@
     android:id="@+id/settings"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/small_padding"
     android:orientation="vertical"
-    tools:context=".settings.ui.activity.SettingsActivity">
+    android:background="@color/fragBackground">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/settings_toolbar"
@@ -20,59 +19,69 @@
         <TextView
             android:id="@+id/dark_theme"
             android:text="@string/theme_switch"
+            android:layout_marginStart="4dp"
+            tools:text="@tools:sample/full_names"
             style="@style/SettingsTextView"/>
 
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/theme_switch"
-            android:trackTint="@color/trackTintColor"
-            android:thumbTint="@color/main_background"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/big_padding"/>
+            style="@style/switch_material_style" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/share_layout"
-        style="@style/SettingsViewLinearLayout">
+        style="@style/SettingsViewLinearLayout"
+        tools:ignore="UseCompoundDrawables">
 
         <TextView
             android:id="@+id/share_text"
             style="@style/SettingsTextView"
+            tools:text="@tools:sample/full_names"
             android:text="@string/share_app_text"/>
 
         <ImageView
             android:id="@+id/share_icon"
             style="@style/SettingsImageView"
+            android:contentDescription="@string/content_description"
+            tools:src="@tools:sample/avatars"
             app:srcCompat="@drawable/share" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/support_layout"
-        style="@style/SettingsViewLinearLayout">
+        style="@style/SettingsViewLinearLayout"
+        tools:ignore="UseCompoundDrawables">
 
         <TextView
             android:id="@+id/support_send"
+            tools:text="@tools:sample/full_names"
             android:text="@string/support_text"
             style="@style/SettingsTextView"/>
 
         <ImageView
             android:id="@+id/support_icon"
             style="@style/SettingsImageView"
+            android:contentDescription="@string/content_description"
+            tools:src="@tools:sample/avatars"
             app:srcCompat="@drawable/support" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/user_agreement_layout"
-        style="@style/SettingsViewLinearLayout">
+        style="@style/SettingsViewLinearLayout"
+        tools:ignore="UseCompoundDrawables">
 
         <TextView
             android:id="@+id/user_lic"
+            tools:text="@tools:sample/full_names"
             android:text="@string/user_lic_text"
             style="@style/SettingsTextView"/>
 
         <ImageView
             android:id="@+id/forward_arrow"
             style="@style/SettingsImageView"
+            android:contentDescription="@string/content_description"
+            tools:src="@tools:sample/avatars"
             app:srcCompat="@drawable/forward_arrow" />
 
     </LinearLayout>

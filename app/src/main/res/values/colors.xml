@@ -2,9 +2,11 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFF</color>
+    <color name="fragBackground">#FFFFFF</color>
     <color name="main_background">#3772E7</color>
     <color name="text_icon_color">#1A1B22</color>
     <color name="trackTintColor">#9FBBF3</color>
+    <color name="switchTrackColor">#E6E8EB</color>
     <color name="knobTintColor">#3772E7</color>
     <color name="grayTint">#AEAFB4</color>
     <color name="searchTextColorDark">#1A1B22</color>

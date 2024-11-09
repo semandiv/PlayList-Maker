@@ -1,4 +1,4 @@
-package com.example.playlistmaker.search.ui.activity
+package com.example.playlistmaker.search.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -20,10 +20,6 @@ class TracksAdapter(private val tracks: List<Track>, val listener: (Track) -> Un
 
     override fun getItemCount(): Int {
         return tracks.size
-    }
-
-    fun getItem(position: Int): Track {
-        return tracks[position]
     }
 
 }

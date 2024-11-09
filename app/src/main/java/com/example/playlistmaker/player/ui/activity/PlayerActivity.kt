@@ -97,7 +97,7 @@ class PlayerActivity : AppCompatActivity() {
             binding.trackName.text = it.trackName
             binding.timePlayValue.text = playerViewModel.timePlay
 
-            if (it.collectionName.isNullOrEmpty()) {
+            if (!it.collectionName.isNullOrEmpty()) {
                 binding.albumNameValue.text = it.collectionName
             } else {
                 hideAlbumName()

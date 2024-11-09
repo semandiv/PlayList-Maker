@@ -53,4 +53,7 @@
     <string name="newPlaylistBtnText">Новый плейлист</string>
     <string name="noPlaylist">Вы не создали\nни одного плейлиста</string>
     <string name="libraryTitle">Медиатека</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_navigate">NavigateActivity</string>
+    <string name="content_description">Просто изображение</string>
 </resources>
