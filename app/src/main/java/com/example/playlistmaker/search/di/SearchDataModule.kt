@@ -40,7 +40,7 @@ val searchDataModule = module {
     single { TrackMapper() }
 
     single<TrackRepository> {
-        TrackRepositoryImpl(get())
+        TrackRepositoryImpl(get(), get())
     }
 
     //SharedPrefRepository

@@ -16,7 +16,7 @@ private const val TRACK_TO_PLAY = "track_to_play"
 
 val searchDomainModule = module {
     //TracksInteractor
-    single<TracksInteractor> { TracksInteractorImpl(get(), get()) }
+    single<TracksInteractor> { TracksInteractorImpl(get()) }
 
     //HistoryInteractor
     single<HistoryInteractor> {

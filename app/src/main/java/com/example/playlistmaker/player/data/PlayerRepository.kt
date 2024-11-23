@@ -20,18 +20,8 @@ class PlayerRepository(
     private var listener: (PlayerState) -> Unit = {}
     private var playerState: PlayerState = PlayerState.DEFAULT
 
-    private fun updatePlayerState(state: PlayerState) {
-        listener.invoke(state)
-    }
-
     fun setPlayerStateListener(listener: (PlayerState) -> Unit) {
         this.listener = listener
-    }
-
-    private fun getTrack(): Track? {
-        return sharedPref.getString(SAVED_TRACK, null)
-            ?.let { jsonString ->
-                gson.fromJson(jsonString, Track::class.java) }
     }
 
     fun sendTrack(): Track? = track
@@ -76,5 +66,15 @@ class PlayerRepository(
 
     fun isPlaying(): Boolean {
         return mediaPlayer.isPlaying
+    }
+
+    private fun updatePlayerState(state: PlayerState) {
+        listener.invoke(state)
+    }
+
+    private fun getTrack(): Track? {
+        return sharedPref.getString(SAVED_TRACK, null)
+            ?.let { jsonString ->
+                gson.fromJson(jsonString, Track::class.java) }
     }
 }
