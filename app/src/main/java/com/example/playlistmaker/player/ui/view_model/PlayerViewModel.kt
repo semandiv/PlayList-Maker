@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.player.domain.api.PlayerInteractor
 import com.example.playlistmaker.player.domain.models.MediaState
 import com.example.playlistmaker.search.domain.models.Track
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -20,6 +21,8 @@ class PlayerViewModel(
         const val DELAY = 300L
         const val TIME_FORMAT = "mm:ss"
     }
+
+    private var timerJob: Job? = null
 
     private val track: Track? = playerInteractor.loadTrack()
     private val previewUrl: String = track?.previewUrl ?: String()
@@ -83,7 +86,8 @@ class PlayerViewModel(
     }
 
     private fun startUpdatingTime() {
-        viewModelScope.launch {
+        timerJob?.cancel()
+        timerJob = viewModelScope.launch {
             while (playerInteractor.isPlaying()) {
                 _currentPosition.postValue(getPositionToString(playerInteractor.currentPosition()))
                 delay(DELAY)

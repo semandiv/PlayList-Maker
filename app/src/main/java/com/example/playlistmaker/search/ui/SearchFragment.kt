@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
@@ -106,7 +105,7 @@ class SearchFragment : Fragment() {
             },
             onTextChanged = { text: CharSequence?, _, _, _ ->
                 binding.clearText.isVisible = !text.isNullOrEmpty()
-                textChangeListener(text, binding.clearText)
+                textChangeListener(text)
                 searchDebounce()
             },
             afterTextChanged = { text: CharSequence? ->
@@ -114,6 +113,7 @@ class SearchFragment : Fragment() {
 
                 if (backSpaceOnPressed) {
                     binding.trackList.isVisible = false
+                    if (text?.length == 0) binding.clearText.isVisible = false
                 }
             }
         )
@@ -187,10 +187,9 @@ class SearchFragment : Fragment() {
         searchViewModel.searchedTracks(inputText.text.toString())
     }
 
-    private fun textChangeListener(text: CharSequence?, clearTextButton: ImageView) {
+    private fun textChangeListener(text: CharSequence?) {
         if (text != null) {
             searchQuery += text.toString()
-            clearTextButton.isVisible = true
         }
     }
 
@@ -245,7 +244,7 @@ class SearchFragment : Fragment() {
 
     private fun saveTrack(track: Track) {
         searchViewModel.saveTrackToHistory(track)
-        adapter.notifyItemInserted(0)
+        historyAdapter.notifyItemInserted(0)
     }
 
     private fun startPlayer(track: Track) {
