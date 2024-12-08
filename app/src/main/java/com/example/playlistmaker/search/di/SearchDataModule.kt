@@ -2,13 +2,10 @@ package com.example.playlistmaker.search.di
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.room.Room
 import com.example.playlistmaker.search.data.NetworkClient
 import com.example.playlistmaker.search.data.SharedPrefRepositoryImpl
 import com.example.playlistmaker.search.data.TrackPlayRepositoryImpl
 import com.example.playlistmaker.search.data.TrackRepositoryImpl
-import com.example.playlistmaker.search.data.convertors.TrackDBConvertor
-import com.example.playlistmaker.search.data.db.TrackDatabase
 import com.example.playlistmaker.search.data.network.AppleAPI
 import com.example.playlistmaker.search.data.network.RetrofitNetworkClient
 import com.example.playlistmaker.search.domain.api.SharedPrefRepository
@@ -43,7 +40,7 @@ val searchDataModule = module {
     single { TrackMapper() }
 
     single<TrackRepository> {
-        TrackRepositoryImpl(get(), get())
+        TrackRepositoryImpl(get())
     }
 
     //SharedPrefRepository
@@ -60,11 +57,4 @@ val searchDataModule = module {
         val sharedPrefs: SharedPreferences = get { parametersOf(name) }
         TrackPlayRepositoryImpl(sharedPrefs, get())
     }
-
-    single {
-        Room.databaseBuilder(androidContext(), TrackDatabase::class.java, "database.db")
-            .build()
-    }
-
-    factory { TrackDBConvertor() }
 }

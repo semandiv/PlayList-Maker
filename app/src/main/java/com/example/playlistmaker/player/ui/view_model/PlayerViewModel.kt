@@ -1,15 +1,13 @@
 package com.example.playlistmaker.player.ui.view_model
 
+import android.os.Handler
+import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.player.domain.api.PlayerInteractor
 import com.example.playlistmaker.player.domain.models.MediaState
 import com.example.playlistmaker.search.domain.models.Track
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -21,8 +19,6 @@ class PlayerViewModel(
         const val DELAY = 300L
         const val TIME_FORMAT = "mm:ss"
     }
-
-    private var timerJob: Job? = null
 
     private val track: Track? = playerInteractor.loadTrack()
     private val previewUrl: String = track?.previewUrl ?: String()
@@ -38,6 +34,7 @@ class PlayerViewModel(
         Locale.getDefault()
     ).format(track?.trackTimeMillis?.toLong() ?: String())
 
+    private val handler = Handler(Looper.getMainLooper())
 
     init {
         playerInteractor.observeMediaState (_mediaState::postValue)
@@ -46,6 +43,7 @@ class PlayerViewModel(
 
     override fun onCleared() {
         releasePlayer()
+        stopUpdateTime()
     }
 
     fun getCoverUrl() = track?.artworkUrl100?.replaceAfterLast('/', "512x512bb.jpg")
@@ -64,6 +62,7 @@ class PlayerViewModel(
 
     fun pause() {
         if (previewUrl.isNotEmpty()) {
+            stopUpdateTime()
             playerInteractor.pause()
         }
     }
@@ -80,19 +79,26 @@ class PlayerViewModel(
 
     private fun play() {
         if (previewUrl.isNotEmpty()) {
-            playerInteractor.play()
             startUpdatingTime()
+            playerInteractor.play()
         }
     }
 
     private fun startUpdatingTime() {
-        timerJob?.cancel()
-        timerJob = viewModelScope.launch {
-            while (playerInteractor.isPlaying()) {
-                _currentPosition.postValue(getPositionToString(playerInteractor.currentPosition()))
-                delay(DELAY)
+        handler.post(object : Runnable {
+            override fun run() {
+                if (playerInteractor.isPlaying()) {
+                    _currentPosition.postValue(getPositionToString(playerInteractor.currentPosition()))
+                    handler.postDelayed(this, DELAY)
+                } else {
+                    stopUpdateTime()
+                }
             }
-        }
+        })
+    }
+
+    private fun stopUpdateTime() {
+        handler.removeCallbacksAndMessages(null)
     }
 
     private fun getPositionToString(position: Int): String {

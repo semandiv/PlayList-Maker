@@ -4,17 +4,19 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentSearchBinding
@@ -22,9 +24,6 @@ import com.example.playlistmaker.player.ui.activity.PlayerActivity
 import com.example.playlistmaker.search.domain.models.Track
 import com.example.playlistmaker.search.domain.models.TrackSearchResult
 import com.example.playlistmaker.search.ui.view_model.SearchViewModel
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -34,9 +33,8 @@ class SearchFragment : Fragment() {
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
 
-    private var searchJob: Job?= null
-    private var clickJob: Job?= null
-
+    private val searchRunnable = Runnable { searchRequest() }
+    private val handler = Handler(Looper.getMainLooper())
     private var isClickAllowed = true
     private lateinit var historyAdapter: TracksAdapter
     private lateinit var historyList: MutableList<Track>
@@ -105,7 +103,7 @@ class SearchFragment : Fragment() {
             },
             onTextChanged = { text: CharSequence?, _, _, _ ->
                 binding.clearText.isVisible = !text.isNullOrEmpty()
-                textChangeListener(text)
+                textChangeListener(text, binding.clearText)
                 searchDebounce()
             },
             afterTextChanged = { text: CharSequence? ->
@@ -113,7 +111,6 @@ class SearchFragment : Fragment() {
 
                 if (backSpaceOnPressed) {
                     binding.trackList.isVisible = false
-                    if (text?.length == 0) binding.clearText.isVisible = false
                 }
             }
         )
@@ -187,9 +184,10 @@ class SearchFragment : Fragment() {
         searchViewModel.searchedTracks(inputText.text.toString())
     }
 
-    private fun textChangeListener(text: CharSequence?) {
+    private fun textChangeListener(text: CharSequence?, clearTextButton: ImageView) {
         if (text != null) {
             searchQuery += text.toString()
+            clearTextButton.isVisible = true
         }
     }
 
@@ -244,7 +242,7 @@ class SearchFragment : Fragment() {
 
     private fun saveTrack(track: Track) {
         searchViewModel.saveTrackToHistory(track)
-        historyAdapter.notifyItemInserted(0)
+        adapter.notifyItemInserted(0)
     }
 
     private fun startPlayer(track: Track) {
@@ -265,21 +263,14 @@ class SearchFragment : Fragment() {
         val current = isClickAllowed
         if (isClickAllowed) {
             isClickAllowed = false
-            clickJob?.cancel()
-            clickJob = lifecycleScope.launch {
-                delay(CLICK_DEBOUNCE_DELAY)
-                isClickAllowed = true
-            }
+            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
         }
         return current
     }
 
     private fun searchDebounce() {
-        searchJob?.cancel()
-        searchJob = lifecycleScope.launch {
-            delay(SEARCH_DEBOUNCE_DELAY)
-            searchRequest()
-        }
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
     }
 
     private fun searchRequest() {
