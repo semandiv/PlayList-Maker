@@ -1,5 +1,6 @@
 [versions]
 agp = "8.7.2"
+artifactid = "2.1.0"
 glide = "4.16.0"
 gson = "2.11.0"
 kotlin = "2.0.0"
@@ -21,10 +22,14 @@ navigationUiKtx = "2.8.3"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.9.3"
 composeBom = "2024.10.01"
+roomKtx = "2.7.0-alpha11"
+roomRuntime = "2.7.0-alpha11"
+roomCompiler = "2.7.0-alpha11"
 
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+artifactid = { module = "groupId:artifactId", version.ref = "artifactid" }
 compiler = { module = "com.github.bumptech.glide:compiler", version = "4.16.0" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
@@ -53,6 +58,9 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomRuntime" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomCompiler" }
 
 
 

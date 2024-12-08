@@ -2,6 +2,7 @@ package com.example.playlistmaker
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
+import com.example.playlistmaker.library.di.favoritesViewModelModule
 import com.example.playlistmaker.player.di.playerDataModule
 import com.example.playlistmaker.player.di.playerViewModelModule
 import com.example.playlistmaker.search.di.searchDataModule
@@ -29,7 +30,8 @@ class App : Application() {
                 searchViewModelModule,
                 playerDataModule,
                 playerViewModelModule,
-                settingsViewModelModule)
+                settingsViewModelModule,
+                favoritesViewModelModule)
         }
 
         //грузим тему из настроек
