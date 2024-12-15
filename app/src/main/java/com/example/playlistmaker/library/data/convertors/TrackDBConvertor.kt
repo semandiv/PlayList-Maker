@@ -1,6 +1,6 @@
-package com.example.playlistmaker.search.data.convertors
+package com.example.playlistmaker.library.data.convertors
 
-import com.example.playlistmaker.search.data.db.TrackEntity
+import com.example.playlistmaker.library.data.db.TrackEntity
 import com.example.playlistmaker.search.domain.models.Track
 
 class TrackDBConvertor {
@@ -16,7 +16,8 @@ class TrackDBConvertor {
             track.releaseDate,
             track.collectionName,
             track.country,
-            track.primaryGenreName
+            track.primaryGenreName,
+            track.isFavorite
         )
     }
 
@@ -31,7 +32,8 @@ class TrackDBConvertor {
             trackEntity.releaseDate,
             trackEntity.collectionName,
             trackEntity.country,
-            trackEntity.primaryGenreName
+            trackEntity.primaryGenreName,
+            trackEntity.isFavorite
         )
     }
 }

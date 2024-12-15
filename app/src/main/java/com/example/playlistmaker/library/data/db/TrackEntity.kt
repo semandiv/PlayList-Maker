@@ -1,4 +1,4 @@
-package com.example.playlistmaker.search.data.db
+package com.example.playlistmaker.library.data.db
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -14,5 +14,6 @@ class TrackEntity(
     val releaseDate: String?,
     val primaryGenreName: String?,
     val country: String?,
-    val collectionName: String?
+    val collectionName: String?,
+    val isFavorite: Boolean = false
 )

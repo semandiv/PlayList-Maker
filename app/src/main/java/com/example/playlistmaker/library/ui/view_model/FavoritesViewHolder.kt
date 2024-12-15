@@ -1,4 +1,4 @@
-package com.example.playlistmaker.library.view_model
+package com.example.playlistmaker.library.ui.view_model
 
 import android.annotation.SuppressLint
 import androidx.recyclerview.widget.RecyclerView

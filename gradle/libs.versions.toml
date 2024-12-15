@@ -1,5 +1,6 @@
 [versions]
-agp = "8.7.2"
+agp = "8.7.3"
+annotations = "23.0.0"
 artifactid = "2.1.0"
 glide = "4.16.0"
 gson = "2.11.0"
@@ -9,7 +10,7 @@ junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 appcompat = "1.7.0"
-kotlinxCoroutinesAndroid = "1.7.3"
+kotlinxCoroutinesAndroid = "1.9.0"
 material = "1.12.0"
 activity = "1.9.3"
 constraintlayout = "2.2.0"
@@ -17,18 +18,19 @@ retrofit = "2.11.0"
 activityKtx = "1.9.3"
 koinAndroid = "4.0.0"
 fragmentKtx = "1.8.5"
-navigationFragmentKtx = "2.8.3"
-navigationUiKtx = "2.8.3"
+navigationFragmentKtx = "2.8.5"
+navigationUiKtx = "2.8.5"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.9.3"
-composeBom = "2024.10.01"
-roomKtx = "2.7.0-alpha11"
-roomRuntime = "2.7.0-alpha11"
-roomCompiler = "2.7.0-alpha11"
+composeBom = "2024.12.01"
+roomCompilerVersion = "2.6.1"
+roomKtxVersion = "2.6.1"
+roomRuntimeVersion = "2.6.1"
 
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+annotations = { module = "org.jetbrains:annotations", version.ref = "annotations" }
 artifactid = { module = "groupId:artifactId", version.ref = "artifactid" }
 compiler = { module = "com.github.bumptech.glide:compiler", version = "4.16.0" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
@@ -58,9 +60,9 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
-androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
-androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomRuntime" }
-androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomCompiler" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomCompilerVersion" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtxVersion" }
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomRuntimeVersion" }
 
 
 

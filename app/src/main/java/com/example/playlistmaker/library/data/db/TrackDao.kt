@@ -1,11 +1,11 @@
-package com.example.playlistmaker.search.data.db
+package com.example.playlistmaker.library.data.db
 
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.playlistmaker.search.domain.models.Track
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TrackDao {
@@ -20,6 +20,6 @@ interface TrackDao {
     suspend fun getTrackId(): List<String>
 
     @Query("SELECT * FROM track_table")
-    suspend fun getAllTracks(): List<TrackEntity>
+    fun getAllTracks(): Flow<List<TrackEntity>>
 
 }

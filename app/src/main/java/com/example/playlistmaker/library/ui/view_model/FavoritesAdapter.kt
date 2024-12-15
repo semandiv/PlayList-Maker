@@ -1,10 +1,10 @@
-package com.example.playlistmaker.library.view_model
+package com.example.playlistmaker.library.ui.view_model
 
 import android.view.LayoutInflater
-import com.example.playlistmaker.search.domain.models.Track
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.databinding.ItemTrackBinding
+import com.example.playlistmaker.search.domain.models.Track
 
 class FavoritesAdapter(
     private val tracks: List<Track>,

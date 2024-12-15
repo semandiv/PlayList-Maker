@@ -1,14 +1,10 @@
 package com.example.playlistmaker.search.di
 
-import com.example.playlistmaker.search.data.FavoritesRepositoryImpl
-import com.example.playlistmaker.search.domain.api.FavoritesInteractor
 import com.example.playlistmaker.search.domain.api.HistoryInteractor
 import com.example.playlistmaker.search.domain.api.SharedPrefRepository
 import com.example.playlistmaker.search.domain.api.ToPlayerInteractor
 import com.example.playlistmaker.search.domain.api.TrackPlayRepository
 import com.example.playlistmaker.search.domain.api.TracksInteractor
-import com.example.playlistmaker.search.domain.db.FavoritesRespository
-import com.example.playlistmaker.search.domain.impl.FavoritesInteractorImpl
 import com.example.playlistmaker.search.domain.impl.HistoryInteractorImpl
 import com.example.playlistmaker.search.domain.impl.ToPlayerInteractorImpl
 import com.example.playlistmaker.search.domain.impl.TracksInteractorImpl
@@ -33,11 +29,5 @@ val searchDomainModule = module {
         ToPlayerInteractorImpl(trackRepository)
     }
 
-    single<FavoritesRespository>{
-        FavoritesRepositoryImpl(get(), get())
-    }
 
-    single<FavoritesInteractor>{
-        FavoritesInteractorImpl(get())
-    }
 }

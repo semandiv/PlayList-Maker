@@ -1,9 +1,9 @@
-package com.example.playlistmaker.search.data.db
+package com.example.playlistmaker.library.data.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 
-@Database(version = 1, entities = [TrackEntity::class])
+@Database(version = 2, entities = [TrackEntity::class])
 abstract class TrackDatabase: RoomDatabase(){
     abstract fun trackDao(): TrackDao
 }
