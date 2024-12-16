@@ -1,9 +1,11 @@
-package com.example.playlistmaker.search.domain.models
+package com.example.playlistmaker.library.data.db
 
-import java.io.Serializable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-data class Track(
-    val trackId: String,
+@Entity(tableName = "track_table")
+class TrackEntity(
+    @PrimaryKey val trackId: String,
     val trackName: String,
     val artistName: String?,
     val trackTimeMillis: String?,
@@ -13,5 +15,5 @@ data class Track(
     val primaryGenreName: String?,
     val country: String?,
     val collectionName: String?,
-    var isFavorite: Boolean = false
-) : Serializable
+    val isFavorite: Boolean = false
+)

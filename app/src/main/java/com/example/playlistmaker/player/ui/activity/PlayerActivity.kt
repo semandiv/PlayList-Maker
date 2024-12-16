@@ -6,12 +6,14 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityPlayerBinding
 import com.example.playlistmaker.player.domain.models.MediaState
 import com.example.playlistmaker.player.ui.view_model.PlayerViewModel
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlayerActivity : AppCompatActivity() {
@@ -42,12 +44,23 @@ class PlayerActivity : AppCompatActivity() {
             }
         }
 
+        playerViewModel.isFavorite.observe(this) { isFavorite ->
+            when (isFavorite){
+                true -> binding.likeButton.setImageResource(R.drawable.like_active)
+                false -> binding.likeButton.setImageResource(R.drawable.like_unfill)
+            }
+        }
+
         playerViewModel.currentPosition.observe(this) { position ->
             binding.playingTime.text = position
         }
 
         binding.playButton.setOnClickListener {
             playerViewModel.onClickPlayButton()
+        }
+
+        binding.likeButton.setOnClickListener {
+            likeButtonClicked()
         }
 
     }
@@ -132,5 +145,11 @@ class PlayerActivity : AppCompatActivity() {
     private fun handleNullTrack() {
         binding.playButton.isEnabled = false
         Toast.makeText(this, getString(R.string.not_load_previewTrack), Toast.LENGTH_SHORT).show()
+    }
+
+    private fun likeButtonClicked() {
+        lifecycleScope.launch {
+            playerViewModel.toggleFavorite()
+        }
     }
 }
