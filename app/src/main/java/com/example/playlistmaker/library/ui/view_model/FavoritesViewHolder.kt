@@ -12,7 +12,7 @@ import java.util.Locale
 
 class FavoritesViewHolder(
     private val binding: ItemTrackBinding,
-    private val adapter: FavoritesAdapter
+    private val listener: (Track) -> Unit
 ): RecyclerView.ViewHolder(binding.root) {
 
     private val separator = " \u2022 "
@@ -36,8 +36,6 @@ class FavoritesViewHolder(
 
         binding.artistName.requestLayout()
 
-        itemView.setOnClickListener{
-            adapter.listener.invoke(track)
-        }
+        binding.root.setOnClickListener { listener(track) }
     }
 }

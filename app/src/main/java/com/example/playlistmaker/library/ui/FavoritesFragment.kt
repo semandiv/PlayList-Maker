@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlistmaker.databinding.FragmentFavoritesBinding
@@ -23,19 +22,14 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FavoritesFragment : Fragment() {
 
+    private lateinit var adapter: FavoritesAdapter
     private val favViewModel: FavoritesViewModel by viewModel()
     private var _binding: FragmentFavoritesBinding? = null
     private val binding get() = _binding!!
 
-    private val tracks = mutableListOf<Track>()
-
     private var clickJob: Job?= null
 
     private var isClickAllowed = true
-
-    private val adapter = FavoritesAdapter(tracks) { track ->
-        startPlayer(track)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,29 +47,26 @@ class FavoritesFragment : Fragment() {
 
         binding.favoritesPlaceholder.isVisible = false
 
-
-        favViewModel.tracks.observe(viewLifecycleOwner, Observer { tracksList ->
-            if (tracksList.isEmpty()) {
-                showPlaceHolder()
-            } else {
-                tracks.clear()
-                tracks.addAll(tracksList)
-                adapter.notifyDataSetChanged()
-            }
-        })
+        adapter = FavoritesAdapter { track ->
+            startPlayer(track)
+        }
 
         binding.favoritesList.layoutManager = LinearLayoutManager(requireContext())
         binding.favoritesList.adapter = adapter
+
+        favViewModel.tracks.observe(viewLifecycleOwner) { tracksList ->
+            if (tracksList.isEmpty()) {
+                showPlaceHolder(true)
+            } else {
+                showPlaceHolder(false)
+                adapter.submitList(tracksList)
+            }
+        }
     }
 
-    override fun onResume() {
-        super.onResume()
-        favViewModel.getTracks()
-    }
-
-    private fun showPlaceHolder() {
-        binding.favoritesList.isVisible = false
-        binding.favoritesPlaceholder.isVisible = true
+    private fun showPlaceHolder(show: Boolean) {
+        binding.favoritesList.isVisible = !show
+        binding.favoritesPlaceholder.isVisible = show
 
     }
 
@@ -104,6 +95,6 @@ class FavoritesFragment : Fragment() {
         fun newInstance(): FavoritesFragment {
             return FavoritesFragment()
         }
-        const val CLICK_DEBOUNCE_DELAY = 1000L
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 }
