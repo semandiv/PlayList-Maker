@@ -64,6 +64,11 @@ class FavoritesFragment : Fragment() {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun showPlaceHolder(show: Boolean) {
         binding.favoritesList.isVisible = !show
         binding.favoritesPlaceholder.isVisible = show

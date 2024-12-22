@@ -17,7 +17,7 @@ class TrackDBConvertor {
             track.collectionName,
             track.country,
             track.primaryGenreName,
-            track.isFavorite
+            track.timeStamp
         )
     }
 
@@ -33,7 +33,7 @@ class TrackDBConvertor {
             trackEntity.collectionName,
             trackEntity.country,
             trackEntity.primaryGenreName,
-            trackEntity.isFavorite
+            trackEntity.timeStamp
         )
     }
 }

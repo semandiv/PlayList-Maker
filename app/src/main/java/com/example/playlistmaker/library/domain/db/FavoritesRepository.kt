@@ -3,7 +3,7 @@ package com.example.playlistmaker.library.domain.db
 import com.example.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.flow.Flow
 
-interface FavoritesRespository {
+interface FavoritesRepository {
 
     fun getFavoritesTrack(): Flow<List<Track>>
 

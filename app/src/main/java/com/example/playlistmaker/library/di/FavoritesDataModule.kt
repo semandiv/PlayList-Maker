@@ -9,8 +9,13 @@ import org.koin.dsl.module
 val favoritesDataModule = module {
     single {
         Room.databaseBuilder(androidContext(), TrackDatabase::class.java, "database.db")
+            .fallbackToDestructiveMigration()
             .build()
     }
 
     factory { TrackDBConvertor() }
+
+    // Получаем TrackDao из базы данных
+    factory { get<TrackDatabase>().trackDao() }
+
 }

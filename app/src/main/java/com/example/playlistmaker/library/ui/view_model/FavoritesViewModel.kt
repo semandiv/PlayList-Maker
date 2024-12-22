@@ -18,7 +18,7 @@ class FavoritesViewModel(
         viewModelScope.launch {
             favInteractor.getFavoritesTrack()
                 .collect{tracks ->
-                    _tracks.postValue(tracks.asReversed())
+                    _tracks.postValue(tracks)
                 }
         }
     }
@@ -40,7 +40,7 @@ class FavoritesViewModel(
         viewModelScope.launch {
             favInteractor.getFavoritesTrack()
                 .collect{tracks ->
-                    _tracks.postValue(tracks.asReversed())
+                    _tracks.postValue(tracks)
                 }
         }
     }

@@ -2,17 +2,20 @@ package com.example.playlistmaker.library.di
 
 import com.example.playlistmaker.library.data.FavoritesRepositoryImpl
 import com.example.playlistmaker.library.domain.api.FavoritesInteractor
-import com.example.playlistmaker.library.domain.db.FavoritesRespository
+import com.example.playlistmaker.library.domain.db.FavoritesRepository
 import com.example.playlistmaker.library.domain.impl.FavoritesInteractorImpl
 import org.koin.dsl.module
 
 val favoritesDomainModule = module {
 
-    single<FavoritesRespository>{
-        FavoritesRepositoryImpl(get(), get())
+    factory<FavoritesRepository> {
+        FavoritesRepositoryImpl(
+            trackDAO = get(),
+            trackDBConvertor = get()
+        )
     }
 
-    single<FavoritesInteractor>{
+    factory<FavoritesInteractor>{
         FavoritesInteractorImpl(get())
     }
 }

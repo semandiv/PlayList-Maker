@@ -1,6 +1,7 @@
 package com.example.playlistmaker.library.ui.view_model
 
 import android.annotation.SuppressLint
+import android.content.Context
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -15,13 +16,16 @@ class FavoritesViewHolder(
     private val listener: (Track) -> Unit
 ): RecyclerView.ViewHolder(binding.root) {
 
-    private val separator = " \u2022 "
+    private companion object{
+        const val SEPARATOR = " \u2022 "
+    }
+
 
     @SuppressLint("SetTextI18n")
     fun bind(track: Track) {
         binding.trackName.text = track.trackName
         binding.artistName.text = track.artistName
-        binding.trackTime.text = separator + SimpleDateFormat(
+        binding.trackTime.text = SEPARATOR + SimpleDateFormat(
             "mm:ss",
             Locale.getDefault()
         ).format(track.trackTimeMillis?.toLong() ?: String())
@@ -31,11 +35,15 @@ class FavoritesViewHolder(
             .load(track.artworkUrl100)
             .placeholder(R.drawable.placeholder)
             .error(R.drawable.placeholder)
-            .transform(RoundedCorners(16))
+            .transform(RoundedCorners(dpToPx(16, itemView.context)))
             .into(binding.artwork)
 
         binding.artistName.requestLayout()
 
         binding.root.setOnClickListener { listener(track) }
+    }
+
+    private fun dpToPx(dp: Int, context: Context): Int {
+        return (dp * context.resources.displayMetrics.density).toInt()
     }
 }

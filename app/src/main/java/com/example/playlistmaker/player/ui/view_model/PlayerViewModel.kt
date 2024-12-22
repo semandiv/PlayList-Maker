@@ -85,12 +85,14 @@ class PlayerViewModel(
 
     suspend fun toggleFavorite() {
         if (track != null) {
-            if (track.isFavorite) {
+            val trackContains = favoritesInteractor.getTracksID()
+                .firstOrNull { items -> items.contains(track.trackId) } != null
+
+            if (trackContains) {
                 favoritesInteractor.removeTrack(track)
             } else {
                 favoritesInteractor.addTrack(track)
             }
-
             getFavorites(track)
         }
     }
@@ -128,7 +130,6 @@ class PlayerViewModel(
             .firstOrNull { items -> items.contains(track.trackId) } != null
 
         _isFavorite.postValue(isFavorite)
-        track.isFavorite = isFavorite
     }
 
     private fun getFavorites(track: Track?) {

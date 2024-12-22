@@ -13,5 +13,5 @@ data class Track(
     val primaryGenreName: String?,
     val country: String?,
     val collectionName: String?,
-    var isFavorite: Boolean = false
+    var timeStamp: Long = System.currentTimeMillis()
 ) : Serializable

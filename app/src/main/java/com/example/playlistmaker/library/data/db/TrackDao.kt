@@ -19,7 +19,7 @@ interface TrackDao {
     @Query("SELECT trackId FROM track_table")
     suspend fun getTrackId(): List<String>
 
-    @Query("SELECT * FROM track_table")
+    @Query("SELECT * FROM track_table ORDER BY timeStamp DESC")
     fun getAllTracks(): Flow<List<TrackEntity>>
 
 }
