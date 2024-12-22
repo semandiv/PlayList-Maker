@@ -4,17 +4,20 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.playlistmaker.library.domain.api.FavoritesInteractor
 import com.example.playlistmaker.player.domain.api.PlayerInteractor
 import com.example.playlistmaker.player.domain.models.MediaState
 import com.example.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class PlayerViewModel(
-    private val playerInteractor: PlayerInteractor
+    private val playerInteractor: PlayerInteractor,
+    private val favoritesInteractor: FavoritesInteractor
 ) : ViewModel() {
 
     private companion object {
@@ -33,6 +36,9 @@ class PlayerViewModel(
     private val _mediaState = MutableLiveData<MediaState>()
     val mediaState: LiveData<MediaState> get() = _mediaState
 
+    private val _isFavorite = MutableLiveData<Boolean>()
+    val isFavorite: LiveData<Boolean> get() = _isFavorite
+
     val timePlay: String = SimpleDateFormat(
         TIME_FORMAT,
         Locale.getDefault()
@@ -40,8 +46,9 @@ class PlayerViewModel(
 
 
     init {
-        playerInteractor.observeMediaState (_mediaState::postValue)
+        playerInteractor.observeMediaState(_mediaState::postValue)
         preparePlayer()
+        getFavorites(track)
     }
 
     override fun onCleared() {
@@ -50,13 +57,15 @@ class PlayerViewModel(
 
     fun getCoverUrl() = track?.artworkUrl100?.replaceAfterLast('/', "512x512bb.jpg")
 
-    fun onClickPlayButton(){
-        when(mediaState.value){
-            MediaState.Default -> { /* NOP*/}
+    fun onClickPlayButton() {
+        when (mediaState.value) {
+            MediaState.Default -> { /* NOP*/ }
+
             MediaState.Paused -> play()
             MediaState.Playing -> pause()
             is MediaState.Prepared -> play()
-            null -> { }
+
+            null -> { /* NOP*/ }
         }
     }
 
@@ -71,6 +80,20 @@ class PlayerViewModel(
     fun releasePlayer() {
         if (previewUrl.isNotEmpty()) {
             playerInteractor.releasePlayer()
+        }
+    }
+
+    suspend fun toggleFavorite() {
+        if (track != null) {
+            val trackContains = favoritesInteractor.getTracksID()
+                .firstOrNull { items -> items.contains(track.trackId) } != null
+
+            if (trackContains) {
+                favoritesInteractor.removeTrack(track)
+            } else {
+                favoritesInteractor.addTrack(track)
+            }
+            getFavorites(track)
         }
     }
 
@@ -100,5 +123,20 @@ class PlayerViewModel(
             TIME_FORMAT,
             Locale.getDefault()
         ).format(position)
+    }
+
+    private suspend fun isFavorite(track: Track) {
+        val isFavorite = favoritesInteractor.getTracksID()
+            .firstOrNull { items -> items.contains(track.trackId) } != null
+
+        _isFavorite.postValue(isFavorite)
+    }
+
+    private fun getFavorites(track: Track?) {
+        if (track != null) {
+            viewModelScope.launch {
+                isFavorite(track)
+            }
+        }
     }
 }

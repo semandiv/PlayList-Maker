@@ -1,0 +1,27 @@
+package com.example.playlistmaker.library.domain.impl
+
+import com.example.playlistmaker.library.domain.api.FavoritesInteractor
+import com.example.playlistmaker.library.domain.db.FavoritesRepository
+import com.example.playlistmaker.search.domain.models.Track
+import kotlinx.coroutines.flow.Flow
+
+class FavoritesInteractorImpl(
+    private val favoritesRepository: FavoritesRepository
+): FavoritesInteractor {
+
+    override fun getFavoritesTrack(): Flow<List<Track>> {
+        return favoritesRepository.getFavoritesTrack()
+    }
+
+    override fun getTracksID(): Flow<List<String>> {
+        return favoritesRepository.getTracksID()
+    }
+
+    override suspend fun addTrack(track: Track) {
+        favoritesRepository.addTrack(track)
+    }
+
+    override suspend fun removeTrack(track: Track) {
+        favoritesRepository.removeTrack(track)
+    }
+}

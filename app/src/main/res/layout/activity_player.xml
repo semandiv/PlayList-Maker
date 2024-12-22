@@ -179,11 +179,22 @@
     <ImageButton
         android:id="@+id/likeButton"
         android:contentDescription="@string/add_track_to_favorities"
-        android:src="@drawable/baseline_favorite_border_25"
+        android:src="@drawable/like_unfill"
         app:layout_constraintEnd_toStartOf="@id/right_guideline"
         app:layout_constraintStart_toEndOf="@id/playButton"
         app:layout_constraintBottom_toTopOf="@id/playingTime"
-        style="@style/smallControlButton"/>
+        style="@style/smallControlButton"
+        android:visibility="visible"/>
+
+    <ImageButton
+        android:id="@+id/likeButton_Act"
+        android:contentDescription="@string/add_track_to_favorities"
+        android:src="@drawable/like_active"
+        app:layout_constraintEnd_toEndOf="@id/likeButton"
+        app:layout_constraintStart_toStartOf="@id/likeButton"
+        app:layout_constraintBottom_toTopOf="@id/playingTime"
+        style="@style/smallControlButton"
+        android:visibility="invisible"/>
 
     <TextView
         android:id="@+id/artistName"

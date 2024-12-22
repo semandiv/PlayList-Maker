@@ -28,4 +28,6 @@ val searchDomainModule = module {
         val trackRepository: TrackPlayRepository = get { parametersOf(TRACK_TO_PLAY) }
         ToPlayerInteractorImpl(trackRepository)
     }
+
+
 }
