@@ -22,4 +22,9 @@
     <dimen name="dp9_size">9dp</dimen>
     <dimen name="toolbarTitleTopPadd">10dp</dimen>
     <dimen name="dp34_size">34dp</dimen>
+    <dimen name="dp56_size">56dp</dimen>
+    <dimen name="dp32_size">32dp</dimen>
+    <dimen name="dp44_size">44dp</dimen>
+    <dimen name="dp17_size">17dp</dimen>
+    <dimen name="dp26_size">26dp</dimen>
 </resources>
