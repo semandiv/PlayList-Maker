@@ -300,7 +300,7 @@
     <style name="fragmentIconPlaceholder">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">106dp</item>
+        <item name="android:layout_marginTop">46dp</item>
         <item name="android:src">@drawable/no_result_light_mode</item>
         <item name="android:contentDescription">@string/placeholder</item>
     </style>

@@ -1,7 +1,10 @@
 package com.example.playlistmaker.library.domain.models
 
 data class Playlist(
-    val cover: String?,
-    val name: String,
-    val description: String?
+    val plID: Int,
+    var plName: String,
+    var plDescription: String = String(),
+    var plImage: String = String(),
+    var tracks: List<String> = emptyList(),
+    var trackCount: Int = 0
 )

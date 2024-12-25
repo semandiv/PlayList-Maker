@@ -27,4 +27,6 @@
     <dimen name="dp44_size">44dp</dimen>
     <dimen name="dp17_size">17dp</dimen>
     <dimen name="dp26_size">26dp</dimen>
+    <dimen name="dp46_size">46dp</dimen>
+    <dimen name="dp30_size">30dp</dimen>
 </resources>
