@@ -63,4 +63,6 @@
     <string name="pl_cover_descr">Обложка плейлиста</string>
     <string name="pl_name">Название плейлиста</string>
     <string name="pl_descr">Описание плейлиста</string>
+    <string name="addPlaylistTitle">Добавить в плейлист</string>
+    <string name="newPlaylistBtnCapt">Новый плейлист</string>
 </resources>

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
@@ -38,6 +39,15 @@ class PlaylistsFragment : Fragment() {
 
         binding.playlistUpdButton.setOnClickListener {
             findNavController().navigate(R.id.newPlaylistFragment)
+        }
+
+        viewModel.playlists.observe(viewLifecycleOwner) { playlists ->
+            if (playlists.isNotEmpty()) {
+                binding.plPlaceholder.isVisible = false
+                adapter.submitList(playlists)
+            } else {
+                binding.plPlaceholder.isVisible = true
+            }
         }
 
         adapter = PlaylistAdapter{}
