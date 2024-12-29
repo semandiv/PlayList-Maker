@@ -19,18 +19,12 @@ class PlaylistViewModel(
     private val _playlists = MutableLiveData<List<Playlist>>()
     val playlists: LiveData<List<Playlist>> get() = _playlists
 
-    fun getPlaylists() {
+    private fun getPlaylists() {
         viewModelScope.launch {
             plInteractor.getAllPlaylists()
                 .collect { playlists ->
                     _playlists.postValue(playlists)
                 }
-        }
-    }
-
-    fun newPlaylist(playlist: Playlist) {
-        viewModelScope.launch {
-            plInteractor.createPlaylist(playlist)
         }
     }
 

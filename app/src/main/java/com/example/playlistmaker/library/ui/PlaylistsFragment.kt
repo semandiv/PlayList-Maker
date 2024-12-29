@@ -50,6 +50,10 @@ class PlaylistsFragment : Fragment() {
             }
         }
 
+        binding.playlistUpdButton.setOnClickListener {
+            findNavController().navigate(R.id.action_playlistsFragment_to_newPlaylistFragment)
+        }
+
         adapter = PlaylistAdapter{}
 
         binding.playlistList.layoutManager = GridLayoutManager(requireContext(), 2)

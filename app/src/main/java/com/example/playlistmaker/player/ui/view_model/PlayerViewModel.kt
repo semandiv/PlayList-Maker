@@ -5,9 +5,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.library.domain.api.FavoritesInteractor
+import com.example.playlistmaker.library.domain.api.PlaylistInteractor
+import com.example.playlistmaker.library.domain.models.Playlist
 import com.example.playlistmaker.player.domain.api.PlayerInteractor
 import com.example.playlistmaker.player.domain.models.MediaState
 import com.example.playlistmaker.search.domain.models.Track
+import com.google.gson.Gson
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.firstOrNull
@@ -17,7 +20,8 @@ import java.util.Locale
 
 class PlayerViewModel(
     private val playerInteractor: PlayerInteractor,
-    private val favoritesInteractor: FavoritesInteractor
+    private val favoritesInteractor: FavoritesInteractor,
+    private val playlistInteractor: PlaylistInteractor
 ) : ViewModel() {
 
     private companion object {
@@ -39,6 +43,9 @@ class PlayerViewModel(
     private val _isFavorite = MutableLiveData<Boolean>()
     val isFavorite: LiveData<Boolean> get() = _isFavorite
 
+    private val _playlists = MutableLiveData<List<Playlist>>()
+    val playlists: LiveData<List<Playlist>> get() = _playlists
+
     val timePlay: String = SimpleDateFormat(
         TIME_FORMAT,
         Locale.getDefault()
@@ -49,6 +56,7 @@ class PlayerViewModel(
         playerInteractor.observeMediaState(_mediaState::postValue)
         preparePlayer()
         getFavorites(track)
+        getPlaylists()
     }
 
     override fun onCleared() {
@@ -81,6 +89,34 @@ class PlayerViewModel(
         if (previewUrl.isNotEmpty()) {
             playerInteractor.releasePlayer()
         }
+    }
+
+    fun addTrackToPlaylist(playlist: Playlist): Int {
+        var resultCode = 0
+        val trackList: MutableList<String> = if (playlist.tracks.isEmpty()) {
+            mutableListOf()
+        } else convertStringToList(playlist.tracks).toMutableList()
+
+        track?.let { track ->
+
+            if (trackList.contains(track.trackId)) {
+                resultCode = 1
+                return resultCode
+            }
+
+            trackList.add(track.trackId)
+
+            viewModelScope.launch {
+                try {
+                    playlistInteractor.addTracksToPlaylist(playlist.plID, trackList, trackList.count())
+                } catch (_: Exception) {
+                    resultCode = 2
+                }
+            }
+        } ?: run {
+            resultCode = 3
+        }
+        return resultCode
     }
 
     suspend fun toggleFavorite() {
@@ -139,4 +175,19 @@ class PlayerViewModel(
             }
         }
     }
+
+    private fun getPlaylists() {
+        viewModelScope.launch {
+            playlistInteractor.getAllPlaylists()
+                .collect { playlists ->
+                    _playlists.postValue(playlists)
+                }
+        }
+    }
+
+    private fun convertStringToList(jsonString: String): List<String> {
+        val gson = Gson()
+        return gson.fromJson(jsonString, Array<String>::class.java).toList()
+    }
+
 }

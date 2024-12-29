@@ -7,12 +7,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityPlayerBinding
+import com.example.playlistmaker.library.ui.NewPlaylistFragment
 import com.example.playlistmaker.player.domain.models.MediaState
+import com.example.playlistmaker.player.ui.view_model.BottomSheetListAdapter
 import com.example.playlistmaker.player.ui.view_model.PlayerViewModel
+import com.example.playlistmaker.search.domain.models.Track
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -22,15 +27,31 @@ class PlayerActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPlayerBinding
 
+    private lateinit var adapter: BottomSheetListAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val bottomSheetContainer = binding.plBottomSheet
+        val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetContainer)
+
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+
         setToolbar()
 
         setValues()
+
+        adapter = BottomSheetListAdapter { playlist ->
+            val addResult = playerViewModel.addTrackToPlaylist(playlist)
+            when(addResult){
+                1 -> Toast.makeText(this, getString(R.string.add_track_error_1), Toast.LENGTH_LONG).show()
+                2 -> Toast.makeText(this, getString(R.string.add_track_error_2), Toast.LENGTH_LONG).show()
+                3 -> Toast.makeText(this, getString(R.string.add_track_error_3), Toast.LENGTH_LONG).show()
+            }
+        }
 
         playerViewModel.mediaState.observe(this) { mediaState ->
             when (mediaState) {
@@ -51,6 +72,14 @@ class PlayerActivity : AppCompatActivity() {
             }
         }
 
+        playerViewModel.playlists.observe(this) { playlist ->
+            adapter.submitList(playlist)
+        }
+
+        val linearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        binding.playlistRv.layoutManager = linearLayoutManager
+        binding.playlistRv.adapter = adapter
+
         playerViewModel.currentPosition.observe(this) { position ->
             binding.playingTime.text = position
         }
@@ -61,6 +90,14 @@ class PlayerActivity : AppCompatActivity() {
 
         binding.likeButton.setOnClickListener {
             likeButtonClicked()
+        }
+
+        binding.addToPlaylist.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
+
+        binding.newPlBtn.setOnClickListener {
+            openNewPlaylistFragment()
         }
 
     }
@@ -151,5 +188,17 @@ class PlayerActivity : AppCompatActivity() {
         lifecycleScope.launch {
             playerViewModel.toggleFavorite()
         }
+    }
+
+    private fun openNewPlaylistFragment() {
+        val fragment = NewPlaylistFragment()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.new_pl_frag_container, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
+    private fun addTrackToPlaylist(track: Track) {
+
     }
 }

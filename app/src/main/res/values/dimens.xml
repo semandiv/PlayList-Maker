@@ -29,4 +29,8 @@
     <dimen name="dp26_size">26dp</dimen>
     <dimen name="dp46_size">46dp</dimen>
     <dimen name="dp30_size">30dp</dimen>
+    <dimen name="dp13_size">13dp</dimen>
+    <dimen name="dp52_size">52dp</dimen>
+    <dimen name="sp19_text_size">19sp</dimen>
+    <dimen name="dp50_size">50dp</dimen>
 </resources>

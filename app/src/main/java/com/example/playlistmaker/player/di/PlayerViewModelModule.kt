@@ -9,6 +9,7 @@ val playerViewModelModule = module {
     viewModel {
         PlayerViewModel(
             playerInteractor = get(),
-            favoritesInteractor = get())
+            favoritesInteractor = get(),
+            playlistInteractor = get())
     }
 }

@@ -37,8 +37,8 @@ class PlaylistInteractorImpl(
         playlistRepository.setImage(id, image)
     }
 
-    override suspend fun addTracksToPlaylist(id: Int, tracks: List<String>) {
-        playlistRepository.setTracks(id, tracks)
+    override suspend fun addTracksToPlaylist(id: Int, tracks: List<String>, count: Int) {
+        playlistRepository.setTracks(id, tracks, count)
     }
 
     override suspend fun setTrackCount(id: Int, count: Int) {

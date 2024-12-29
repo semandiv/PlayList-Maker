@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/fragBackground"
+    android:id="@+id/new_pl_container">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolBar"
@@ -14,31 +17,66 @@
     <ImageView
         android:id="@+id/placeholderImage"
         android:src="@drawable/add_photo"
-        app:layout_constraintBottom_toTopOf="@id/input_edit_text"
+        app:layout_constraintBottom_toTopOf="@id/playlistNameInputLayout"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolBar"
         style="@style/pl_cover" />
 
-    <EditText
-        android:id="@+id/input_edit_text"
-        android:hint="@string/new_pl_name"
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/playlistNameInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp32_size"
+        android:hint="@string/new_pl_name"
+        app:boxStrokeColor="@color/border_colors"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/placeholderImage"
-        style="@style/new_pl_edit_field" />
+        android:layout_marginStart="@dimen/big_padding"
+        android:layout_marginEnd="@dimen/big_padding"
+        app:boxStrokeWidth="1dp"
+        app:boxBackgroundColor="@color/textInputBackground"
+        app:boxCornerRadiusTopStart="@dimen/small_padding"
+        app:boxCornerRadiusTopEnd="@dimen/small_padding"
+        app:boxCornerRadiusBottomStart="@dimen/small_padding"
+        app:boxCornerRadiusBottomEnd="@dimen/small_padding"
+        app:boxBackgroundMode="outline">
 
-    <EditText
-        android:id="@+id/descript_edit_text"
-        android:hint="@string/new_pl_descr"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/playlistNameEditText"
+            android:hint=""
+            style="@style/pl_inputTextField" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/playlistDescriptionInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/big_padding"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:hint="@string/new_pl_descr"
+        app:boxStrokeColor="@color/border_colors"
+        app:layout_constraintTop_toBottomOf="@id/playlistNameInputLayout"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/input_edit_text"
-        style="@style/new_pl_edit_field" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="@dimen/big_padding"
+        android:layout_marginEnd="@dimen/big_padding"
+        app:boxStrokeWidth="1dp"
+        app:boxBackgroundColor="@color/textInputBackground"
+        app:boxCornerRadiusTopStart="@dimen/small_padding"
+        app:boxCornerRadiusTopEnd="@dimen/small_padding"
+        app:boxCornerRadiusBottomStart="@dimen/small_padding"
+        app:boxCornerRadiusBottomEnd="@dimen/small_padding"
+        app:boxBackgroundMode="outline">
 
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/playlistDescriptionEditText"
+            android:hint=""
+            style="@style/pl_inputTextField"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/createButton"

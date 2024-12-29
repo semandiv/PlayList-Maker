@@ -5,6 +5,7 @@ import com.example.playlistmaker.library.data.db.PlaylistDao
 import com.example.playlistmaker.library.data.db.PlaylistEntity
 import com.example.playlistmaker.library.domain.db.PlaylistRepository
 import com.example.playlistmaker.library.domain.models.Playlist
+import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -42,8 +43,9 @@ class PlaylistRepositoryImpl(
         playlistDao.updatePlImage(id, image)
     }
 
-    override suspend fun setTracks(id: Int, tracks: List<String>) {
-        playlistDao.updatePlTracks(id, tracks)
+    override suspend fun setTracks(id: Int, tracks: List<String>, count: Int) {
+        val gson = Gson()
+        playlistDao.updatePlTracks(id, gson.toJson(tracks), count)
     }
 
     override suspend fun setTrackCount(id: Int, trackCountMethod: Int) {

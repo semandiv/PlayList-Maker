@@ -28,8 +28,8 @@ interface PlaylistDao {
     @Query("UPDATE playlist SET plImage = :image WHERE plID = :id")
     suspend fun updatePlImage(id: Int, image: String)
 
-    @Query("UPDATE playlist SET tracks = :tracks WHERE plID = :id")
-    suspend fun updatePlTracks(id: Int, tracks: List<String>)
+    @Query("UPDATE playlist SET tracks = :tracks, trackCount = :trackCount WHERE plID = :id")
+    suspend fun updatePlTracks(id: Int, tracks: String, trackCount: Int)
 
     @Query("UPDATE playlist SET trackCount = :trackCount WHERE plID = :id")
     suspend fun updatePlTrackCount(id: Int, trackCount: Int)

@@ -13,7 +13,7 @@ interface PlaylistRepository {
     suspend fun setName(id: Int, name: String)
     suspend fun setDescription(id: Int, description: String)
     suspend fun setImage(id: Int, image: String)
-    suspend fun setTracks(id: Int, tracks: List<String>)
+    suspend fun setTracks(id: Int, tracks: List<String>, count: Int)
     suspend fun setTrackCount(id: Int, trackCountMethod: Int)
 
 }

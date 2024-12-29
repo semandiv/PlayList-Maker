@@ -16,4 +16,7 @@
     <color name="tabLayoutColor">#FFFFFF</color>
     <color name="tabIndicatorColor">#1A1B22</color>
     <color name="bottomSheetIndi">#E6E8EB</color>
+    <color name="borderColorActive">#3772E7</color>
+    <color name="borderColorInactive">#AEAFB4</color>
+    <color name="textInputBackground">#FFFFFF</color>
 </resources>

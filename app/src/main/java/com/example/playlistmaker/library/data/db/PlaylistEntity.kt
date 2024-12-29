@@ -5,10 +5,10 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "playlist")
 class PlaylistEntity(
-    @PrimaryKey(autoGenerate = true) var plID: Int,
+    @PrimaryKey(autoGenerate = true) val plID: Int = 0,
     var plName: String,
     var plDescription: String = String(),
     var plImage: String = String(),
-    var tracks: List<String> = emptyList(),
+    var tracks: String = String(),
     var trackCount: Int = 0
 )
