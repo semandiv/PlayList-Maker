@@ -91,8 +91,9 @@ class PlayerViewModel(
         }
     }
 
-    fun addTrackToPlaylist(playlist: Playlist): Int {
+    fun addTrackToPlaylist(playlist: Playlist): Pair<Int, String> {
         var resultCode = 0
+        val pl_Name = playlist.plName
         val trackList: MutableList<String> = if (playlist.tracks.isEmpty()) {
             mutableListOf()
         } else convertStringToList(playlist.tracks).toMutableList()
@@ -101,7 +102,7 @@ class PlayerViewModel(
 
             if (trackList.contains(track.trackId)) {
                 resultCode = 1
-                return resultCode
+                return Pair(resultCode, pl_Name)
             }
 
             trackList.add(track.trackId)
@@ -116,7 +117,7 @@ class PlayerViewModel(
         } ?: run {
             resultCode = 3
         }
-        return resultCode
+        return Pair(resultCode, pl_Name)
     }
 
     suspend fun toggleFavorite() {

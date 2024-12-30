@@ -2,6 +2,7 @@ package com.example.playlistmaker.player.ui.activity
 
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -16,7 +17,6 @@ import com.example.playlistmaker.library.ui.NewPlaylistFragment
 import com.example.playlistmaker.player.domain.models.MediaState
 import com.example.playlistmaker.player.ui.view_model.BottomSheetListAdapter
 import com.example.playlistmaker.player.ui.view_model.PlayerViewModel
-import com.example.playlistmaker.search.domain.models.Track
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -29,6 +29,8 @@ class PlayerActivity : AppCompatActivity() {
 
     private lateinit var adapter: BottomSheetListAdapter
 
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -36,7 +38,7 @@ class PlayerActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val bottomSheetContainer = binding.plBottomSheet
-        val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetContainer)
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetContainer)
 
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
@@ -46,10 +48,27 @@ class PlayerActivity : AppCompatActivity() {
 
         adapter = BottomSheetListAdapter { playlist ->
             val addResult = playerViewModel.addTrackToPlaylist(playlist)
-            when(addResult){
-                1 -> Toast.makeText(this, getString(R.string.add_track_error_1), Toast.LENGTH_LONG).show()
-                2 -> Toast.makeText(this, getString(R.string.add_track_error_2), Toast.LENGTH_LONG).show()
-                3 -> Toast.makeText(this, getString(R.string.add_track_error_3), Toast.LENGTH_LONG).show()
+            when (addResult.first) {
+                0 -> Toast.makeText(
+                    this,
+                    getString(R.string.new_pl_add_message).format(addResult.second),
+                    Toast.LENGTH_LONG
+                ).show()
+
+                1 -> Toast.makeText(
+                    this, getString(R.string.add_track_error_1)
+                        .format(addResult.second), Toast.LENGTH_LONG
+                ).show()
+
+                2 -> Toast.makeText(
+                    this,
+                    getString(R.string.add_track_error_2), Toast.LENGTH_LONG
+                ).show()
+
+                3 -> Toast.makeText(
+                    this,
+                    getString(R.string.add_track_error_3), Toast.LENGTH_LONG
+                ).show()
             }
         }
 
@@ -66,7 +85,7 @@ class PlayerActivity : AppCompatActivity() {
         }
 
         playerViewModel.isFavorite.observe(this) { isFavorite ->
-            when (isFavorite){
+            when (isFavorite) {
                 true -> binding.likeButton.setImageResource(R.drawable.like_active)
                 false -> binding.likeButton.setImageResource(R.drawable.like_unfill)
             }
@@ -93,10 +112,12 @@ class PlayerActivity : AppCompatActivity() {
         }
 
         binding.addToPlaylist.setOnClickListener {
+            adapter.submitList(playerViewModel.playlists.value)
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
 
         binding.newPlBtn.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
             openNewPlaylistFragment()
         }
 
@@ -191,14 +212,11 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun openNewPlaylistFragment() {
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
         val fragment = NewPlaylistFragment()
         supportFragmentManager.beginTransaction()
-            .replace(R.id.new_pl_frag_container, fragment)
-            .addToBackStack(null)
+            .replace(R.id.main, fragment)
+            .addToBackStack("PlayerActivity_BackStack")
             .commit()
-    }
-
-    private fun addTrackToPlaylist(track: Track) {
-
     }
 }

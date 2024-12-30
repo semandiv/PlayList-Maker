@@ -1,5 +1,6 @@
 package com.example.playlistmaker.library.ui
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,7 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.example.playlistmaker.library.ui.view_model.PlaylistAdapter
 import com.example.playlistmaker.library.ui.view_model.PlaylistViewModel
+import com.example.playlistmaker.library.utils.GridSpacingItemDecoration
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistsFragment : Fragment() {
@@ -56,7 +58,16 @@ class PlaylistsFragment : Fragment() {
 
         adapter = PlaylistAdapter{}
 
-        binding.playlistList.layoutManager = GridLayoutManager(requireContext(), 2)
+        val spanCount = 2
+        val spacing = dpToPx(8, requireContext())
+        val includeEdge = true // Учитывать отступы от краев
+
+        val gridLayoutManager = GridLayoutManager(requireContext(), spanCount)
+        binding.playlistList.layoutManager = gridLayoutManager
+
+        val itemDecoration = GridSpacingItemDecoration(spanCount, spacing, includeEdge)
+        binding.playlistList.addItemDecoration(itemDecoration)
+
         binding.playlistList.adapter = adapter
     }
 
@@ -69,5 +80,8 @@ class PlaylistsFragment : Fragment() {
         fun newInstance(): PlaylistsFragment {
             return PlaylistsFragment()
         }
+    }
+    private fun dpToPx(dp: Int, context: Context): Int {
+        return (dp * context.resources.displayMetrics.density).toInt()
     }
 }

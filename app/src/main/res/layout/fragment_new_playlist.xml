@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/new_pl_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/fragBackground"
-    android:id="@+id/new_pl_container">
+    android:background="@color/fragBackground">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolBar"
@@ -14,77 +13,75 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/placeholderImage"
-        android:src="@drawable/add_photo"
-        app:layout_constraintBottom_toTopOf="@id/playlistNameInputLayout"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolBar"
-        style="@style/pl_cover" />
+            <Button
+                android:id="@+id/createButton"
+                style="@style/new_pl_btn"
+                android:text="@string/create_pl_btn_capt"
+                app:cornerRadius="@dimen/medium_padding"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/playlistDescriptionInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/big_padding"
+                android:layout_marginTop="@dimen/big_padding"
+                android:layout_marginEnd="@dimen/big_padding"
+                android:hint="@string/new_pl_descr"
+                app:boxBackgroundColor="@color/textInputBackground"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusBottomEnd="@dimen/small_padding"
+                app:boxCornerRadiusBottomStart="@dimen/small_padding"
+                app:boxCornerRadiusTopEnd="@dimen/small_padding"
+                app:boxCornerRadiusTopStart="@dimen/small_padding"
+                app:boxStrokeColor="@color/border_colors"
+                app:boxStrokeWidth="1dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/playlistNameInputLayout">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/playlistNameInputLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp32_size"
-        android:hint="@string/new_pl_name"
-        app:boxStrokeColor="@color/border_colors"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/placeholderImage"
-        android:layout_marginStart="@dimen/big_padding"
-        android:layout_marginEnd="@dimen/big_padding"
-        app:boxStrokeWidth="1dp"
-        app:boxBackgroundColor="@color/textInputBackground"
-        app:boxCornerRadiusTopStart="@dimen/small_padding"
-        app:boxCornerRadiusTopEnd="@dimen/small_padding"
-        app:boxCornerRadiusBottomStart="@dimen/small_padding"
-        app:boxCornerRadiusBottomEnd="@dimen/small_padding"
-        app:boxBackgroundMode="outline">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/playlistDescriptionEditText"
+                    style="@style/pl_inputTextField"
+                    android:hint="" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/playlistNameEditText"
-            android:hint=""
-            style="@style/pl_inputTextField" />
-    </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/playlistNameInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/big_padding"
+                android:layout_marginTop="@dimen/dp32_size"
+                android:layout_marginEnd="@dimen/big_padding"
+                android:hint="@string/new_pl_name"
+                app:boxBackgroundColor="@color/textInputBackground"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusBottomEnd="@dimen/small_padding"
+                app:boxCornerRadiusBottomStart="@dimen/small_padding"
+                app:boxCornerRadiusTopEnd="@dimen/small_padding"
+                app:boxCornerRadiusTopStart="@dimen/small_padding"
+                app:boxStrokeColor="@color/border_colors"
+                app:boxStrokeWidth="1dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/placeholderImage">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/playlistDescriptionInputLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/big_padding"
-        android:hint="@string/new_pl_descr"
-        app:boxStrokeColor="@color/border_colors"
-        app:layout_constraintTop_toBottomOf="@id/playlistNameInputLayout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginStart="@dimen/big_padding"
-        android:layout_marginEnd="@dimen/big_padding"
-        app:boxStrokeWidth="1dp"
-        app:boxBackgroundColor="@color/textInputBackground"
-        app:boxCornerRadiusTopStart="@dimen/small_padding"
-        app:boxCornerRadiusTopEnd="@dimen/small_padding"
-        app:boxCornerRadiusBottomStart="@dimen/small_padding"
-        app:boxCornerRadiusBottomEnd="@dimen/small_padding"
-        app:boxBackgroundMode="outline">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/playlistNameEditText"
+                    style="@style/pl_inputTextField"
+                    android:hint="" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/playlistDescriptionEditText"
-            android:hint=""
-            style="@style/pl_inputTextField"
-            />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <Button
-        android:id="@+id/createButton"
-        android:text="@string/create_pl_btn_capt"
-        app:cornerRadius="@dimen/medium_padding"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        style="@style/new_pl_btn" />
+            <ImageView
+                android:id="@+id/placeholderImage"
+                style="@style/pl_cover"
+                android:src="@drawable/add_photo"
+                app:layout_constraintBottom_toTopOf="@id/playlistNameInputLayout"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/toolBar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

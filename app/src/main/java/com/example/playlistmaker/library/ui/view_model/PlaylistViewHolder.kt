@@ -3,6 +3,7 @@ package com.example.playlistmaker.library.ui.view_model
 import android.content.Context
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.PlaylistItemBinding
@@ -21,7 +22,7 @@ class PlaylistViewHolder(
             .load(playlist.plImage)
             .placeholder(R.drawable.placeholder)
             .error(R.drawable.placeholder)
-            .transform(RoundedCorners(dpToPx(8, itemView.context)))
+            .transform(CenterCrop(), RoundedCorners(dpToPx(8, itemView.context)))
             .into(binding.playlistImage)
 
         binding.playlistTitle.requestLayout()

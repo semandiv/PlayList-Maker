@@ -9,10 +9,7 @@
 
     tools:context=".player.ui.activity.PlayerActivity">
 
-    <FrameLayout
-        android:id="@+id/new_pl_frag_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main"
@@ -268,7 +265,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/playlist_rv"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:padding="0dp"/>
     </LinearLayout>
 

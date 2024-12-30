@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ItemBottomsheetPlBinding
@@ -23,7 +24,7 @@ class BottomSheetListViewHolder(
             .load(playlist.plImage)
             .placeholder(R.drawable.placeholder)
             .error(R.drawable.placeholder)
-            .transform(RoundedCorners(dpToPx(8, itemView.context)))
+            .transform(CenterCrop(), RoundedCorners(dpToPx(2, itemView.context)))
             .into(binding.plCover)
 
         binding.plNameTextview.requestLayout()

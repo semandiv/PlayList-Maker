@@ -12,17 +12,15 @@ import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
-import org.koin.androidx.viewmodel.ext.android.viewModel
-import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
 import com.example.playlistmaker.RootActivity
 import com.example.playlistmaker.databinding.FragmentNewPlaylistBinding
 import com.example.playlistmaker.library.domain.models.Playlist
 import com.example.playlistmaker.library.ui.view_model.NewPlaylistViewModel
 import com.google.android.material.snackbar.Snackbar
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 
 class NewPlaylistFragment : Fragment() {
@@ -68,7 +66,7 @@ class NewPlaylistFragment : Fragment() {
         }
 
         toolBar.setNavigationOnClickListener {
-            findNavController().popBackStack()
+            checkForUnsavedChangesAndShowDialog()
         }
 
         (activity as? RootActivity)?.hideBottomNavigationView()
@@ -134,7 +132,7 @@ class NewPlaylistFragment : Fragment() {
             viewModel.createPlaylist(playlist)
 
             showSnackBar(plName)
-            findNavController().popBackStack()
+            parentFragmentManager.popBackStack()
         } else {
             checkPlaylistName()
             return
@@ -162,7 +160,7 @@ class NewPlaylistFragment : Fragment() {
             .setMessage(getString(R.string.pl_dialog_message))
             .setPositiveButton(getString(R.string.pl_dialog_ok)) { dialog, _ ->
                 dialog.dismiss()
-                findNavController().popBackStack() // Закрыть экран
+                parentFragmentManager.popBackStack() // Закрыть экран
             }
             .setNegativeButton(getString(R.string.pl_dialog_cancel)) { dialog, _ ->
                 dialog.dismiss() // Закрыть диалог
@@ -176,12 +174,14 @@ class NewPlaylistFragment : Fragment() {
         if (isDataChanged) {
             showExitConfirmationDialog()
         } else {
-            findNavController().popBackStack()
+            parentFragmentManager.popBackStack()
         }
     }
 
     private fun isPlaylistDataChanged(): Boolean {
-        return binding.playlistNameEditText.text?.isNotEmpty() ?: false
+        return !binding.playlistNameEditText.text.isNullOrEmpty() ||
+                !binding.playlistDescriptionEditText.text.isNullOrEmpty() ||
+                plImagePath.isNotEmpty()
     }
 
 
