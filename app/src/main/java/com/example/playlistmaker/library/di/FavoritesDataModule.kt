@@ -9,6 +9,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val favoritesDataModule = module {
+
     single {
         Room.databaseBuilder(androidContext(), TrackDatabase::class.java, "database.db")
             .fallbackToDestructiveMigration()
@@ -20,6 +21,8 @@ val favoritesDataModule = module {
             .fallbackToDestructiveMigration()
             .build()
     }
+
+
 
     factory { TrackDBConvertor() }
 

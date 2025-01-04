@@ -15,5 +15,6 @@ interface PlaylistRepository {
     suspend fun setImage(id: Int, image: String)
     suspend fun setTracks(id: Int, tracks: List<String>, count: Int)
     suspend fun setTrackCount(id: Int, trackCountMethod: Int)
+    suspend fun saveImageToStorage(image: String):Flow<String>
 
 }

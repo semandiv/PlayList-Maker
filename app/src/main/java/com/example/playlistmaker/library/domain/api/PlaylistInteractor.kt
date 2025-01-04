@@ -14,4 +14,6 @@ interface PlaylistInteractor {
     suspend fun setPlaylistImage(id: Int, image: String)
     suspend fun addTracksToPlaylist(id: Int, tracks: List<String>, count: Int)
     suspend fun setTrackCount(id: Int, count: Int)
+
+    suspend fun saveImageToStorage(image: String): Flow<String>
 }

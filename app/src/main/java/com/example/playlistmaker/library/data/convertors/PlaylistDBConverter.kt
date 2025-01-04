@@ -7,23 +7,23 @@ class PlaylistDBConverter {
 
     fun map (playlist: Playlist): PlaylistEntity {
       return PlaylistEntity(
-          playlist.plID,
-          playlist.plName,
-          playlist.plDescription,
-          playlist.plImage,
-          playlist.tracks,
-          playlist.trackCount
+          plID = playlist.plID,
+          plName = playlist.plName,
+          plDescription = playlist.plDescription,
+          plImage = playlist.plImage,
+          tracks = playlist.tracks,
+          trackCount = playlist.trackCount
       )
     }
 
     fun map (playlistEntity: PlaylistEntity): Playlist {
         return Playlist(
-            playlistEntity.plID,
-            playlistEntity.plName,
-            playlistEntity.plDescription,
-            playlistEntity.plImage,
-            playlistEntity.tracks,
-            playlistEntity.trackCount
+            plID = playlistEntity.plID,
+            plName = playlistEntity.plName,
+            plDescription = playlistEntity.plDescription,
+            plImage = playlistEntity.plImage,
+            tracks = playlistEntity.tracks,
+            trackCount = playlistEntity.trackCount
         )
     }
 }

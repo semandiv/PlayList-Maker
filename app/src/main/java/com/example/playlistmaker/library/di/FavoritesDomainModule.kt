@@ -8,6 +8,7 @@ import com.example.playlistmaker.library.domain.db.FavoritesRepository
 import com.example.playlistmaker.library.domain.db.PlaylistRepository
 import com.example.playlistmaker.library.domain.impl.FavoritesInteractorImpl
 import com.example.playlistmaker.library.domain.impl.PlaylistInteractorImpl
+import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val favoritesDomainModule = module {
@@ -26,7 +27,9 @@ val favoritesDomainModule = module {
     factory<PlaylistRepository>{
         PlaylistRepositoryImpl(
             playlistDao = get(),
-            converter = get()
+            converter = get(),
+            gson = get(),
+            androidContext()
         )
     }
 

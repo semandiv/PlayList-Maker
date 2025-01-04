@@ -44,4 +44,8 @@ class PlaylistInteractorImpl(
     override suspend fun setTrackCount(id: Int, count: Int) {
         playlistRepository.setTrackCount(id, count)
     }
+
+    override suspend fun saveImageToStorage(image: String): Flow<String> {
+        return playlistRepository.saveImageToStorage(image)
+    }
 }

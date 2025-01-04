@@ -1,5 +1,6 @@
 package com.example.playlistmaker.library.ui
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,30 +18,25 @@ import androidx.fragment.app.Fragment
 import com.example.playlistmaker.R
 import com.example.playlistmaker.RootActivity
 import com.example.playlistmaker.databinding.FragmentNewPlaylistBinding
-import com.example.playlistmaker.library.domain.models.Playlist
 import com.example.playlistmaker.library.ui.view_model.NewPlaylistViewModel
 import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.io.File
 
 class NewPlaylistFragment : Fragment() {
-
-    companion object {
-        fun newInstance() = NewPlaylistFragment()
-    }
-
-    private var plImagePath = String()
 
     private var _binding: FragmentNewPlaylistBinding? = null
     private val binding get() = _binding!!
 
     private val viewModel: NewPlaylistViewModel by viewModel()
 
-    private val pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        uri?.let {
-            saveImageToInternalStorage(it)
+    private val pickImage =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            uri?.let {
+                viewModel.saveImage(it.toString()) { imageUri ->
+                    binding.placeholderImage.setImageURI(imageUri)
+                }
+            }
         }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -102,36 +98,18 @@ class NewPlaylistFragment : Fragment() {
         (activity as? RootActivity)?.showBottomNavigationView()
     }
 
-    private fun openPhoto(){
+    private fun openPhoto() {
         pickImage.launch("image/*")
     }
 
-    private fun saveImageToInternalStorage(uri: Uri) {
-        val inputStream = requireContext().contentResolver.openInputStream(uri)
-        val fileName = "image_${System.currentTimeMillis()}.jpg" // Уникальное имя файла
-        val file = File(requireContext().filesDir, fileName)
-
-        inputStream.use { input ->
-            file.outputStream().use { output ->
-                input?.copyTo(output)
-            }
-        }
-
-        plImagePath = file.absolutePath
-
-        binding.placeholderImage.setImageURI(Uri.fromFile(file))
-    }
-
     private fun savePlaylist() {
-        val plDescription = binding.playlistDescriptionEditText.text.toString()
-        val plName: String
+        viewModel.plDescriptionVM = binding.playlistDescriptionEditText.text.toString()
 
         if (!binding.playlistNameEditText.text.isNullOrEmpty()) {
-            plName = binding.playlistNameEditText.text.toString()
-            val playlist = Playlist(0,plName, plDescription, plImagePath)
-            viewModel.createPlaylist(playlist)
+            viewModel.plNameVM = binding.playlistNameEditText.text.toString()
+            viewModel.createPlaylist()
 
-            showSnackBar(plName)
+            showSnackBar(viewModel.plNameVM)
             parentFragmentManager.popBackStack()
         } else {
             checkPlaylistName()
@@ -139,6 +117,7 @@ class NewPlaylistFragment : Fragment() {
         }
     }
 
+    @SuppressLint("InflateParams")
     private fun showSnackBar(plName: String) {
         val snackBar = Snackbar.make(requireView(), "", Snackbar.LENGTH_LONG)
         val customView = LayoutInflater.from(requireContext())
@@ -151,7 +130,8 @@ class NewPlaylistFragment : Fragment() {
     }
 
     private fun checkPlaylistName() {
-        Toast.makeText(requireContext(),"Нужно указать название плейлиста", Toast.LENGTH_LONG).show()
+        Toast.makeText(requireContext(), getString(R.string.checkPLName_message), Toast.LENGTH_LONG)
+            .show()
     }
 
     private fun showExitConfirmationDialog() {
@@ -171,7 +151,7 @@ class NewPlaylistFragment : Fragment() {
     private fun checkForUnsavedChangesAndShowDialog() {
         val isDataChanged = isPlaylistDataChanged()
 
-        if (isDataChanged) {
+        if (!isDataChanged) {
             showExitConfirmationDialog()
         } else {
             parentFragmentManager.popBackStack()
@@ -179,10 +159,8 @@ class NewPlaylistFragment : Fragment() {
     }
 
     private fun isPlaylistDataChanged(): Boolean {
-        return !binding.playlistNameEditText.text.isNullOrEmpty() ||
-                !binding.playlistDescriptionEditText.text.isNullOrEmpty() ||
-                plImagePath.isNotEmpty()
+        return binding.playlistNameEditText.text?.isNotEmpty() == true ||
+                binding.playlistDescriptionEditText.text?.isNotEmpty() == true ||
+                viewModel.savedImageUri.toString().isNotEmpty()
     }
-
-
 }

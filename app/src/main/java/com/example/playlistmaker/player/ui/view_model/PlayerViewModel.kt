@@ -1,7 +1,5 @@
 package com.example.playlistmaker.player.ui.view_model
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.library.domain.api.FavoritesInteractor
@@ -13,6 +11,8 @@ import com.example.playlistmaker.search.domain.models.Track
 import com.google.gson.Gson
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -27,6 +27,7 @@ class PlayerViewModel(
     private companion object {
         const val DELAY = 300L
         const val TIME_FORMAT = "mm:ss"
+        const val DEFAULT_TIME = "00:00"
     }
 
     private var timerJob: Job? = null
@@ -34,17 +35,17 @@ class PlayerViewModel(
     private val track: Track? = playerInteractor.loadTrack()
     private val previewUrl: String = track?.previewUrl ?: String()
 
-    private val _currentPosition = MutableLiveData<String>()
-    val currentPosition: LiveData<String> get() = _currentPosition
+    private val _currentPosition = MutableStateFlow(DEFAULT_TIME)
+    val currentPosition: StateFlow<String> get() = _currentPosition
 
-    private val _mediaState = MutableLiveData<MediaState>()
-    val mediaState: LiveData<MediaState> get() = _mediaState
+    private val _mediaState = MutableStateFlow<MediaState>(MediaState.Default)
+    val mediaState: StateFlow<MediaState> get() = _mediaState
 
-    private val _isFavorite = MutableLiveData<Boolean>()
-    val isFavorite: LiveData<Boolean> get() = _isFavorite
+    private val _isFavorite = MutableStateFlow(false)
+    val isFavorite: StateFlow<Boolean> get() = _isFavorite
 
-    private val _playlists = MutableLiveData<List<Playlist>>()
-    val playlists: LiveData<List<Playlist>> get() = _playlists
+    private val _playlists = MutableStateFlow<List<Playlist>>(emptyList())
+    val playlists: StateFlow<List<Playlist>> get() = _playlists
 
     val timePlay: String = SimpleDateFormat(
         TIME_FORMAT,
@@ -53,7 +54,8 @@ class PlayerViewModel(
 
 
     init {
-        playerInteractor.observeMediaState(_mediaState::postValue)
+        playerInteractor.observeMediaState{ newState ->
+            _mediaState.value = newState}
         preparePlayer()
         getFavorites(track)
         getPlaylists()
@@ -73,7 +75,6 @@ class PlayerViewModel(
             MediaState.Playing -> pause()
             is MediaState.Prepared -> play()
 
-            null -> { /* NOP*/ }
         }
     }
 
@@ -149,7 +150,7 @@ class PlayerViewModel(
         timerJob?.cancel()
         timerJob = viewModelScope.launch {
             while (playerInteractor.isPlaying()) {
-                _currentPosition.postValue(getPositionToString(playerInteractor.currentPosition()))
+                _currentPosition.value = getPositionToString(playerInteractor.currentPosition())
                 delay(DELAY)
             }
         }
@@ -166,7 +167,7 @@ class PlayerViewModel(
         val isFavorite = favoritesInteractor.getTracksID()
             .firstOrNull { items -> items.contains(track.trackId) } != null
 
-        _isFavorite.postValue(isFavorite)
+        _isFavorite.value = isFavorite
     }
 
     private fun getFavorites(track: Track?) {
@@ -181,7 +182,7 @@ class PlayerViewModel(
         viewModelScope.launch {
             playlistInteractor.getAllPlaylists()
                 .collect { playlists ->
-                    _playlists.postValue(playlists)
+                    _playlists.value = playlists
                 }
         }
     }

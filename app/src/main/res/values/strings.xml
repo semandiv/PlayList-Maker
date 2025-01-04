@@ -77,4 +77,15 @@
     <string name="add_track_error_2">Ошибка добавления трека в плейлист</string>
     <string name="add_track_error_3">Нет ID трека</string>
     <string name="new_pl_add_message">Добавлено в плейлист %s</string>
+    <string name="checkPLName_message">Нужно указать название плейлиста</string>
+
+    <plurals name="track_count">
+        <item quantity="one">%d трек</item>
+        <item quantity="two">%d трека</item>
+        <item quantity="few">%d треков</item>
+        <item quantity="many">%d треков</item>
+        <item quantity="other">%d треков</item>
+    </plurals>
+
+
 </resources>

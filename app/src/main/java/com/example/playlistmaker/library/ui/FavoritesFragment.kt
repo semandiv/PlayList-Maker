@@ -8,7 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlistmaker.databinding.FragmentFavoritesBinding
 import com.example.playlistmaker.library.ui.view_model.FavoritesAdapter
@@ -27,7 +29,7 @@ class FavoritesFragment : Fragment() {
     private var _binding: FragmentFavoritesBinding? = null
     private val binding get() = _binding!!
 
-    private var clickJob: Job?= null
+    private var clickJob: Job? = null
 
     private var isClickAllowed = true
 
@@ -54,12 +56,13 @@ class FavoritesFragment : Fragment() {
         binding.favoritesList.layoutManager = LinearLayoutManager(requireContext())
         binding.favoritesList.adapter = adapter
 
-        favViewModel.tracks.observe(viewLifecycleOwner) { tracksList ->
-            if (tracksList.isEmpty()) {
-                showPlaceHolder(true)
-            } else {
-                showPlaceHolder(false)
-                adapter.submitList(tracksList)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                favViewModel.tracks.collect { tracksList ->
+                    showPlaceHolder(tracksList.isEmpty())
+                    if (tracksList.isNotEmpty()) adapter.submitList(tracksList)
+                }
             }
         }
     }
@@ -100,6 +103,7 @@ class FavoritesFragment : Fragment() {
         fun newInstance(): FavoritesFragment {
             return FavoritesFragment()
         }
+
         private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 }

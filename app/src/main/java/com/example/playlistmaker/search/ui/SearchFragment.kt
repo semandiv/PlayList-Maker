@@ -14,7 +14,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentSearchBinding
@@ -67,20 +69,28 @@ class SearchFragment : Fragment() {
         toolbar.title = getString(R.string.search_text)
 
 
-        searchViewModel.searchResult.observe(viewLifecycleOwner) { result ->
-            binding.progressBar.isVisible = false
-            when (result) {
-                TrackSearchResult.NetworkError -> showPlaceHolders(false)
-                TrackSearchResult.NoResult -> showPlaceHolders(true)
-                is TrackSearchResult.SearchResult -> showSearchedTracks(result.tracks)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                searchViewModel.searchResult.collect { result ->
+                    binding.progressBar.isVisible = false
+                    when (result) {
+                        TrackSearchResult.NetworkError -> showPlaceHolders(false)
+                        TrackSearchResult.NoResult -> showPlaceHolders(true)
+                        is TrackSearchResult.SearchResult -> showSearchedTracks(result.tracks)
+                    }
+                }
             }
         }
 
         historyList = mutableListOf()
 
-        searchViewModel.history.observe(viewLifecycleOwner) { history ->
-            historyList.clear()
-            historyList.addAll(history)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                searchViewModel.history.collect { history ->
+                    historyList.clear()
+                    historyList.addAll(history)
+                }
+            }
         }
 
         searchViewModel.loadHistory()
