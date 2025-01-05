@@ -11,12 +11,12 @@ import org.koin.dsl.module
 val playerDataModule = module {
     factory { MediaPlayer() }
 
-    factory {
+    single {
         val sharedPref: SharedPreferences = get() { parametersOf("track_to_play") }
         PlayerRepository(mediaPlayer = get(), sharedPref = sharedPref, gson = get())
     }
 
-    factory<PlayerInteractor> {
+    single<PlayerInteractor> {
         PlayerInteractorImpl(get())
     }
 }

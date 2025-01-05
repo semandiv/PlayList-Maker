@@ -80,21 +80,19 @@ class PlayerViewModel(
 
     fun getTrack(): Track? = track
 
+    fun updatePlayer() {
+        playerInteractor.updatePlayerState()
+    }
+
     fun pause() {
         if (previewUrl.isNotEmpty()) {
             playerInteractor.pause()
         }
     }
 
-    fun releasePlayer() {
-        if (previewUrl.isNotEmpty()) {
-            playerInteractor.releasePlayer()
-        }
-    }
-
     fun addTrackToPlaylist(playlist: Playlist): Pair<Int, String> {
         var resultCode = 0
-        val pl_Name = playlist.plName
+        val plName = playlist.plName
         val trackList: MutableList<String> = if (playlist.tracks.isEmpty()) {
             mutableListOf()
         } else convertStringToList(playlist.tracks).toMutableList()
@@ -103,7 +101,7 @@ class PlayerViewModel(
 
             if (trackList.contains(track.trackId)) {
                 resultCode = 1
-                return Pair(resultCode, pl_Name)
+                return Pair(resultCode, plName)
             }
 
             trackList.add(track.trackId)
@@ -118,7 +116,7 @@ class PlayerViewModel(
         } ?: run {
             resultCode = 3
         }
-        return Pair(resultCode, pl_Name)
+        return Pair(resultCode, plName)
     }
 
     suspend fun toggleFavorite() {
@@ -190,6 +188,12 @@ class PlayerViewModel(
     private fun convertStringToList(jsonString: String): List<String> {
         val gson = Gson()
         return gson.fromJson(jsonString, Array<String>::class.java).toList()
+    }
+
+    private fun releasePlayer() {
+        if (previewUrl.isNotEmpty()) {
+            playerInteractor.releasePlayer()
+        }
     }
 
 }

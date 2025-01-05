@@ -167,9 +167,9 @@ class PlayerActivity : AppCompatActivity() {
         binding.playButton.setImageResource(R.drawable.baseline_play_circle_filled_84)
     }
 
-    override fun onDestroy() {
-        playerViewModel.releasePlayer()
-        super.onDestroy()
+    override fun onResume() {
+        super.onResume()
+        playerViewModel.updatePlayer()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

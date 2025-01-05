@@ -28,6 +28,7 @@ class PlayerRepository(
 
     fun preparePlayer() {
         if (previewUrl.isNotEmpty()) {
+            mediaPlayer.reset()
             mediaPlayer.setDataSource(previewUrl)
             mediaPlayer.prepareAsync()
             playerState = PlayerState.PREPARED
@@ -66,6 +67,15 @@ class PlayerRepository(
 
     fun isPlaying(): Boolean {
         return mediaPlayer.isPlaying
+    }
+
+    fun updatePlayer(){
+        if (isPlaying()) {
+            playerState = PlayerState.PLAYING
+        } else {
+            playerState = PlayerState.PAUSED
+        }
+        updatePlayerState(playerState)
     }
 
     private fun updatePlayerState(state: PlayerState) {

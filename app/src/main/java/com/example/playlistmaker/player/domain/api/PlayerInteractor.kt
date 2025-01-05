@@ -13,5 +13,6 @@ interface PlayerInteractor {
     fun currentPosition(): Int
     fun isPlaying(): Boolean
     fun loadTrack(): Track?
+    fun updatePlayerState()
 
 }

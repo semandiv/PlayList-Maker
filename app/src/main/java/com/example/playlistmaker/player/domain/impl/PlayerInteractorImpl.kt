@@ -55,4 +55,8 @@ class PlayerInteractorImpl(private val playerRepository: PlayerRepository) : Pla
     override fun loadTrack(): Track? {
         return playerRepository.sendTrack()
     }
+
+    override fun updatePlayerState(){
+        playerRepository.updatePlayer()
+    }
 }

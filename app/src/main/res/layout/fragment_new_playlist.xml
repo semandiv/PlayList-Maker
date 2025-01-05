@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/new_pl_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/fragBackground">
 
+    <!-- Toolbar -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolBar"
         android:layout_width="match_parent"
@@ -13,87 +15,96 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Scrollable content -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/toolBar"
+        app:layout_constraintBottom_toTopOf="@id/createButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/dp24_size">
+
+            <!-- FrameLayout for cover -->
+            <FrameLayout
+                android:id="@+id/coverFrame"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp26_size"
+                android:background="@drawable/dashed_border">
+
+                <ImageView
+                    android:id="@+id/placeholderImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/pl_cover_desc"
+                    android:src="@drawable/add_photo" />
+            </FrameLayout>
+
+            <!-- Name Input Field -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/playlistNameInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp32_size"
+                android:hint="@string/new_pl_name"
+                app:boxBackgroundColor="@color/textInputBackground"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusBottomEnd="@dimen/small_padding"
+                app:boxCornerRadiusBottomStart="@dimen/small_padding"
+                app:boxCornerRadiusTopEnd="@dimen/small_padding"
+                app:boxCornerRadiusTopStart="@dimen/small_padding"
+                app:boxStrokeColor="@color/border_colors"
+                app:boxStrokeWidth="1dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/playlistNameEditText"
+                    style="@style/pl_inputTextField"
+                    android:hint="" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Description Input Field -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/playlistDescriptionInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/big_padding"
+                android:hint="@string/new_pl_descr"
+                app:boxBackgroundColor="@color/textInputBackground"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusBottomEnd="@dimen/small_padding"
+                app:boxCornerRadiusBottomStart="@dimen/small_padding"
+                app:boxCornerRadiusTopEnd="@dimen/small_padding"
+                app:boxCornerRadiusTopStart="@dimen/small_padding"
+                app:boxStrokeColor="@color/border_colors"
+                app:boxStrokeWidth="1dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/playlistDescriptionEditText"
+                    style="@style/pl_inputTextField"
+                    android:hint="" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Create Button -->
     <Button
         android:id="@+id/createButton"
         style="@style/new_pl_btn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:text="@string/create_pl_btn_capt"
         app:cornerRadius="@dimen/medium_padding"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/playlistDescriptionInputLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/big_padding"
-        android:layout_marginTop="@dimen/medium_padding"
-        android:layout_marginEnd="@dimen/big_padding"
-        android:layout_marginBottom="170dp"
-        android:hint="@string/new_pl_descr"
-        app:boxBackgroundColor="@color/textInputBackground"
-        app:boxBackgroundMode="outline"
-        app:boxCornerRadiusBottomEnd="@dimen/small_padding"
-        app:boxCornerRadiusBottomStart="@dimen/small_padding"
-        app:boxCornerRadiusTopEnd="@dimen/small_padding"
-        app:boxCornerRadiusTopStart="@dimen/small_padding"
-        app:boxStrokeColor="@color/border_colors"
-        app:boxStrokeWidth="1dp"
-        app:layout_constraintBottom_toTopOf="@id/createButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/playlistDescriptionEditText"
-            style="@style/pl_inputTextField"
-            android:hint="" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/playlistNameInputLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/big_padding"
-        android:layout_marginTop="@dimen/dp32_size"
-        android:layout_marginEnd="@dimen/big_padding"
-        android:layout_marginBottom="@dimen/big_padding"
-        android:hint="@string/new_pl_name"
-        app:boxBackgroundColor="@color/textInputBackground"
-        app:boxBackgroundMode="outline"
-        app:boxCornerRadiusBottomEnd="@dimen/small_padding"
-        app:boxCornerRadiusBottomStart="@dimen/small_padding"
-        app:boxCornerRadiusTopEnd="@dimen/small_padding"
-        app:boxCornerRadiusTopStart="@dimen/small_padding"
-        app:boxStrokeColor="@color/border_colors"
-        app:boxStrokeWidth="1dp"
-        app:layout_constraintBottom_toTopOf="@id/playlistDescriptionInputLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/playlistNameEditText"
-            style="@style/pl_inputTextField"
-            android:hint="" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-        <ImageView
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_gravity="center"
-            android:scaleType="centerCrop"
-            android:id="@+id/placeholderImage"
-            android:background="@drawable/dashed_border"
-            android:layout_marginTop="@dimen/dp26_size"
-            android:layout_marginStart="@dimen/dp24_size"
-            android:layout_marginEnd="@dimen/dp24_size"
-            android:layout_marginBottom="@dimen/dp32_size"
-            app:layout_constraintBottom_toTopOf="@id/playlistNameInputLayout"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/toolBar"
-            android:src="@drawable/add_photo"
-            android:contentDescription="@string/pl_cover_descr"/>
-
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
