@@ -6,7 +6,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
@@ -34,6 +36,7 @@ class NewPlaylistFragment : Fragment() {
             uri?.let {
                 viewModel.saveImage(it.toString()) { imageUri ->
                     binding.placeholderImage.setImageURI(imageUri)
+                    binding.placeholderImage.scaleType = ImageView.ScaleType.CENTER_CROP
                 }
             }
         }
@@ -60,6 +63,17 @@ class NewPlaylistFragment : Fragment() {
                 setDisplayHomeAsUpEnabled(true)
             }
         }
+
+        val coverFrame = binding.placeholderImage
+        coverFrame.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                val width = coverFrame.width
+                coverFrame.layoutParams.height = width
+                coverFrame.requestLayout()
+                coverFrame.viewTreeObserver.removeOnGlobalLayoutListener(this)
+            }
+        })
+
 
         toolBar.setNavigationOnClickListener {
             checkForUnsavedChangesAndShowDialog()

@@ -506,4 +506,10 @@
         <item name="android:paddingBottom">19dp</item>
     </style>
 
+    <style name="RoundedCornersShape" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+
+
 </resources>

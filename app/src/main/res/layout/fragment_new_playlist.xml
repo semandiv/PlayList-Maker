@@ -32,22 +32,19 @@
             android:orientation="vertical"
             android:padding="@dimen/dp24_size">
 
-            <!-- FrameLayout for cover -->
-            <FrameLayout
-                android:id="@+id/coverFrame"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp26_size"
-                android:background="@drawable/dashed_border">
 
-                <ImageView
+                <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/placeholderImage"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp26_size"
+                    android:background="@drawable/dashed_border"
+                    app:shapeAppearanceOverlay="@style/RoundedCornersShape"
                     android:layout_gravity="center"
+                    android:scaleType="center"
                     android:contentDescription="@string/pl_cover_desc"
                     android:src="@drawable/add_photo" />
-            </FrameLayout>
+
 
             <!-- Name Input Field -->
             <com.google.android.material.textfield.TextInputLayout
