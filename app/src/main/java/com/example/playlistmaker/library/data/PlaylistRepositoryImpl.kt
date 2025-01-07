@@ -5,6 +5,7 @@ import android.net.Uri
 import com.example.playlistmaker.library.data.convertors.PlaylistDBConverter
 import com.example.playlistmaker.library.data.db.PlaylistDao
 import com.example.playlistmaker.library.data.db.PlaylistEntity
+import com.example.playlistmaker.library.data.db.TracklistDao
 import com.example.playlistmaker.library.domain.db.PlaylistRepository
 import com.example.playlistmaker.library.domain.models.Playlist
 import com.example.playlistmaker.library.domain.models.SaveCoverResult
@@ -18,6 +19,7 @@ import java.io.File
 
 class PlaylistRepositoryImpl(
     private val playlistDao: PlaylistDao,
+    private val tracklistDao: TracklistDao,
     private val converter: PlaylistDBConverter,
     private val gson: Gson,
     private val context: Context

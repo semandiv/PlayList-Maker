@@ -27,6 +27,7 @@ val favoritesDomainModule = module {
     factory<PlaylistRepository>{
         PlaylistRepositoryImpl(
             playlistDao = get(),
+            tracklistDao = get(),
             converter = get(),
             gson = get(),
             androidContext()
