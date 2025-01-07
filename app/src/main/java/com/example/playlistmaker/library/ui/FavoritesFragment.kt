@@ -22,6 +22,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+private const val CLICK_DEBOUNCE_DELAY = 1000L
+
 class FavoritesFragment : Fragment() {
 
     private lateinit var adapter: FavoritesAdapter
@@ -34,9 +36,7 @@ class FavoritesFragment : Fragment() {
     private var isClickAllowed = true
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
 
         _binding = FragmentFavoritesBinding.inflate(inflater, container, false)
@@ -103,7 +103,5 @@ class FavoritesFragment : Fragment() {
         fun newInstance(): FavoritesFragment {
             return FavoritesFragment()
         }
-
-        private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 }

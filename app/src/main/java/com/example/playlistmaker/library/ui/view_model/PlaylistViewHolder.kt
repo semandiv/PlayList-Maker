@@ -7,7 +7,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.PlaylistItemBinding
 import com.example.playlistmaker.library.domain.models.Playlist
-import com.example.playlistmaker.library.utils.dpToPx.dpToPx
+import com.example.playlistmaker.library.utils.dpToPx
 
 class PlaylistViewHolder(
     private val binding: PlaylistItemBinding,
@@ -22,7 +22,7 @@ class PlaylistViewHolder(
             .load(playlist.plImage)
             .placeholder(R.drawable.placeholder)
             .error(R.drawable.placeholder)
-            .transform(CenterCrop(), RoundedCorners(dpToPx(8, itemView.context)))
+            .transform(CenterCrop(), RoundedCorners(itemView.context.dpToPx(8)))
             .into(binding.playlistImage)
 
         binding.playlistTitle.requestLayout()

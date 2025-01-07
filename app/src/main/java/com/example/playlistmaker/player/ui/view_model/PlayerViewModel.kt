@@ -7,6 +7,7 @@ import com.example.playlistmaker.library.domain.api.PlaylistInteractor
 import com.example.playlistmaker.library.domain.models.Playlist
 import com.example.playlistmaker.player.domain.api.PlayerInteractor
 import com.example.playlistmaker.player.domain.models.MediaState
+import com.example.playlistmaker.player.domain.models.PlaylistAddResult
 import com.example.playlistmaker.search.domain.models.Track
 import com.google.gson.Gson
 import kotlinx.coroutines.Job
@@ -21,7 +22,8 @@ import java.util.Locale
 class PlayerViewModel(
     private val playerInteractor: PlayerInteractor,
     private val favoritesInteractor: FavoritesInteractor,
-    private val playlistInteractor: PlaylistInteractor
+    private val playlistInteractor: PlaylistInteractor,
+    private val gson: Gson
 ) : ViewModel() {
 
     private companion object {
@@ -90,34 +92,33 @@ class PlayerViewModel(
         }
     }
 
-    fun addTrackToPlaylist(playlist: Playlist): Pair<Int, String> {
-        var resultCode = 0
+    fun addTrackToPlaylist(playlist: Playlist): PlaylistAddResult {
         val plName = playlist.plName
         val trackList: MutableList<String> = if (playlist.tracks.isEmpty()) {
             mutableListOf()
         } else convertStringToList(playlist.tracks).toMutableList()
 
-        track?.let { track ->
+        val currentTrack = track
 
-            if (trackList.contains(track.trackId)) {
-                resultCode = 1
-                return Pair(resultCode, plName)
-            }
-
-            trackList.add(track.trackId)
-
-            viewModelScope.launch {
+        return if (currentTrack != null) {
+            if (trackList.contains(currentTrack.trackId)) {
+                PlaylistAddResult.AlreadyExists(plName)
+            } else {
+                trackList.add(currentTrack.trackId)
                 try {
-                    playlistInteractor.addTracksToPlaylist(playlist.plID, trackList, trackList.count())
-                } catch (_: Exception) {
-                    resultCode = 2
+                    viewModelScope.launch {
+                        playlistInteractor.addTracksToPlaylist(playlist.plID, trackList, trackList.count())
+                    }
+                    PlaylistAddResult.Success(plName)
+                } catch (e: Exception) {
+                    PlaylistAddResult.Error
                 }
             }
-        } ?: run {
-            resultCode = 3
+        } else {
+            PlaylistAddResult.TrackIdNotFound
         }
-        return Pair(resultCode, plName)
     }
+
 
     suspend fun toggleFavorite() {
         if (track != null) {
@@ -186,7 +187,6 @@ class PlayerViewModel(
     }
 
     private fun convertStringToList(jsonString: String): List<String> {
-        val gson = Gson()
         return gson.fromJson(jsonString, Array<String>::class.java).toList()
     }
 

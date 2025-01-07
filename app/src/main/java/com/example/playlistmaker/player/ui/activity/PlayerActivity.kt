@@ -18,6 +18,7 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityPlayerBinding
 import com.example.playlistmaker.library.ui.NewPlaylistFragment
 import com.example.playlistmaker.player.domain.models.MediaState
+import com.example.playlistmaker.player.domain.models.PlaylistAddResult
 import com.example.playlistmaker.player.ui.view_model.BottomSheetListAdapter
 import com.example.playlistmaker.player.ui.view_model.PlayerViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -49,19 +50,14 @@ class PlayerActivity : AppCompatActivity() {
 
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
-        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+        bottomSheetBehavior.addBottomSheetCallback(object :
+            BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
-                when (newState) {
-                    BottomSheetBehavior.STATE_HIDDEN -> binding.overlay.isVisible = false
-                    BottomSheetBehavior.STATE_EXPANDED -> binding.overlay.isVisible = true
-                    BottomSheetBehavior.STATE_COLLAPSED -> binding.overlay.isVisible = true
-                    BottomSheetBehavior.STATE_DRAGGING -> binding.overlay.isVisible = true
-                    BottomSheetBehavior.STATE_SETTLING -> binding.overlay.isVisible = true
-                    BottomSheetBehavior.STATE_HALF_EXPANDED -> binding.overlay.isVisible = true
-                }
+                binding.overlay.isVisible = newState != BottomSheetBehavior.STATE_HIDDEN
             }
 
-            override fun onSlide(bottomSheet: View, slideOffset: Float) { /*NOP*/ }
+            override fun onSlide(bottomSheet: View, slideOffset: Float) { /*NOP*/
+            }
         })
 
         setToolbar()
@@ -69,25 +65,24 @@ class PlayerActivity : AppCompatActivity() {
         setValues()
 
         adapter = BottomSheetListAdapter { playlist ->
-            val addResult = playerViewModel.addTrackToPlaylist(playlist)
-            when (addResult.first) {
-                0 -> Toast.makeText( //трек успешно добавлен
-                    this,
-                    getString(R.string.new_pl_add_message).format(addResult.second),
-                    Toast.LENGTH_LONG
-                ).show()
-
-                1 -> Toast.makeText( //трек уже есть в плейлисте
+            when (val addResult = playerViewModel.addTrackToPlaylist(playlist)) {
+                is PlaylistAddResult.AlreadyExists -> Toast.makeText( //трек уже есть в плейлисте
                     this, getString(R.string.add_track_error_1)
-                        .format(addResult.second), Toast.LENGTH_LONG
+                        .format(addResult.playlistName), Toast.LENGTH_LONG
                 ).show()
 
-                2 -> Toast.makeText( //трек не получилось добавить в плейлист
+                PlaylistAddResult.Error -> Toast.makeText( //трек не получилось добавить в плейлист
                     this,
                     getString(R.string.add_track_error_2), Toast.LENGTH_LONG
                 ).show()
 
-                3 -> Toast.makeText( //по какой-то причине не передался ID трека
+                is PlaylistAddResult.Success -> Toast.makeText( //трек успешно добавлен
+                    this,
+                    getString(R.string.new_pl_add_message).format(addResult.playlistName),
+                    Toast.LENGTH_LONG
+                ).show()
+
+                PlaylistAddResult.TrackIdNotFound -> Toast.makeText( //по какой-то причине не передался ID трека
                     this,
                     getString(R.string.add_track_error_3), Toast.LENGTH_LONG
                 ).show()

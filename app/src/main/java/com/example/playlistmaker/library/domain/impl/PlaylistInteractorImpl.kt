@@ -3,6 +3,7 @@ package com.example.playlistmaker.library.domain.impl
 import com.example.playlistmaker.library.domain.api.PlaylistInteractor
 import com.example.playlistmaker.library.domain.db.PlaylistRepository
 import com.example.playlistmaker.library.domain.models.Playlist
+import com.example.playlistmaker.library.domain.models.SaveCoverResult
 import kotlinx.coroutines.flow.Flow
 
 class PlaylistInteractorImpl(
@@ -45,7 +46,7 @@ class PlaylistInteractorImpl(
         playlistRepository.setTrackCount(id, count)
     }
 
-    override suspend fun saveImageToStorage(image: String): Flow<String> {
+    override suspend fun saveImageToStorage(image: String): Flow<SaveCoverResult> {
         return playlistRepository.saveImageToStorage(image)
     }
 }

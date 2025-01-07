@@ -5,35 +5,31 @@ import com.example.playlistmaker.search.domain.models.Track
 
 class TrackDBConvertor {
 
-    fun map(track: Track): TrackEntity {
-        return TrackEntity(
-            track.trackId,
-            track.trackName,
-            track.artistName,
-            track.previewUrl,
-            track.artworkUrl100,
-            track.trackTimeMillis,
-            track.releaseDate,
-            track.collectionName,
-            track.country,
-            track.primaryGenreName,
-            track.timeStamp
+    fun map(track: Track): TrackEntity = TrackEntity(
+            trackId = track.trackId,
+            trackName = track.trackName,
+            artistName = track.artistName,
+            previewUrl = track.previewUrl,
+            artworkUrl100 = track.artworkUrl100,
+            trackTimeMillis = track.trackTimeMillis,
+            releaseDate = track.releaseDate,
+            collectionName = track.collectionName,
+            country = track.country,
+            primaryGenreName = track.primaryGenreName,
+            timeStamp = track.timeStamp
         )
-    }
 
-    fun map(trackEntity: TrackEntity): Track {
-        return Track(
-            trackEntity.trackId,
-            trackEntity.trackName,
-            trackEntity.artistName,
-            trackEntity.previewUrl,
-            trackEntity.artworkUrl100,
-            trackEntity.trackTimeMillis,
-            trackEntity.releaseDate,
-            trackEntity.collectionName,
-            trackEntity.country,
-            trackEntity.primaryGenreName,
-            trackEntity.timeStamp
+    fun map(trackEntity: TrackEntity): Track = Track(
+            trackId = trackEntity.trackId,
+            trackName = trackEntity.trackName,
+            artistName = trackEntity.artistName,
+            previewUrl = trackEntity.previewUrl,
+            artworkUrl100 = trackEntity.artworkUrl100,
+            trackTimeMillis = trackEntity.trackTimeMillis,
+            releaseDate = trackEntity.releaseDate,
+            collectionName = trackEntity.collectionName,
+            country = trackEntity.country,
+            primaryGenreName = trackEntity.primaryGenreName,
+            timeStamp = trackEntity.timeStamp
         )
-    }
 }

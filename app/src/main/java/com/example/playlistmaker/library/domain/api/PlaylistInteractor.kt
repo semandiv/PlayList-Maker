@@ -1,6 +1,7 @@
 package com.example.playlistmaker.library.domain.api
 
 import com.example.playlistmaker.library.domain.models.Playlist
+import com.example.playlistmaker.library.domain.models.SaveCoverResult
 import kotlinx.coroutines.flow.Flow
 
 interface PlaylistInteractor {
@@ -15,5 +16,5 @@ interface PlaylistInteractor {
     suspend fun addTracksToPlaylist(id: Int, tracks: List<String>, count: Int)
     suspend fun setTrackCount(id: Int, count: Int)
 
-    suspend fun saveImageToStorage(image: String): Flow<String>
+    suspend fun saveImageToStorage(image: String): Flow<SaveCoverResult>
 }

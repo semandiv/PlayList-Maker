@@ -8,7 +8,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ItemBottomsheetPlBinding
 import com.example.playlistmaker.library.domain.models.Playlist
-import com.example.playlistmaker.library.utils.dpToPx.dpToPx
+import com.example.playlistmaker.library.utils.dpToPx
 
 class BottomSheetListViewHolder(
     private val binding: ItemBottomsheetPlBinding,
@@ -24,7 +24,7 @@ class BottomSheetListViewHolder(
             .load(playlist.plImage)
             .placeholder(R.drawable.placeholder)
             .error(R.drawable.placeholder)
-            .transform(CenterCrop(), RoundedCorners(dpToPx(2, itemView.context)))
+            .transform(CenterCrop(), RoundedCorners(itemView.context.dpToPx(2)))
             .into(binding.plCover)
 
         binding.plNameTextview.requestLayout()

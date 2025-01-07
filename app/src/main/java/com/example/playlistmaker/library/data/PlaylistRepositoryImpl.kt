@@ -7,6 +7,7 @@ import com.example.playlistmaker.library.data.db.PlaylistDao
 import com.example.playlistmaker.library.data.db.PlaylistEntity
 import com.example.playlistmaker.library.domain.db.PlaylistRepository
 import com.example.playlistmaker.library.domain.models.Playlist
+import com.example.playlistmaker.library.domain.models.SaveCoverResult
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -26,8 +27,7 @@ class PlaylistRepositoryImpl(
         playlistDao.getPlaylists().map(::convertFromDB)
 
     override fun getPlaylist(id: Int): Flow<Playlist> = flow{
-        val playlist = playlistDao.getPlaylist(id)
-        emit(playlist)
+        emit(playlistDao.getPlaylist(id))
     }
 
     override suspend fun addNewPlaylist(playlist: Playlist) {
@@ -58,7 +58,7 @@ class PlaylistRepositoryImpl(
         playlistDao.updatePlTrackCount(id, trackCountMethod)
     }
 
-    override suspend fun saveImageToStorage(image: String): Flow<String> = flow {
+    override suspend fun saveImageToStorage(image: String): Flow<SaveCoverResult> = flow {
         val uri = Uri.parse(image)
         val inputStream = context.contentResolver.openInputStream(uri)
         val fileName = "image_${System.currentTimeMillis()}.jpg"
@@ -70,10 +70,9 @@ class PlaylistRepositoryImpl(
             }
         }
 
-        val result = "${file.absolutePath};${Uri.fromFile(file)}"
+        val result = SaveCoverResult(absolutePath = file.absolutePath, uri = Uri.fromFile(file))
 
         emit(result)
-        inputStream?.close()
     }
         .flowOn(Dispatchers.IO)
 

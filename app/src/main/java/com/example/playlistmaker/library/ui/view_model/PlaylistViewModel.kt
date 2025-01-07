@@ -6,6 +6,7 @@ import com.example.playlistmaker.library.domain.api.PlaylistInteractor
 import com.example.playlistmaker.library.domain.models.Playlist
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class PlaylistViewModel(
@@ -23,7 +24,7 @@ class PlaylistViewModel(
         viewModelScope.launch {
             plInteractor.getAllPlaylists()
                 .collect { playlists ->
-                    _playlists.value = playlists
+                    _playlists.update { playlists }
                 }
         }
     }

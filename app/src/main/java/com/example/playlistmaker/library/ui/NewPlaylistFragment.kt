@@ -17,11 +17,15 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.playlistmaker.R
 import com.example.playlistmaker.RootActivity
 import com.example.playlistmaker.databinding.FragmentNewPlaylistBinding
 import com.example.playlistmaker.library.ui.view_model.NewPlaylistViewModel
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class NewPlaylistFragment : Fragment() {
@@ -31,13 +35,12 @@ class NewPlaylistFragment : Fragment() {
 
     private val viewModel: NewPlaylistViewModel by viewModel()
 
+    private var coverIsSaved: Boolean = false
+
     private val pickImage =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             uri?.let {
-                viewModel.saveImage(it.toString()) { imageUri ->
-                    binding.placeholderImage.setImageURI(imageUri)
-                    binding.placeholderImage.scaleType = ImageView.ScaleType.CENTER_CROP
-                }
+                viewModel.saveImage(it.toString())
             }
         }
 
@@ -61,6 +64,16 @@ class NewPlaylistFragment : Fragment() {
             supportActionBar?.apply {
                 title = getString(R.string.new_pl_toolbar_title)
                 setDisplayHomeAsUpEnabled(true)
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.imageUri.collect { imageUri ->
+                    coverIsSaved = imageUri.toString().isNotEmpty()
+                    binding.placeholderImage.setImageURI(imageUri)
+                    binding.placeholderImage.scaleType = ImageView.ScaleType.CENTER_CROP
+                }
             }
         }
 
@@ -117,13 +130,13 @@ class NewPlaylistFragment : Fragment() {
     }
 
     private fun savePlaylist() {
-        viewModel.plDescriptionVM = binding.playlistDescriptionEditText.text.toString()
+        val description = binding.playlistDescriptionEditText.text.toString()
+        val name = binding.playlistNameEditText.text.toString()
 
-        if (!binding.playlistNameEditText.text.isNullOrEmpty()) {
-            viewModel.plNameVM = binding.playlistNameEditText.text.toString()
-            viewModel.createPlaylist()
+        if (name.isNotEmpty()) {
+            viewModel.createPlaylist(name, description)
 
-            showSnackBar(viewModel.plNameVM)
+            showSnackBar(name)
             parentFragmentManager.popBackStack()
         } else {
             checkPlaylistName()
@@ -174,7 +187,6 @@ class NewPlaylistFragment : Fragment() {
 
     private fun isPlaylistDataChanged(): Boolean {
         return binding.playlistNameEditText.text?.isNotEmpty() == true ||
-                binding.playlistDescriptionEditText.text?.isNotEmpty() == true ||
-                viewModel.savedImageUri.toString().isNotEmpty()
+                binding.playlistDescriptionEditText.text?.isNotEmpty() == true || coverIsSaved
     }
 }

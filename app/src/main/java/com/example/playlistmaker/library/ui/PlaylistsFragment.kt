@@ -16,7 +16,7 @@ import com.example.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.example.playlistmaker.library.ui.view_model.PlaylistAdapter
 import com.example.playlistmaker.library.ui.view_model.PlaylistViewModel
 import com.example.playlistmaker.library.utils.GridSpacingItemDecoration
-import com.example.playlistmaker.library.utils.dpToPx.dpToPx
+import com.example.playlistmaker.library.utils.dpToPx
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -68,7 +68,7 @@ class PlaylistsFragment : Fragment() {
         val gridLayoutManager = GridLayoutManager(requireContext(), 2)
         binding.playlistList.layoutManager = gridLayoutManager
 
-        val itemDecoration = GridSpacingItemDecoration(2, dpToPx(8, requireContext()), true)
+        val itemDecoration = GridSpacingItemDecoration(2, requireContext().dpToPx(8), true)
         binding.playlistList.addItemDecoration(itemDecoration)
 
         binding.playlistList.adapter = adapter

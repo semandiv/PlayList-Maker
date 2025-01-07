@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.library.domain.api.PlaylistInteractor
 import com.example.playlistmaker.library.domain.models.Playlist
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class NewPlaylistViewModel(
@@ -12,30 +14,28 @@ class NewPlaylistViewModel(
 ) : ViewModel() {
 
     private companion object{
-        const val PL_ID = 0
+        const val PLAYLIST_ID = 0
     }
 
-    var plNameVM = String()
-    var plDescriptionVM = String()
-    var savedImageUri: Uri = Uri.EMPTY
+    private val _imageUri = MutableStateFlow<Uri?>(null)
+    val imageUri: StateFlow<Uri?> get() = _imageUri
+
     private var imagePath = String()
 
 
-    fun createPlaylist() {
+    fun createPlaylist(plNameVM: String, plDescriptionVM: String) {
         viewModelScope.launch {
-            val playlist = Playlist(PL_ID, plNameVM, plDescriptionVM, imagePath)
+            val playlist = Playlist(PLAYLIST_ID, plNameVM, plDescriptionVM, imagePath)
             plInteractor.createPlaylist(playlist)
         }
     }
 
-    fun saveImage(image: String, callback: (Uri) -> Unit) {
+    fun saveImage(image: String) {
         viewModelScope.launch {
             plInteractor.saveImageToStorage(image)
                 .collect {
-                    val result = it.split(";", limit = 2)
-                    imagePath = result[0]
-                    val imageUri = Uri.parse(result[1])
-                    callback(imageUri)
+                    imagePath = it.absolutePath
+                    _imageUri.value = it.uri
                 }
         }
     }
