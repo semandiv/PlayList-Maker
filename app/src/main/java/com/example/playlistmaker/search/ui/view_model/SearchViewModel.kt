@@ -1,7 +1,5 @@
 package com.example.playlistmaker.search.ui.view_model
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.search.domain.api.HistoryInteractor
@@ -9,6 +7,8 @@ import com.example.playlistmaker.search.domain.api.ToPlayerInteractor
 import com.example.playlistmaker.search.domain.api.TracksInteractor
 import com.example.playlistmaker.search.domain.models.Track
 import com.example.playlistmaker.search.domain.models.TrackSearchResult
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
@@ -17,11 +17,11 @@ class SearchViewModel(
     private val toPlayerInteractor: ToPlayerInteractor
 ) : ViewModel() {
 
-    private val _history = MutableLiveData<List<Track>>()
-    val history: LiveData<List<Track>> get() = _history
+    private val _history = MutableStateFlow<List<Track>>(emptyList())
+    val history: StateFlow<List<Track>> get() = _history
 
-    private val _searchResult = MutableLiveData<TrackSearchResult>()
-    val searchResult: LiveData<TrackSearchResult> get() = _searchResult
+    private val _searchResult = MutableStateFlow<TrackSearchResult>(TrackSearchResult.NoResult)
+    val searchResult: StateFlow<TrackSearchResult> get() = _searchResult
 
     init {
         loadHistory()
@@ -33,7 +33,7 @@ class SearchViewModel(
                 tracksInteractor
                     .searchTracks(query)
                     .collect { result ->
-                        _searchResult.postValue(result)
+                        _searchResult.value = result
                     }
             }
         }
@@ -44,7 +44,7 @@ class SearchViewModel(
     }
 
     fun loadHistory() {
-        _history.postValue(historyInteractor.getTrack().reversed())
+        _history.value = historyInteractor.getTrack().reversed()
     }
 
     fun saveTrackToHistory(track: Track) {

@@ -1,12 +1,12 @@
 package com.example.playlistmaker.library.ui.view_model
 
 import android.annotation.SuppressLint
-import android.content.Context
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ItemTrackBinding
+import com.example.playlistmaker.library.utils.dpToPx
 import com.example.playlistmaker.search.domain.models.Track
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -35,15 +35,11 @@ class FavoritesViewHolder(
             .load(track.artworkUrl100)
             .placeholder(R.drawable.placeholder)
             .error(R.drawable.placeholder)
-            .transform(RoundedCorners(dpToPx(16, itemView.context)))
+            .transform(RoundedCorners(itemView.context.dpToPx(16)))
             .into(binding.artwork)
 
         binding.artistName.requestLayout()
 
         binding.root.setOnClickListener { listener(track) }
-    }
-
-    private fun dpToPx(dp: Int, context: Context): Int {
-        return (dp * context.resources.displayMetrics.density).toInt()
     }
 }

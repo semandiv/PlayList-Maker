@@ -61,6 +61,9 @@ configurations.all {
 
 
 dependencies {
+    implementation(libs.androidx.legacy.support.v4)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
     //noinspection KaptUsageInsteadOfKsp
     kapt(libs.room.compiler)
     implementation(libs.room.ktx)

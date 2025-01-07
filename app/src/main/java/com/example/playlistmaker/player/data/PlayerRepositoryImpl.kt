@@ -2,32 +2,43 @@ package com.example.playlistmaker.player.data
 
 import android.content.SharedPreferences
 import android.media.MediaPlayer
+import com.example.playlistmaker.player.domain.api.PlayerRepository
 import com.example.playlistmaker.player.domain.models.PlayerState
 import com.example.playlistmaker.search.domain.models.Track
 import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 private const val SAVED_TRACK = "saved_track_to_play"
 
-class PlayerRepository(
+class PlayerRepositoryImpl(
     private val mediaPlayer: MediaPlayer,
     private val sharedPref: SharedPreferences,
     private val gson: Gson
-) {
+): PlayerRepository {
 
-    private val track = getTrack()
+    private var track: Track? = null
     private val previewUrl = track?.previewUrl ?: String()
     private var listener: (PlayerState) -> Unit = {}
     private var playerState: PlayerState = PlayerState.DEFAULT
 
-    fun setPlayerStateListener(listener: (PlayerState) -> Unit) {
+    init {
+        CoroutineScope(Dispatchers.IO).launch {
+            track = getTrack()
+        }
+    }
+
+    override fun setPlayerStateListener(listener: (PlayerState) -> Unit) {
         this.listener = listener
     }
 
-    fun sendTrack(): Track? = track
+    override fun sendTrack(): Track? = track
 
-    fun preparePlayer() {
+    override fun preparePlayer() {
         if (previewUrl.isNotEmpty()) {
+            mediaPlayer.reset()
             mediaPlayer.setDataSource(previewUrl)
             mediaPlayer.prepareAsync()
             playerState = PlayerState.PREPARED
@@ -44,28 +55,37 @@ class PlayerRepository(
         }
     }
 
-    fun play() {
+    override fun play() {
         playerState = PlayerState.PLAYING
         updatePlayerState(playerState)
         mediaPlayer.start()
     }
 
-    fun pause() {
+    override fun pause() {
         playerState = PlayerState.PAUSED
         updatePlayerState(playerState)
         mediaPlayer.pause()
     }
 
-    fun release() {
+    override fun release() {
         mediaPlayer.release()
     }
 
-    fun getCurrentPosition(): Int {
+    override fun getCurrentPosition(): Int {
         return mediaPlayer.currentPosition
     }
 
-    fun isPlaying(): Boolean {
+    override fun isPlaying(): Boolean {
         return mediaPlayer.isPlaying
+    }
+
+    override fun updatePlayer(){
+        if (isPlaying()) {
+            playerState = PlayerState.PLAYING
+        } else {
+            playerState = PlayerState.PAUSED
+        }
+        updatePlayerState(playerState)
     }
 
     private fun updatePlayerState(state: PlayerState) {

@@ -29,6 +29,7 @@
         </activity>
         <activity
             android:name=".player.ui.activity.PlayerActivity"
+            android:windowSoftInputMode="adjustPan"
             android:exported="false"
             android:theme="@style/Theme.SearchView" />
     </application>

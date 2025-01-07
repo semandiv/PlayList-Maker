@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    
+    <ImageView
+        android:id="@+id/pl_cover"
+        android:src="@drawable/placeholder"
+        android:scaleType="centerCrop"
+        style="@style/pl_cover_bottomsheet_item" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/plName_textview"
+            android:text="@string/pl_name_placeholder"
+            style="@style/pl_name_bottomsheet_item" />
+
+        <TextView
+            android:id="@+id/pl_trackcount"
+            android:text="@string/pl_trackcount_placeholder"
+            style="@style/pl_trackcount_bottomsheet_item" />
+
+
+    </LinearLayout>
+
+
+</LinearLayout>

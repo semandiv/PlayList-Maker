@@ -56,4 +56,36 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_navigate">NavigateActivity</string>
     <string name="content_description">Просто изображение</string>
+    <string name="new_pl_name">Название*</string>
+    <string name="new_pl_descr">Описание</string>
+    <string name="create_pl_btn_capt">Создать</string>
+    <string name="pl_cover_desc">Playlist_Cover</string>
+    <string name="pl_cover_descr">Обложка плейлиста</string>
+    <string name="pl_name">Название плейлиста</string>
+    <string name="pl_descr">Описание плейлиста</string>
+    <string name="addPlaylistTitle">Добавить в плейлист</string>
+    <string name="newPlaylistBtnCapt">Новый плейлист</string>
+    <string name="pl_name_placeholder">Название плейлиста</string>
+    <string name="pl_trackcount_placeholder">Количество треков</string>
+    <string name="pl_toast_text">Плейлист %s создан</string>
+    <string name="pl_dialog_title">Завершить создание плейлиста?</string>
+    <string name="pl_dialog_message">Все несохраненные данные будут потеряны</string>
+    <string name="pl_dialog_ok">Завершить</string>
+    <string name="pl_dialog_cancel">Отмена</string>
+    <string name="new_pl_toolbar_title">Новый плейлист</string>
+    <string name="add_track_error_1">Трек уже добавлен в плейлист %s</string>
+    <string name="add_track_error_2">Ошибка добавления трека в плейлист</string>
+    <string name="add_track_error_3">Нет ID трека</string>
+    <string name="new_pl_add_message">Добавлено в плейлист %s</string>
+    <string name="checkPLName_message">Нужно указать название плейлиста</string>
+
+    <plurals name="track_count">
+        <item quantity="one">%d трек</item>
+        <item quantity="two">%d трека</item>
+        <item quantity="few">%d треков</item>
+        <item quantity="many">%d треков</item>
+        <item quantity="other">%d треков</item>
+    </plurals>
+
+
 </resources>

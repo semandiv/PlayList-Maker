@@ -13,4 +13,8 @@
     <color name="grayTintDarkMode">#AEAFB4</color>
     <color name="tabLayoutColor">#1A1B22</color>
     <color name="tabIndicatorColor">#FFFFFF</color>
+    <color name="bottomSheetIndi">#FFFFFF</color>
+    <color name="borderColorActive">#3772E7</color>
+    <color name="borderColorInactive">#FFFFFF</color>
+    <color name="textInputBackground">#1A1B22</color>
 </resources>
