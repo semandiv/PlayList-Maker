@@ -6,9 +6,6 @@ import com.example.playlistmaker.player.domain.api.PlayerRepository
 import com.example.playlistmaker.player.domain.models.PlayerState
 import com.example.playlistmaker.search.domain.models.Track
 import com.google.gson.Gson
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 
 private const val SAVED_TRACK = "saved_track_to_play"
@@ -25,9 +22,7 @@ class PlayerRepositoryImpl(
     private var playerState: PlayerState = PlayerState.DEFAULT
 
     init {
-        CoroutineScope(Dispatchers.IO).launch {
             track = getTrack()
-        }
     }
 
     override fun setPlayerStateListener(listener: (PlayerState) -> Unit) {

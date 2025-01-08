@@ -22,6 +22,12 @@
         <action
             android:id="@+id/action_playlistsFragment_to_newPlaylistFragment"
             app:destination="@id/newPlaylistFragment" />
+        <action
+            android:id="@+id/action_playlistsFragment_to_playlistDetailsFragment"
+            app:destination="@id/playlistDetailsFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_enter_anim"
+            app:launchSingleTop="true" />
     </fragment>
 
     <fragment
@@ -35,6 +41,13 @@
         android:name="com.example.playlistmaker.library.ui.PlaylistsFragment"
         android:label="PlaylistsFragment"
         tools:layout="@layout/fragment_playlists">
+
+    </fragment>
+    <fragment
+        android:id="@+id/playlistDetailsFragment"
+        android:name="com.example.playlistmaker.library.ui.PlaylistDetails"
+        android:label="PlaylistDetails"
+        tools:layout="@layout/fragment_playlist_details">
 
     </fragment>
 

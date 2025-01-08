@@ -8,7 +8,7 @@ import com.example.playlistmaker.library.domain.models.Playlist
 import com.example.playlistmaker.library.utils.PlaylistDiffCallback
 
 class PlaylistAdapter(
-    private val listener: (Playlist) -> Unit
+    private val listener: (Playlist) -> Unit,
 ): ListAdapter<Playlist, PlaylistViewHolder>(PlaylistDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistViewHolder {
@@ -20,6 +20,4 @@ class PlaylistAdapter(
         val playlist = getItem(position)
         holder.bind(playlist)
     }
-
-
 }

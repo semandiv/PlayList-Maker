@@ -14,8 +14,8 @@ class FavoritesRepositoryImpl(
     private val trackDBConvertor: TrackDBConvertor
 ): FavoritesRepository {
 
-    override fun getFavoritesTrack(): Flow<List<Track>> = trackDAO.getAllTracks()
-        .map { trackEntities -> convertFromDB(trackEntities) }
+    override fun getFavoritesTrack(): Flow<List<Track>> =
+        trackDAO.getAllTracks().map(::convertFromDB)
 
     override suspend fun addTrack(track: Track) {
         track.timeStamp = System.currentTimeMillis()
@@ -31,9 +31,7 @@ class FavoritesRepositoryImpl(
         emit(tracksID)
     }
 
-    private fun convertFromDB(tracksDB: List<TrackEntity>): List<Track>{
-        return tracksDB.map { track -> trackDBConvertor.map(track) }
-    }
+    private fun convertFromDB(tracksDB: List<TrackEntity>) = tracksDB.map(trackDBConvertor::map)
 
     private fun convertToDB(track: Track): TrackEntity {
         return trackDBConvertor.map(track)

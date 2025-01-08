@@ -1,5 +1,6 @@
 package com.example.playlistmaker.player.ui.view_model
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.library.domain.api.FavoritesInteractor
@@ -15,6 +16,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -57,7 +59,7 @@ class PlayerViewModel(
 
     init {
         playerInteractor.observeMediaState{ newState ->
-            _mediaState.value = newState}
+            _mediaState.update { newState } }
         preparePlayer()
         getFavorites(track)
         getPlaylists()
@@ -70,6 +72,7 @@ class PlayerViewModel(
     fun getCoverUrl() = track?.artworkUrl100?.replaceAfterLast('/', "512x512bb.jpg")
 
     fun onClickPlayButton() {
+        Log.d("TAG1", mediaState.value.toString())
         when (mediaState.value) {
             MediaState.Default -> { /* NOP*/ }
 
@@ -107,7 +110,11 @@ class PlayerViewModel(
                 trackList.add(currentTrack.trackId)
                 try {
                     viewModelScope.launch {
-                        playlistInteractor.addTracksToPlaylist(playlist.plID, trackList, trackList.count())
+                        playlistInteractor.addTracksToPlaylist(
+                            playlist.plID,
+                            trackList,
+                            trackList.count(),
+                            currentTrack)
                     }
                     PlaylistAddResult.Success(plName)
                 } catch (e: Exception) {
@@ -149,7 +156,7 @@ class PlayerViewModel(
         timerJob?.cancel()
         timerJob = viewModelScope.launch {
             while (playerInteractor.isPlaying()) {
-                _currentPosition.value = getPositionToString(playerInteractor.currentPosition())
+                _currentPosition.update { getPositionToString(playerInteractor.currentPosition()) }
                 delay(DELAY)
             }
         }
@@ -181,7 +188,7 @@ class PlayerViewModel(
         viewModelScope.launch {
             playlistInteractor.getAllPlaylists()
                 .collect { playlists ->
-                    _playlists.value = playlists
+                    _playlists.update { playlists }
                 }
         }
     }

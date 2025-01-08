@@ -5,6 +5,7 @@
     <dimen name="big_padding">16dp</dimen>
     <dimen name="primary_text_size">22sp</dimen>
     <dimen name="list_text_size">16sp</dimen>
+    <dimen name="sp18_size">18sp</dimen>
     <dimen name="small_text_size">11sp</dimen>
     <dimen name="medium_text_size">14sp</dimen>
     <dimen name="big_text_size">19sp</dimen>
@@ -33,4 +34,5 @@
     <dimen name="dp52_size">52dp</dimen>
     <dimen name="sp19_text_size">19sp</dimen>
     <dimen name="dp50_size">50dp</dimen>
+    <dimen name="text_margin">16dp</dimen>
 </resources>
