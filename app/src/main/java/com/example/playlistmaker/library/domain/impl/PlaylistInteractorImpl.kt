@@ -4,6 +4,7 @@ import com.example.playlistmaker.library.domain.api.PlaylistInteractor
 import com.example.playlistmaker.library.domain.db.PlaylistRepository
 import com.example.playlistmaker.library.domain.models.Playlist
 import com.example.playlistmaker.library.domain.models.SaveCoverResult
+import com.example.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.flow.Flow
 
 class PlaylistInteractorImpl(
@@ -38,8 +39,8 @@ class PlaylistInteractorImpl(
         playlistRepository.setImage(id, image)
     }
 
-    override suspend fun addTracksToPlaylist(id: Int, tracks: List<String>, count: Int) {
-        playlistRepository.setTracks(id, tracks, count)
+    override suspend fun addTracksToPlaylist(id: Int, tracks: List<String>, count: Int, track: Track) {
+        playlistRepository.setTracks(id, tracks, count, track)
     }
 
     override suspend fun setTrackCount(id: Int, count: Int) {

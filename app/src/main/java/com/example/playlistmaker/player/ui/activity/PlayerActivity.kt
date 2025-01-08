@@ -167,6 +167,11 @@ class PlayerActivity : AppCompatActivity() {
         playerViewModel.updatePlayer()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {

@@ -5,9 +5,12 @@ import android.net.Uri
 import com.example.playlistmaker.library.data.convertors.PlaylistDBConverter
 import com.example.playlistmaker.library.data.db.PlaylistDao
 import com.example.playlistmaker.library.data.db.PlaylistEntity
+import com.example.playlistmaker.library.data.db.TracklistDao
+import com.example.playlistmaker.library.data.db.TracklistEntity
 import com.example.playlistmaker.library.domain.db.PlaylistRepository
 import com.example.playlistmaker.library.domain.models.Playlist
 import com.example.playlistmaker.library.domain.models.SaveCoverResult
+import com.example.playlistmaker.search.domain.models.Track
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -18,6 +21,7 @@ import java.io.File
 
 class PlaylistRepositoryImpl(
     private val playlistDao: PlaylistDao,
+    private val tracklistDao: TracklistDao,
     private val converter: PlaylistDBConverter,
     private val gson: Gson,
     private val context: Context
@@ -50,8 +54,9 @@ class PlaylistRepositoryImpl(
         playlistDao.updatePlImage(id, image)
     }
 
-    override suspend fun setTracks(id: Int, tracks: List<String>, count: Int) {
+    override suspend fun setTracks(id: Int, tracks: List<String>, count: Int, track: Track) {
         playlistDao.updatePlTracks(id, gson.toJson(tracks), count)
+        tracklistDao.insertTrackToList(convertTracklistToDB(track))
     }
 
     override suspend fun setTrackCount(id: Int, trackCountMethod: Int) {
@@ -77,6 +82,8 @@ class PlaylistRepositoryImpl(
         .flowOn(Dispatchers.IO)
 
     private fun convertFromDB(entity: List<PlaylistEntity>) = entity.map(converter::map)
+
+    private fun convertTracklistToDB(track: Track): TracklistEntity = converter.mapToTracklistEntity(track)
 
     private fun plToDB(playlist: Playlist): PlaylistEntity {
         return converter.map(playlist)

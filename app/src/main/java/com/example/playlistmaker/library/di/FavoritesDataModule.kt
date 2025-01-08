@@ -33,4 +33,6 @@ val favoritesDataModule = module {
 
     factory {get<PlaylistDatabase>().playlistDao()}
 
+    factory {get<PlaylistDatabase>().tracklistDao()}
+
 }

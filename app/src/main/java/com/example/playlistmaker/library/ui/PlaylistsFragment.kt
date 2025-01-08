@@ -44,10 +44,6 @@ class PlaylistsFragment : Fragment() {
     ) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.playlistUpdButton.setOnClickListener {
-            findNavController().navigate(R.id.newPlaylistFragment)
-        }
-
         viewLifecycleOwner.lifecycleScope.launch{
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.playlists.collect{playlists->
@@ -57,13 +53,14 @@ class PlaylistsFragment : Fragment() {
             }
         }
 
-
-
         binding.playlistUpdButton.setOnClickListener {
             findNavController().navigate(R.id.action_playlistsFragment_to_newPlaylistFragment)
         }
 
-        adapter = PlaylistAdapter {}
+        adapter = PlaylistAdapter { playlist ->
+            viewModel.openPlaylist(playlist.plID)
+            findNavController().navigate(R.id.action_playlistsFragment_to_playlistDetailsFragment)
+        }
 
         val gridLayoutManager = GridLayoutManager(requireContext(), 2)
         binding.playlistList.layoutManager = gridLayoutManager

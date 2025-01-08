@@ -7,6 +7,7 @@ import com.example.playlistmaker.search.domain.api.ToPlayerInteractor
 import com.example.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class FavoritesViewModel(
@@ -18,7 +19,7 @@ class FavoritesViewModel(
         viewModelScope.launch {
             favInteractor.getFavoritesTrack()
                 .collect{tracks ->
-                    _tracks.value = tracks
+                    _tracks.update { tracks }
                 }
         }
     }
@@ -40,7 +41,7 @@ class FavoritesViewModel(
         viewModelScope.launch {
             favInteractor.getFavoritesTrack()
                 .collect{tracks ->
-                    _tracks.value = tracks
+                    _tracks.update { tracks }
                 }
         }
     }

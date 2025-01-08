@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentLibraryBinding
 import com.google.android.material.tabs.TabLayoutMediator
@@ -35,6 +36,8 @@ class LibraryFragment : Fragment() {
 
         val tabLayout = binding.tabLayout
         val viewPager = binding.viewPager
+
+        val navController = findNavController()
 
         val adapter = LibraryPagerAdapter(requireActivity())
         binding.viewPager.adapter = adapter
